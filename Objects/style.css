@@ -1,0 +1,36 @@
+﻿body {
+    font-family: 'Rubik', sans-serif;
+    background-color: #f8fafc;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    height: 300px;
+    max-height: 350px;
+}
+
+@media (min-width: 768px) {
+    .chart-container {
+        height: 320px;
+    }
+}
+
+.code-font {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.code-ltr {
+    direction: ltr;
+    unicode-bidi: isolate;
+    display: inline-block;
+    text-align: left;
+}
+
+.active-tab {
+    border-bottom: 3px solid #4f46e5;
+    color: #4f46e5;
+    font-weight: 600;
+}

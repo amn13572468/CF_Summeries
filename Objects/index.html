@@ -1,0 +1,790 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שיעור אינטראקטיבי: טיפוסים ועצמים (Turtle / UNIT4)</title>
+
+    <!-- Tailwind CSS & Chart.js CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS חיצוני -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md">🐢</div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold text-slate-900">למידת עצמים וטיפוסים (OOP)</h1>
+                    <p class="text-xs md:text-sm text-slate-500">שיעור אינטראקטיבי בהשראת תרגול הצב הרשמי (UNIT4 / משרד החינוך)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full border border-indigo-100 font-medium self-start md:self-auto">
+                <span>🎯 קהל יעד: כיתה י' / מדעי המחשב (תכנות מונחה עצמים)</span>
+            </div>
+        </div>
+
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto gap-6 text-sm font-medium text-slate-600 border-t border-slate-100">
+            <button onclick="switchTab('tab-intro')" id="nav-tab-intro" class="py-3 whitespace-nowrap active-tab hover:text-indigo-600 transition-colors">1. פתיחה: הצב האנושי</button>
+            <button onclick="switchTab('tab-simulator')" id="nav-tab-simulator" class="py-3 whitespace-nowrap hover:text-indigo-600 transition-colors">2. מעבדת הצבים והזיכרון UNIT4 💻</button>
+            <button onclick="switchTab('tab-theory')" id="nav-tab-theory" class="py-3 whitespace-nowrap hover:text-indigo-600 transition-colors">3. מילון מושגים וממשק הצב</button>
+            <button onclick="switchTab('tab-bugs')" id="nav-tab-bugs" class="py-3 whitespace-nowrap hover:text-indigo-600 transition-colors">4. ניתוח שגיאות נפוצות 🐛</button>
+            <button onclick="switchTab('tab-worksheet')" id="nav-tab-worksheet" class="py-3 whitespace-nowrap hover:text-indigo-600 transition-colors">5. דף עבודה ותרגול מעשי 📝</button>
+            <button onclick="switchTab('tab-quiz')" id="nav-tab-quiz" class="py-3 whitespace-nowrap hover:text-indigo-600 transition-colors">6. בחן את עצמך (15 שאלות) 📊</button>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+        <!-- TAB 1: INTRO & HUMAN TURTLE -->
+        <section id="tab-intro" class="space-y-6">
+            <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 1: חוויה פיזית (15 דקות)</div>
+                <h2 class="text-2xl font-bold text-slate-900">משחק תפקידים: "הצב האנושי" בכיתה</h2>
+                <p class="text-slate-600 leading-relaxed">לפני שכותבים קוד במחשב, ממחישים את ההבדל בין <strong>הגדרת מחלקה (Class)</strong> לבין <strong>מופע חוקי בזיכרון (Object)</strong> באמצעות משחק תפקידים אקטיבי בכיתה.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                        <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">1</div>
+                        <h3 class="font-bold text-slate-900">הלוח = הטיפוס (Class)</h3>
+                        <p class="text-sm text-slate-600">כותבים על הלוח את רשימת הפעולות הרשמיות של UNIT4 ואת התכונות. זהו ה"שרטוט".</p>
+                    </div>
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                        <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">2</div>
+                        <h3 class="font-bold text-slate-900">התלמיד = העצם (t1)</h3>
+                        <p class="text-sm text-slate-600">תלמיד קם לחזית הכיתה במרכז. הוא מייצג מופע שנוצר בפקודה <span class="code-font code-ltr text-emerald-600 font-bold">new Turtle()</span>.</p>
+                    </div>
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                        <div class="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-sm">3</div>
+                        <h3 class="font-bold text-slate-900">הכפלה: עצם שני (t2)</h3>
+                        <p class="text-sm text-slate-600">קם תלמיד נוסף (<span class="code-font code-ltr text-amber-600 font-bold">t2</span>). התלמידים מבינים: הורדת הזנב ב-t1 לא משפיעה על t2!</p>
+                    </div>
+                </div>
+                <div class="mt-6 bg-indigo-50 border border-indigo-200 p-5 rounded-xl space-y-3">
+                    <h4 class="font-bold text-indigo-900 flex items-center gap-2"><span>💡</span> שאלת מחשבה דינמית לכיתה:</h4>
+                    <p class="text-sm text-indigo-950">אם נקרא לפעולה <span class="code-font code-ltr bg-white px-2 py-0.5 rounded border border-indigo-300">t1.SetTailColor(Color.Red)</span>, איזה מבין שני הצבים ישנה את צבע הזנב שלו?</p>
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <button onclick="checkThought(1)" class="px-4 py-2 text-sm bg-white hover:bg-indigo-100 border border-indigo-300 rounded-lg font-medium transition-colors">א. רק צב t1</button>
+                        <button onclick="checkThought(2)" class="px-4 py-2 text-sm bg-white hover:bg-indigo-100 border border-indigo-300 rounded-lg font-medium transition-colors">ב. שני הצבים (t1 ו-t2)</button>
+                        <button onclick="checkThought(3)" class="px-4 py-2 text-sm bg-white hover:bg-indigo-100 border border-indigo-300 rounded-lg font-medium transition-colors">ג. אף צב, כי לא רשמנו TailDown</button>
+                    </div>
+                    <div id="thought-feedback" class="hidden p-3 rounded-lg text-sm font-medium mt-2"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: LIVE SIMULATOR & MEMORY VISUALIZER -->
+        <section id="tab-simulator" class="space-y-6 hidden">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 2: סימולטור אינטראקטיבי בזמן אמת לפי ממשק UNIT4</div>
+                <h2 class="text-2xl font-bold text-slate-900">מעבדת הצבים והזיכרון הפנימי (RAM)</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-5 space-y-4 flex flex-col justify-between">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                            <h3 class="font-bold text-slate-800 text-sm flex items-center justify-between">
+                                <span>1. יצירת עצמים (Instantiation)</span>
+                                <span class="text-xs text-indigo-600 code-font code-ltr">Turtle t = new Turtle();</span>
+                            </h3>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="createTurtle('t1')" id="btn-create-t1" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition-all shadow-sm">🐢 צור t1</button>
+                                <button onclick="createTurtle('t2')" id="btn-create-t2" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold transition-all shadow-sm">🐢 צור t2</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                                <h3 class="font-bold text-slate-800 text-sm">2. הפעלת פעולות מהממשק</h3>
+                                <select id="active-turtle-select" class="text-xs bg-white border border-slate-300 rounded px-2 py-1 font-bold text-indigo-700 shadow-sm code-font code-ltr">
+                                    <option value="t1">t1</option>
+                                    <option value="t2">t2</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-xs text-slate-600 font-medium">
+                                    <label for="input-steps">מרחק/צעדים (<span class="code-font code-ltr">x</span>):</label>
+                                    <input type="number" id="input-steps" value="50" min="5" max="300" class="w-20 px-2 py-1 bg-white border border-slate-300 rounded text-center text-xs code-font code-ltr font-bold text-indigo-700">
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="runCommand('moveForward')" class="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 rounded-lg text-xs font-mono code-ltr text-left shadow-sm">.MoveForward(x);</button>
+                                    <button onclick="runCommand('moveBackward')" class="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 rounded-lg text-xs font-mono code-ltr text-left shadow-sm">.MoveBackward(x);</button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-xs text-slate-600 font-medium">
+                                    <label for="input-degrees">זווית במעלות (<span class="code-font code-ltr">x</span>):</label>
+                                    <input type="number" id="input-degrees" value="90" min="1" max="360" class="w-20 px-2 py-1 bg-white border border-slate-300 rounded text-center text-xs code-font code-ltr font-bold text-indigo-700">
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="runCommand('turnRight')" class="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 rounded-lg text-xs font-mono code-ltr text-left shadow-sm">.TurnRight(x);</button>
+                                    <button onclick="runCommand('turnLeft')" class="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 rounded-lg text-xs font-mono code-ltr text-left shadow-sm">.TurnLeft(x);</button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1">
+                                <div class="text-xs font-medium text-slate-600 mb-1">פעולות זנב (ציור):</div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="runCommand('tailDown')" class="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 rounded-lg text-xs font-mono code-ltr font-semibold text-left">.TailDown();</button>
+                                    <button onclick="runCommand('tailUp')" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-800 rounded-lg text-xs font-mono code-ltr font-semibold text-left">.TailUp();</button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-1">
+                                <span class="text-xs font-mono code-ltr text-slate-600">.SetTailColor:</span>
+                                <div class="flex items-center gap-1.5">
+                                    <button onclick="runCommand('setTailColor', '#ef4444')" class="w-6 h-6 rounded-full bg-red-500 border border-slate-300 hover:scale-110 transition-transform" title="אדום"></button>
+                                    <button onclick="runCommand('setTailColor', '#3b82f6')" class="w-6 h-6 rounded-full bg-blue-500 border border-slate-300 hover:scale-110 transition-transform" title="כחול"></button>
+                                    <button onclick="runCommand('setTailColor', '#10b981')" class="w-6 h-6 rounded-full bg-emerald-500 border border-slate-300 hover:scale-110 transition-transform" title="ירוק"></button>
+                                    <button onclick="runCommand('setTailColor', '#f59e0b')" class="w-6 h-6 rounded-full bg-amber-500 border border-slate-300 hover:scale-110 transition-transform" title="כתום"></button>
+                                    <button onclick="runCommand('setTailColor', '#8b5cf6')" class="w-6 h-6 rounded-full bg-purple-500 border border-slate-300 hover:scale-110 transition-transform" title="סגול"></button>
+                                </div>
+                            </div>
+
+                            <div class="pt-2 border-t border-slate-200 space-y-2">
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button onclick="runCommand('toggleVisible')" class="px-2 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded text-[11px] font-mono code-ltr">SetVisible()</button>
+                                    <button onclick="runCommand('callToString')" class="px-2 py-1.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-900 rounded text-[11px] font-mono code-ltr font-bold col-span-2">ToString()</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                            <h3 class="font-bold text-slate-800 text-sm">3. תרחישים מובנים</h3>
+                            <div class="flex flex-col gap-2">
+                                <button onclick="runPresetScenario('presentation')" class="w-full text-right px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 rounded text-xs font-medium">📄 הרץ תרחיש דוגמה</button>
+                                <button onclick="runPresetScenario('aliasing')" class="w-full text-right px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded text-xs font-medium">⚠️ הדגמת דריסת הפניה: t1 = t2</button>
+                                <button onclick="resetSimulator()" class="w-full text-center px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded text-xs font-semibold">🔄 איפוס קנבס וזיכרון</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-7 space-y-4 flex flex-col">
+                        <div class="bg-slate-900 rounded-xl p-3 border border-slate-800 shadow-inner flex flex-col items-center">
+                            <div class="w-full flex justify-between items-center mb-2 px-2 text-xs text-slate-400">
+                                <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>מסך הפלט החזותי</span>
+                                <span id="canvas-status" class="code-font code-ltr text-slate-300 font-bold">Ready</span>
+                            </div>
+                            <div class="w-full flex justify-center items-center bg-slate-950 rounded border border-slate-800 overflow-hidden">
+                                <canvas id="turtleCanvas" width="550" height="340" class="max-w-full h-auto bg-slate-950"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                            <h3 class="font-bold text-slate-900 text-sm flex items-center justify-between">
+                                <span>🧠 מבט לתוך הזיכרון פנימי (RAM Heap)</span>
+                            </h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div id="card-mem-t1" class="bg-slate-50 p-3 rounded-lg border border-slate-200 opacity-50">
+                                    <div class="flex justify-between items-center border-b pb-2 mb-2">
+                                        <span class="font-bold text-sm text-emerald-700 code-font code-ltr">t1 (Turtle)</span>
+                                        <span id="mem-addr-t1" class="text-xs font-mono code-ltr bg-slate-200 px-1.5 py-0.5 rounded">null</span>
+                                    </div>
+                                    <div class="space-y-1 text-xs code-font text-slate-700">
+                                        <div class="flex justify-between bg-indigo-50/50 p-1 rounded"><span>ToString():</span><span id="t1-tostring" class="font-bold text-indigo-700 code-ltr">-</span></div>
+                                        <div class="flex justify-between"><span>Position:</span><span id="t1-pos" class="font-bold text-slate-900 code-ltr">-</span></div>
+                                        <div class="flex justify-between"><span>Angle:</span><span id="t1-angle" class="font-bold text-slate-900 code-ltr">-</span></div>
+                                        <div class="flex justify-between"><span>TailDown:</span><span id="t1-tail" class="font-bold text-slate-900 code-ltr">-</span></div>
+                                        <div class="flex justify-between"><span>TailColor:</span><span id="t1-color" class="font-bold text-slate-900 code-ltr">-</span></div>
+                                    </div>
+                                </div>
+
+                                <div id="card-mem-t2" class="bg-slate-50 p-3 rounded-lg border border-slate-200 opacity-50">
+                                    <div class="flex justify-between items-center border-b pb-2 mb-2">
+                                        <span class="font-bold text-sm text-indigo-700 code-font code-ltr">t2 (Turtle)</span>
+                                        <span id="mem-addr-t2" class="text-xs font-mono code-ltr bg-slate-200 px-1.5 py-0.5 rounded">null</span>
+                                    </div>
+                                    <div class="space-y-1 text-xs code-font text-slate-700">
+                                        <div class="flex justify-between bg-indigo-50/50 p-1 rounded"><span>ToString():</span><span id="t2-tostring" class="font-bold text-indigo-700 code-ltr">-</span></div>
+                                        <div class="flex justify-between"><span>Position:</span><span id="t2-pos" class="font-bold text-slate-900 code-ltr">-</span></div>
+                                        <div class="flex justify-between"><span>Angle:</span><span id="t2-angle" class="font-bold text-slate-900 code-ltr">-</span></div>
+                                        <div class="flex justify-between"><span>TailDown:</span><span id="t2-tail" class="font-bold text-slate-900 code-ltr">-</span></div>
+                                        <div class="flex justify-between"><span>TailColor:</span><span id="t2-color" class="font-bold text-slate-900 code-ltr">-</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: THEORY & GLOSSARY -->
+        <section id="tab-theory" class="space-y-6 hidden">
+            <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                <div class="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1 rounded-md">
+                    חלק 3: מילון מונחים וממשק הצב הרשמי
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900">ממשק המשתמש הרשמי של הצב (UNIT4)</h2>
+
+                <div class="bg-amber-50 border border-amber-200 p-6 rounded-2xl space-y-4">
+                    <h3 class="font-bold text-amber-900 text-lg flex items-center gap-2">
+                        <span>🎂</span> מטפורת העוגה והמתכון
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-amber-950">
+                        <div class="bg-white p-4 rounded-xl border border-amber-200 space-y-2">
+                            <span class="text-xs font-bold text-amber-700 uppercase tracking-wider block">הטיפוס / המחלקה (Class)</span>
+                            <h4 class="font-bold text-base text-slate-900">המתכון / תבנית האפייה</h4>
+                            <p class="text-slate-600">
+                                הגדרת הטיפוס <span class="code-font code-ltr text-indigo-600 font-bold">Turtle</span>. המתכון עצמו אינו נאכל ואינו זז על המסך, אך הוא מפרט איזה פעולות ותכונות יש לכל צב.
+                            </p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-amber-200 space-y-2">
+                            <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider block">העצם / המופע (Object)</span>
+                            <h4 class="font-bold text-base text-slate-900">העוגה האמיתית בזיכרון</h4>
+                            <p class="text-slate-600">
+                                העצם שנוצר בפועל עם המילה השמורה <span class="code-font code-ltr text-emerald-600 font-bold">new</span>. ניתן ליצור מופעים מרובים (<span class="code-font code-ltr">t1, t2</span>), ולכל אחד זיכרון נפרד.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 border-b border-slate-200 text-slate-700">
+                                <th class="p-3 font-bold">שם הפעולה בממשק</th>
+                                <th class="p-3 font-bold">פרמטרים</th>
+                                <th class="p-3 font-bold">תיאור הפעולה הרשמי (UNIT4)</th>
+                                <th class="p-3 font-bold">דוגמת קוד</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-indigo-700 code-font code-ltr">Turtle()</td>
+                                <td class="p-3 text-xs">ללא</td>
+                                <td class="p-3 text-slate-600">הפעולה בונה עצם מסוג צב במרכז המסך, פניו מעלה וזנבו מורם.</td>
+                                <td class="p-3 code-font code-ltr text-xs text-emerald-600">Turtle t1 = new Turtle();</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-indigo-700 code-font code-ltr">TailDown()</td>
+                                <td class="p-3 text-xs">ללא</td>
+                                <td class="p-3 text-slate-600">הפעולה מורידה את זנב הצב כך שיוכל לצייר.</td>
+                                <td class="p-3 code-font code-ltr text-xs">t1.TailDown();</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-indigo-700 code-font code-ltr">TailUp()</td>
+                                <td class="p-3 text-xs">ללא</td>
+                                <td class="p-3 text-slate-600">הפעולה מרימה את זנב הצב כך שיפסיק לצייר.</td>
+                                <td class="p-3 code-font code-ltr text-xs">t1.TailUp();</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-indigo-700 code-font code-ltr">MoveForward(x)</td>
+                                <td class="p-3 text-xs code-font code-ltr">int x</td>
+                                <td class="p-3 text-slate-600">הפעולה מזיזה את הצב x צעדים קדימה.</td>
+                                <td class="p-3 code-font code-ltr text-xs">t1.MoveForward(100);</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-indigo-700 code-font code-ltr">MoveBackward(x)</td>
+                                <td class="p-3 text-xs code-font code-ltr">int x</td>
+                                <td class="p-3 text-slate-600">הפעולה מזיזה את הצב x צעדים אחורה.</td>
+                                <td class="p-3 code-font code-ltr text-xs">t1.MoveBackward(50);</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-indigo-700 code-font code-ltr">TurnLeft(x)</td>
+                                <td class="p-3 text-xs code-font code-ltr">int x</td>
+                                <td class="p-3 text-slate-600">הפעולה מפנה את הצב x מעלות נגד כיוון השעון.</td>
+                                <td class="p-3 code-font code-ltr text-xs">t1.TurnLeft(90);</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-indigo-700 code-font code-ltr">TurnRight(x)</td>
+                                <td class="p-3 text-xs code-font code-ltr">int x</td>
+                                <td class="p-3 text-slate-600">הפעולה מפנה את הצב x מעלות עם כיוון השעון.</td>
+                                <td class="p-3 code-font code-ltr text-xs">t1.TurnRight(70);</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-indigo-50/30">
+                                <td class="p-3 font-bold text-purple-700 code-font code-ltr">SetTailColor(color)</td>
+                                <td class="p-3 text-xs code-font code-ltr">Color color</td>
+                                <td class="p-3 text-slate-600">משנה את צבע הקווים שהצב מצייר (מצריך <span class="code-font code-ltr">using System.Drawing;</span>).</td>
+                                <td class="p-3 code-font code-ltr text-xs">t1.SetTailColor(Color.Red);</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-indigo-50/30">
+                                <td class="p-3 font-bold text-purple-700 code-font code-ltr">SetVisible(b)</td>
+                                <td class="p-3 text-xs code-font code-ltr">bool b</td>
+                                <td class="p-3 text-slate-600">מציגה את הצב על המסך או מסתירה אותו (false מסתירה).</td>
+                                <td class="p-3 code-font code-ltr text-xs">t1.SetVisible(false);</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 bg-indigo-50/30">
+                                <td class="p-3 font-bold text-purple-700 code-font code-ltr">ToString()</td>
+                                <td class="p-3 text-xs">ללא</td>
+                                <td class="p-3 text-slate-600">מחזירה מחרוזת המתארת את מיקום הצב במסך בפורמט <span class="code-font code-ltr">&lt;x&gt;,&lt;y&gt;</span>.</td>
+                                <td class="p-3 code-font code-ltr text-xs">string p = t1.ToString();</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: COMMON BUGS -->
+        <section id="tab-bugs" class="space-y-6 hidden">
+            <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                <div class="inline-block bg-rose-100 text-rose-800 text-xs font-semibold px-3 py-1 rounded-md">
+                    חלק 4: ניתוח שגיאות נפוצות ותפיסות מוטעות
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900">מעבדת איתור באגים (Bug Hunting)</h2>
+                <p class="text-slate-600 text-sm">
+                    תלמידים מתחילים נופלים לעיתים קרובות במלכודות קלאסיות בתכנות מונחה עצמים. לחצו על הכפתורים מתחת לכל מקרה כדי לקרוא את הסבר השגיאה והפתרון!
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="border border-slate-200 rounded-xl p-5 space-y-3 bg-slate-50 hover:border-rose-300 transition-all flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <span class="text-xs font-bold text-rose-600 uppercase tracking-wider block">מלכודת #1</span>
+                            <h3 class="font-bold text-slate-900">שכחת המילה new</h3>
+                            <div class="bg-slate-900 text-slate-100 p-3 rounded-lg code-font code-ltr text-xs leading-relaxed w-full">
+                                Turtle t1;<br>
+                                <span class="text-rose-400 font-bold">t1.MoveForward(50);</span> // ❌ error!
+                            </div>
+                        </div>
+                        <button onclick="showBugExplanation(1)" class="w-full py-2 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg transition-colors mt-4">
+                            למה זה נכשל? 🔍
+                        </button>
+                    </div>
+
+                    <div class="border border-slate-200 rounded-xl p-5 space-y-3 bg-slate-50 hover:border-rose-300 transition-all flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <span class="text-xs font-bold text-rose-600 uppercase tracking-wider block">מלכודת #2</span>
+                            <h3 class="font-bold text-slate-900">פנייה לטיפוס במקום לעצם</h3>
+                            <div class="bg-slate-900 text-slate-100 p-3 rounded-lg code-font code-ltr text-xs leading-relaxed w-full">
+                                <span class="text-rose-400 font-bold">Turtle.MoveForward(50);</span> // ❌ error!
+                            </div>
+                        </div>
+                        <button onclick="showBugExplanation(2)" class="w-full py-2 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg transition-colors mt-4">
+                            למה זה נכשל? 🔍
+                        </button>
+                    </div>
+
+                    <div class="border border-slate-200 rounded-xl p-5 space-y-3 bg-slate-50 hover:border-rose-300 transition-all flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <span class="text-xs font-bold text-rose-600 uppercase tracking-wider block">מלכודת #3</span>
+                            <h3 class="font-bold text-slate-900">שכחת TailDown</h3>
+                            <div class="bg-slate-900 text-slate-100 p-3 rounded-lg code-font code-ltr text-xs leading-relaxed w-full">
+                                Turtle t1 = new Turtle();<br>
+                                t1.MoveForward(100);<br>
+                                <span class="text-amber-400">// ❓ הצב זז אך לא מצייר קו!</span>
+                            </div>
+                        </div>
+                        <button onclick="showBugExplanation(3)" class="w-full py-2 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg transition-colors mt-4">
+                            למה זה נכשל? 🔍
+                        </button>
+                    </div>
+
+                    <div class="border border-slate-200 rounded-xl p-5 space-y-3 bg-slate-50 hover:border-rose-300 transition-all flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <span class="text-xs font-bold text-rose-600 uppercase tracking-wider block">מלכודת #4 (חדש)</span>
+                            <h3 class="font-bold text-slate-900">פנייה למשתנה Null</h3>
+                            <div class="bg-slate-900 text-slate-100 p-3 rounded-lg code-font code-ltr text-xs leading-relaxed w-full">
+                                Turtle t1 = null;<br>
+                                <span class="text-rose-400 font-bold">t1.TailDown();</span> // ❌ NullReferenceException!
+                            </div>
+                        </div>
+                        <button onclick="showBugExplanation(4)" class="w-full py-2 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg transition-colors mt-4">
+                            למה זה נכשל? 🔍
+                        </button>
+                    </div>
+
+                    <div class="border border-slate-200 rounded-xl p-5 space-y-3 bg-slate-50 hover:border-rose-300 transition-all flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <span class="text-xs font-bold text-rose-600 uppercase tracking-wider block">מלכודת #5 (חדש)</span>
+                            <h3 class="font-bold text-slate-900">דריסת הפניה (Aliasing)</h3>
+                            <div class="bg-slate-900 text-slate-100 p-3 rounded-lg code-font code-ltr text-xs leading-relaxed w-full">
+                                Turtle t1 = new Turtle();<br>
+                                Turtle t2 = new Turtle();<br>
+                                <span class="text-amber-400 font-bold">t1 = t2;</span> // ⚠️ שימו לב!
+                            </div>
+                        </div>
+                        <button onclick="showBugExplanation(5)" class="w-full py-2 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg transition-colors mt-4">
+                            למה זה נכשל? 🔍
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: WORKSHEET -->
+        <!-- TAB 5: WORKSHEET -->
+        <section id="tab-worksheet" class="space-y-6 hidden">
+            <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                <div class="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1 rounded-md">
+                    חלק 5: דף עבודה ותרגול מעשי
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900">דף עבודה לתלמיד</h2>
+
+                <!-- עורך קוד עצמאי לתלמיד -->
+                <div class="space-y-4">
+                    <!-- חלק 1: משימות + עורך קוד עצמאי -->
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">1</span>
+                            <span>משימות סרטוט גיאומטרי - כתיבת קוד עצמאית</span>
+                        </h3>
+                        <p class="text-slate-600 text-sm">
+                            בחרו אחת מהמשימות הבאות, כתבו את הקוד המתאים בתיבה השחורה, ולחצו על **"Run My Code in Simulator"** כדי לבדוק את התשובה!
+                        </p>
+
+                        <!-- 3 כרטיסיות ההוראות למשימות -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- משימה 1.1 -->
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600">משימה 1.1: ריבוע</span>
+                                    <p class="text-xs text-slate-600 mt-1">סרטטו ריבוע שאורך כל צלע שלו הוא 100 צעדים.</p>
+                                </div>
+                                <button onclick="loadTemplate('square')" class="mt-3 w-full py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs rounded transition-colors border border-indigo-200">
+                                    Template: Square 💡
+                                </button>
+                            </div>
+
+                            <!-- משימה 1.2 -->
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600">משימה 1.2: גרם מדרגות</span>
+                                    <p class="text-xs text-slate-600 mt-1">סרטטו גרם מדרגות בעל 3 מדרגות (גובה 35, רוחב 35).</p>
+                                </div>
+                                <button onclick="loadTemplate('stairs')" class="mt-3 w-full py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs rounded transition-colors border border-indigo-200">
+                                    Template: Stairs 💡
+                                </button>
+                            </div>
+
+                            <!-- משימה 1.3 -->
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600">משימה 1.3: בית וגג (2 צבים)</span>
+                                    <p class="text-xs text-slate-600 mt-1">צב t1 בונה מלבן אדום, וצב t2 מצייר את הגג המשולש בכחול.</p>
+                                </div>
+                                <button onclick="clearEditor()" class="mt-3 w-full py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded transition-colors">
+                                    Clear Code 🧹
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- תיבת הקוד החופשית לתלמיד -->
+                        <div class="bg-slate-900 rounded-xl p-4 shadow-lg border border-slate-800 space-y-3 mt-4">
+                            <div class="flex items-center justify-between text-xs text-slate-400 border-b border-slate-800 pb-2">
+                                <span class="font-mono code-ltr text-emerald-400">// C# Turtle Script Editor</span>
+                                <div class="flex gap-2">
+                                    <button onclick="loadTemplate('square')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px]">Template: Square</button>
+                                    <button onclick="loadTemplate('stairs')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px]">Template: Stairs</button>
+                                    <button onclick="clearEditor()" class="px-2 py-1 bg-rose-900/50 hover:bg-rose-800 text-rose-300 rounded text-[11px]">Clear</button>
+                                </div>
+                            </div>
+
+                            <textarea id="user-code-input" rows="8" spellcheck="false"
+                                      class="w-full bg-slate-950 text-emerald-400 font-mono text-xs code-ltr p-3 rounded-lg border border-slate-800 focus:outline-none focus:border-indigo-500 leading-relaxed"
+                                      placeholder="// Write your code here, for example:&#10;t1.TailDown();&#10;t1.MoveForward(100);&#10;t1.TurnRight(90);"></textarea>
+
+                            <div class="flex items-center justify-between pt-1">
+                                <button onclick="runUserCustomCode()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-lg transition-all shadow-md flex items-center gap-2">
+                                    <span>▶️ Run My Code in Simulator</span>
+                                </button>
+                                <span id="user-code-feedback" class="text-xs font-bold px-3 py-1 rounded hidden"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- השלמת קוד (Fill-in-the-blanks) -->
+                <div class="space-y-4 pt-4 border-t border-slate-200">
+                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">2</span>
+                        <span>השלמת קוד מתאים (Fill-in-the-blanks)</span>
+                    </h3>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <p class="text-xs text-slate-700">השלימו את המילים החסרות בקוד הבא ליצירת צב, הורדת זנב ושינוי צבעו לאדום:</p>
+                        <div class="bg-slate-900 text-slate-100 p-4 rounded-lg code-font code-ltr text-xs leading-loose">
+                            Turtle t1 = <input type="text" id="blank-1" placeholder="..." class="bg-slate-800 text-emerald-400 border border-slate-600 rounded px-2 py-0.5 w-20 text-center font-bold"> Turtle();<br>
+                            t1.<input type="text" id="blank-2" placeholder="..." class="bg-slate-800 text-emerald-400 border border-slate-600 rounded px-2 py-0.5 w-28 text-center font-bold">();<br>
+                            t1.SetTailColor(<input type="text" id="blank-3" placeholder="..." class="bg-slate-800 text-emerald-400 border border-slate-600 rounded px-2 py-0.5 w-28 text-center font-bold">);
+                        </div>
+                        <button onclick="checkFillBlanks()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg transition-colors">
+                            בדוק השלמות קוד 🎯
+                        </button>
+                        <div id="blanks-feedback" class="hidden p-3 rounded text-xs font-bold"></div>
+                    </div>
+                </div>
+
+                <!-- אתגר תכנות עצמאי -->
+                <div class="space-y-4 pt-4 border-t border-slate-200">
+                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">3</span>
+                        <span>אתגר תכנות עצמאי: "סרטוט האות T"</span>
+                    </h3>
+                    <div class="bg-indigo-50/50 border border-indigo-200 p-5 rounded-xl space-y-4 text-xs text-indigo-950">
+                        <div class="space-y-1">
+                            <p class="font-bold text-sm text-indigo-900">🎯 תיאור המשימה:</p>
+                            <p class="text-slate-700">כתבו את שלבי הקוד הנדרשים כדי לסרטט את האות T (קו אנכי באורך 100, ולאחר מכן זרוע אופקית באורך 60 במרכז).</p>
+                        </div>
+
+                        <div class="space-y-2 font-mono code-ltr">
+                            <div class="flex items-center gap-2">
+                                <span>1.</span>
+                                <input type="text" id="t-step-1" placeholder="t1.TailDown();" class="flex-grow p-2 bg-white border border-indigo-200 rounded text-xs">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span>2.</span>
+                                <input type="text" id="t-step-2" placeholder="t1.MoveForward(100);" class="flex-grow p-2 bg-white border border-indigo-200 rounded text-xs">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span>3.</span>
+                                <input type="text" id="t-step-3" placeholder="t1.TurnRight(90);" class="flex-grow p-2 bg-white border border-indigo-200 rounded text-xs">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span>4.</span>
+                                <input type="text" id="t-step-4" placeholder="t1.MoveForward(30);" class="flex-grow p-2 bg-white border border-indigo-200 rounded text-xs">
+                            </div>
+                        </div>
+
+                        <button onclick="checkTask4Challenge()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg transition-colors">
+                            בדוק תשובה לאתגר T 🚀
+                        </button>
+
+                        <div id="t-challenge-feedback" class="hidden p-4 rounded-lg border text-xs"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--<section id="tab-worksheet" class="space-y-6 hidden">
+        <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+            <div class="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1 rounded-md">
+                חלק 5: דף עבודה ותרגול מעשי
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900">דף עבודה לתלמיד</h2>
+
+            <div class="space-y-4">
+                <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">1</span>
+                    <span>משימות סרטוט גיאומטרי במעבדה</span>
+                </h3>
+                <p class="text-slate-600 text-sm">
+                    לפניכם 3 משימות סרטוט קלאסיות. לחצו על "הרצה בסימולטור" כדי לצפות בתוצר החזותי שנוצר על ידי הצב!
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-indigo-600 block mb-1">משימה 1.1: ריבוע</span>
+                            <p class="text-xs text-slate-600">סרטטו ריבוע שאורך כל צלע שלו הוא 100 צעדים.</p>
+                            <div class="bg-slate-900 text-slate-100 p-2.5 rounded text-[11px] code-font code-ltr mt-2 leading-relaxed w-full">
+                                t1.TailDown();<br>
+                                t1.MoveForward(100);<br>
+                                t1.TurnRight(90);<br>
+                                // ... x4
+                            </div>
+                        </div>
+                        <button onclick="runWorksheetTask('square')" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm">
+                            <span>▶️ הרץ בסימולטור</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-indigo-600 block mb-1">משימה 1.2: גרם מדרגות</span>
+                            <p class="text-xs text-slate-600">סרטטו גרם מדרגות בעל 3 מדרגות (גובה 35, רוחב 35).</p>
+                            <div class="bg-slate-900 text-slate-100 p-2.5 rounded text-[11px] code-font code-ltr mt-2 leading-relaxed w-full">
+                                t1.TailDown();<br>
+                                t1.MoveForward(35);<br>
+                                t1.TurnRight(90);<br>
+                                t1.MoveForward(35);<br>
+                                t1.TurnLeft(90);
+                            </div>
+                        </div>
+                        <button onclick="runWorksheetTask('stairs')" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm">
+                            <span>▶️ הרץ בסימולטור</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-indigo-600 block mb-1">משימה 1.3: בית וגג (2 צבים)</span>
+                            <p class="text-xs text-slate-600">צב t1 בונה מלבן אדום, וצב t2 מצייר את הגג המשולש.</p>
+                            <div class="bg-slate-900 text-slate-100 p-2.5 rounded text-[11px] code-font code-ltr mt-2 leading-relaxed w-full">
+                                t1.SetTailColor(Color.Red);<br>
+                                t2.SetTailColor(Color.Blue);<br>
+                                // עבודה במקביל בזיכרון!
+                            </div>
+                        </div>
+                        <button onclick="runWorksheetTask('house')" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1 shadow-sm">
+                            <span>▶️ הרץ בסימולטור</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4 pt-4 border-t border-slate-200">
+                <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">2</span>
+                    <span>השלמת קוד מתאים (Fill-in-the-blanks)</span>
+                </h3>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <p class="text-xs text-slate-700">השלימו את המילים החסרות בקוד הבא ליצירת צב, הורדת זנב ושינוי צבעו לאדום:</p>
+                    <div class="bg-slate-900 text-slate-100 p-4 rounded-lg code-font code-ltr text-xs leading-loose">
+                        Turtle t1 = <input type="text" id="blank-1" placeholder="..." class="bg-slate-800 text-emerald-400 border border-slate-600 rounded px-2 py-0.5 w-20 text-center font-bold"> Turtle();<br>
+                        t1.<input type="text" id="blank-2" placeholder="..." class="bg-slate-800 text-emerald-400 border border-slate-600 rounded px-2 py-0.5 w-28 text-center font-bold">();<br>
+                        t1.SetTailColor(<input type="text" id="blank-3" placeholder="..." class="bg-slate-800 text-emerald-400 border border-slate-600 rounded px-2 py-0.5 w-28 text-center font-bold">);
+                    </div>
+                    <button onclick="checkFillBlanks()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg transition-colors">
+                        בדוק השלמות קוד 🎯
+                    </button>
+                    <div id="blanks-feedback" class="hidden p-3 rounded text-xs font-bold"></div>
+                </div>
+            </div>
+
+            <div class="space-y-4 pt-4 border-t border-slate-200">
+                <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">3</span>
+                    <span>אתגר תכנות עצמאי: "סרטוט האות T"</span>
+                </h3>
+                <div class="bg-indigo-50/50 border border-indigo-200 p-5 rounded-xl space-y-4 text-xs text-indigo-950">
+                    <div class="space-y-1">
+                        <p class="font-bold text-sm text-indigo-900">🎯 תיאור המשימה:</p>
+                        <p class="text-slate-700">כתבו את שלבי הקוד הנדרשים כדי לסרטט את האות T (קו אנכי באורך 100, ולאחר מכן זרוע אופקית באורך 60 במרכז).</p>
+                    </div>
+
+                    <div class="space-y-2 font-mono code-ltr">
+                        <div class="flex items-center gap-2">
+                            <span>1.</span>
+                            <input type="text" id="t-step-1" placeholder="t1.TailDown();" class="flex-grow p-2 bg-white border border-indigo-200 rounded text-xs">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span>2.</span>
+                            <input type="text" id="t-step-2" placeholder="t1.MoveForward(100);" class="flex-grow p-2 bg-white border border-indigo-200 rounded text-xs">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span>3.</span>
+                            <input type="text" id="t-step-3" placeholder="t1.TurnRight(90);" class="flex-grow p-2 bg-white border border-indigo-200 rounded text-xs">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span>4.</span>
+                            <input type="text" id="t-step-4" placeholder="t1.MoveForward(30);" class="flex-grow p-2 bg-white border border-indigo-200 rounded text-xs">
+                        </div>
+                    </div>
+
+                    <button onclick="checkTask4Challenge()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg transition-colors">
+                        בדוק תשובה לאתגר T 🚀
+                    </button>
+
+                    <div id="t-challenge-feedback" class="hidden p-4 rounded-lg border text-xs"></div>
+                </div>
+            </div>
+        </div>
+    </section>-->
+        <!-- TAB 6: QUIZ -->
+        <section id="tab-quiz" class="space-y-6 hidden">
+            <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                <div class="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1 rounded-md">
+                    חלק 6: הערכה ומשחק סיכום
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900">בחן את עצמך: שליטה ב-Class & Object</h2>
+
+                <div class="flex border-b border-slate-200 gap-2">
+                    <button onclick="switchLevel('easy')" id="btn-easy" class="py-2 px-4 font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 transition-all">
+                        🟢 רמה 1: קל
+                    </button>
+                    <button onclick="switchLevel('medium')" id="btn-medium" class="py-2 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-all">
+                        🟡 רמה 2: בינוני
+                    </button>
+                    <button onclick="switchLevel('hard')" id="btn-hard" class="py-2 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-all">
+                        🔴 רמה 3: קשה
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div class="lg:col-span-7 space-y-6" id="quiz-container">
+                        <!-- EASY LEVEL -->
+                        <div id="level-easy" class="quiz-level-group space-y-4">
+                            <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200 text-emerald-800 text-xs font-bold">
+                                רמה קלה: 15 שאלות להבנת היסודות
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">1. מה תפקידה של המילה השמורה new בקוד?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e1" value="a"> ליצור מופע/עצם חדש בזיכרון המחשב</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e1" value="b"> להגדיר מחלקה חדשה בקוד</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">2. מתי מתבצעת הקצאת הזיכרון עבור עצם חדש?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e2" value="a"> בזמן הריצה (Runtime) כשהשורה מופעלת</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e2" value="b"> בזמן קומפילציה כשהקוד נכתב</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MEDIUM LEVEL -->
+                        <div id="level-medium" class="quiz-level-group space-y-4 hidden">
+                            <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 text-amber-800 text-xs font-bold">
+                                רמה בינונית: 15 שאלות מתקדמות
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">1. נתון: Turtle a = new Turtle(); Turtle b = a; b.SetColor("Red"); מה צבעו של a?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m1" value="a"> אדום (a ו-b מצביעים על אותו עצם בזיכרון)</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m1" value="b"> הצבע המקורי (a לא שונה ישירות)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HARD LEVEL -->
+                        <div id="level-hard" class="quiz-level-group space-y-4 hidden">
+                            <div class="bg-rose-50 p-3 rounded-lg border border-rose-200 text-rose-800 text-xs font-bold">
+                                רמה קשה: 15 שאלות מאתגרות
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">1. היכן נשמר המשתנה t והיכן העצם עצמו ב-Turtle t = new Turtle();?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h1" value="a"> המשתנה t ב-Stack, והעצם עצמו ב-Heap</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h1" value="b"> שניהם נשמרים ב-Stack</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="submitQuiz()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-all mt-4">
+                            בדוק תשובות וחשב ציון 📊
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-5 space-y-6 flex flex-col items-center justify-start">
+                        <div class="w-full bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center space-y-4 sticky top-6">
+                            <h3 class="font-bold text-slate-800 text-base">תוצאות ההערכה</h3>
+                            <div id="score-display" class="text-4xl font-extrabold text-indigo-600">-- / 100</div>
+                            <p id="score-feedback" class="text-xs text-slate-500">בחרו רמה, ענו על השאלות ולחצו לבדיקה</p>
+
+                            <div class="w-full overflow-hidden flex justify-center pt-2">
+                                <canvas id="quizChart" width="360" height="240" class="max-w-full h-auto"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for Bug Hunter Explanations -->
+    <div id="bugModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl border border-slate-200">
+            <div class="flex items-center justify-between border-b pb-3">
+                <h3 id="modalBugTitle" class="font-bold text-slate-900 text-lg flex items-center gap-2">
+                    <span>🔍</span> ניתוח השגיאה
+                </h3>
+                <button onclick="closeBugModal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg">✕</button>
+            </div>
+            <div id="modalBugContent" class="text-sm text-slate-700 leading-relaxed space-y-3"></div>
+            <div class="pt-3 border-t flex justify-end">
+                <button onclick="closeBugModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg transition-colors">
+                    הבנתי, תודה! 👍
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript חיצוני -->
+    <script src="script.js"></script>
+</body>
+</html>
