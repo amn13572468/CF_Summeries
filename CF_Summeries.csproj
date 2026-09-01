@@ -121,10 +121,10 @@
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Objects\index.html" />
-    <Content Include="Objects\script.js" />
-    <Content Include="Objects\style.css" />
-    <Content Include="Objects\unit4_Turtles_02.html" />
+    <Content Include="Objects\Turtle_App\index.html" />
+    <Content Include="Objects\Turtle_App\script.js" />
+    <Content Include="Objects\Turtle_App\style.css" />
+    <Content Include="Objects\Turtle_App\unit4_Turtles_02.html" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
