@@ -671,13 +671,14 @@
         </div>
     </section>-->
         <!-- TAB 6: QUIZ -->
-        <section id="tab-quiz" class="space-y-6 hidden">
+        <section id="tab-quiz" class="space-y-6">
             <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
                 <div class="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1 rounded-md">
-                    חלק 6: הערכה ומשחק סיכום
+                    חלק 5: הערכה ומשחק סיכום
                 </div>
                 <h2 class="text-2xl font-bold text-slate-900">בחן את עצמך: שליטה ב-Class & Object</h2>
 
+                <!-- Level Navigation Tabs -->
                 <div class="flex border-b border-slate-200 gap-2">
                     <button onclick="switchLevel('easy')" id="btn-easy" class="py-2 px-4 font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 transition-all">
                         🟢 רמה 1: קל
@@ -692,7 +693,8 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     <div class="lg:col-span-7 space-y-6" id="quiz-container">
-                        <!-- EASY LEVEL -->
+
+                        <!-- EASY LEVEL (e1 to e15) -->
                         <div id="level-easy" class="quiz-level-group space-y-4">
                             <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200 text-emerald-800 text-xs font-bold">
                                 רמה קלה: 15 שאלות להבנת היסודות
@@ -713,9 +715,113 @@
                                     <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e2" value="b"> בזמן קומפילציה כשהקוד נכתב</label>
                                 </div>
                             </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">3. מה מחזיר הביטוי new Turtle()?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e3" value="a"> הפנייה (כתובת זיכרון) לעצם החדש</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e3" value="b"> מחרוזת טקסט עם שם העצם</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">4. מה קורה אם מגדירים משתנה מסוג Turtle ללא new?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e4" value="a"> המשתנה יכיל null ולא ייווצר עצם</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e4" value="b"> ייווצר עצם אוטומטי בזיכרון</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">5. איזה מגרש זיכרון מוקצה עבור כל קריאה ל-new?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e5" value="a"> שטח זיכרון חדש ונפרד לחלוטין</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e5" value="b"> שטח זיכרון משותף לכל העצמים</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">6. אם יצרנו 3 עצמים מאותה מחלקה, כמה שטחי זיכרון נפתחו עבור תכונותיהם?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e6" value="a"> 3 שטחי זיכרון נפרדים</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e6" value="b"> שטח זיכרון אחד יחיד</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">7. מה קורה כשמשנים תכונה של עצם א'?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e7" value="a"> השינוי משפיע רק על עצם א'</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e7" value="b"> השינוי משפיע על כל העצמים מהמחלקה</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">8. האם שני עצמים שונים יכולים להשתמש באותה מחלקה?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e8" value="a"> כן, המחלקה היא תבנית עבור עצמים מרובים</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e8" value="b"> לא, לכל עצם חייבת להיות מחלקה משלו</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">9. מה קורה בביצוע t1 = new Turtle(); t2 = t1; ?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e9" value="a"> שניהם מצביעים על אותו העצם בזיכרון</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e9" value="b"> נוצר עצם נוסף נפרד בזיכרון</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">10. היכן נשמר הערך של תכונה (Property) של עצם?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e10" value="a"> בתוך העצם עצמו בזיכרון</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e10" value="b"> בקובץ התבנית של המחלקה בלבד</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">11. מה מפעיל המשפט t1.SetColor("Red")?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e11" value="a"> מתודה של העצם t1</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e11" value="b"> יצירת מחלקה חדשה</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">12. כיצד ניגשים למתודה של עצם ספציפי בקוד?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e12" value="a"> בעזרת תו הנקודה (.)</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e12" value="b"> בעזרת מקף (-)</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">13. איזה עצם ישנה מיקום בקריאה t2.Move(10)?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e13" value="a"> אך ורק העצם t2</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e13" value="b"> כל העצמים שהוגדרו בתוכנית</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">14. מהי מתודה (Method) בעולם ה-OOP?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e14" value="a"> פעולה/התנהגות שהעצם יודע לבצע</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e14" value="b"> תכונה או נתון ששמור בזיכרון</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">15. מה הסדר הנכון בעבודה עם עצמים?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e15" value="a"> קודם יוצרים עצם עם new, ואז מפעילים עליו מתודות</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="e15" value="b"> מפעילים מתודות ורק בסוף יוצרים את העצם</label>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- MEDIUM LEVEL -->
+                        <!-- MEDIUM LEVEL (m1 to m15) -->
                         <div id="level-medium" class="quiz-level-group space-y-4 hidden">
                             <div class="bg-amber-50 p-3 rounded-lg border border-amber-200 text-amber-800 text-xs font-bold">
                                 רמה בינונית: 15 שאלות מתקדמות
@@ -728,9 +834,121 @@
                                     <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m1" value="b"> הצבע המקורי (a לא שונה ישירות)</label>
                                 </div>
                             </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">2. נתון: Turtle a = new Turtle(); Turtle b = new Turtle(); a.SetColor("Blue"); מה צבעו של b?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m2" value="a"> הצבע המקורי (הם עצמים נפרדים בזיכרון)</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m2" value="b"> כחול (הם נוצרו מאותה מחלקה)</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">3. מה קורה לזיכרון של עצם כאשר אין אף משתנה שמצביע עליו?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m3" value="a"> הוא מועמד לניקוי אוטומטי (Garbage Collection)</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m3" value="b"> הוא נשאר פעיל בזיכרון לנצח</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">4. מה קורה בהרצת הקוד: Turtle t; t.Move(10); ?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m4" value="a"> שגיאת בזמן ריצה (Null Reference Exception)</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m4" value="b"> הצב יזוז 10 צעדים כרגיל</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">5. מהי השגיאה בכתיבת הקוד: Turtle t = new Turtle; ?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m5" value="a"> חסרים סוגריים בסוף הקריאה לקונסטרקטור ()</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m5" value="b"> המילה new חייבת להירשם באותיות גדולות</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">6. אם הוגדר Turtle t1 = new Turtle(); ואז t1 = new Turtle(); כמה עצמים נוצרו?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m6" value="a"> נוצרו 2 עצמים, אך t1 מצביע כעת רק על השני</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m6" value="b"> נוצר עצם אחד בלבד שנדרס בזיכרון</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">7. בקוד: Turtle a = new Turtle(); Turtle b = a; a = null; מה מצבו של b?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m7" value="a"> b עדיין מצביע על העצם המקורי בזיכרון</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m7" value="b"> b הופך ל-null אוטומטית</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">8. מה משמעות הביטוי (a == b) כאשר a ו-b הם עצמים?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m8" value="a"> בדיקה האם הם מצביעים על אותו האובייקט בזיכרון</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m8" value="b"> בדיקה האם התכונות שלהם זהות</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">9. נתון: Turtle t1 = new Turtle(); Turtle t2 = new Turtle(); מה יחזיר (t1 == t2)?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m9" value="a"> false - לכל new יש כתובת זיכרון נפרדת</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m9" value="b"> true - כי הם מאותו סוג מחלקה</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">10. מה תפקידו של הבנאי (Constructor) הנקרא בעת new?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m10" value="a"> לאתחל את התכונות והערכים הראשוניים של העצם</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m10" value="b"> למחוק משתנים ישנים מזיכרון המחשב</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">11. מדוע שינוי תכונה של t1 לא משנה את t2?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m11" value="a"> לכל עצם נפרד יש שטח Heap עצמאי משלו</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m11" value="b"> מתודות אינן מאפשרות שינויים מקבילים</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">12. מה יקרה בקוד: t1.Move(20); t1.Move(30); ?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m12" value="a"> העצם t1 יבצע את שתי הפעולות ברצף (סה"כ 50)</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m12" value="b"> הפעולה השנייה תבטל את הראשונה (סה"כ 30)</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">13. האם ניתן להעביר עצם כפרמטר למתודה של עצם אחר?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m13" value="a"> כן, מועברת ההפנייה (כתובת הזיכרון) של העצם</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m13" value="b"> לא, עצמים עובדים במבודד בלבד</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">14. איזה מהבאים מגדיר מערך של 3 עצמי Turtle?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m14" value="a"> Turtle[] turtles = new Turtle[3];</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m14" value="b"> Turtle turtles = new Turtle(3);</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">15. יצרנו Turtle[] arr = new Turtle[3]; מה מכיל arr[0] לפני new?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m15" value="a"> null (אין עדיין עצם בתא)</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="m15" value="b"> עצם צב מוכן לשימוש</label>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- HARD LEVEL -->
+                        <!-- HARD LEVEL (h1 to h15) -->
                         <div id="level-hard" class="quiz-level-group space-y-4 hidden">
                             <div class="bg-rose-50 p-3 rounded-lg border border-rose-200 text-rose-800 text-xs font-bold">
                                 רמה קשה: 15 שאלות מאתגרות
@@ -743,6 +961,118 @@
                                     <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h1" value="b"> שניהם נשמרים ב-Stack</label>
                                 </div>
                             </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">2. מה קורה כשמעבירים עצם לפי פרמטר לפונקציה?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h2" value="a"> מועבר העתק של ההפנייה, ולכן שינוי תכונות ישפיע במקור</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h2" value="b"> מועבר העתק מלא של העצם ולכן המקור לא ישתנה</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">3. נתון: Turtle a = new Turtle(); change(a); בפונקציה: void change(Turtle t) { t = new Turtle(); t.SetColor("Red"); } מה צבע a?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h3" value="a"> הצבע המקורי (t קיבלה הפנייה לעצם חדש)</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h3" value="b"> אדום</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">4. מה היה קורה בקוד הקודם אם הפונקציה הייתה רושמת t.SetColor("Red") ללא new?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h4" value="a"> צבעו של a היה משתנה לאדום</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h4" value="b"> הצבע של a עדיין לא היה משתנה</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">5. נתון: Turtle t1 = new Turtle(); Turtle t2 = new Turtle(); t1 = t2; t2 = null; מה הסטטוס בזיכרון?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h5" value="a"> העצם הראשון אבד, העצם השני נגיש דרך t1</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h5" value="b"> שני העצמים אבדו מהזיכרון</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">6. מה ההבדל בין Primitive Types (כמו int) ל-Reference Types (כמו Turtle)?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h6" value="a"> פרימיטיבי מחזיק ערך ישיר, הפנייה מחזיקה כתובת זיכרון</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h6" value="b"> פרימיטיבי נשמר ב-Heap והפנייה ב-Stack</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">7. בקוד: Turtle[] arr = new Turtle[2]; arr[0] = new Turtle(); מה מצבו של arr[1]?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h7" value="a"> מכיל null ויגרום לקריסה אם ניגש למתודות שלו</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h7" value="b"> מאותחל אוטומטית לעצם מוכן</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">8. מה קורה בלולאה: for(int i=0; i<100; i++) { Turtle t=new Turtle(); } ?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h8" value="a"> נוצרים 100 עצמים ב-Heap, קודמיהם מנותקים מההפנייה בכל סיבוב</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h8" value="b"> נוצר רק עצם אחד בלבד שנדרס שוב ושוב</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">9. נתון: Turtle t1 = new Turtle(); Turtle t2 = t1; מה יחזיר הביטוי t1.Equals(t2)?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h9" value="a"> true (מדובר באותו מופע בדיוק בזיכרון)</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h9" value="b"> false</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">10. מה מכילה תכונה של עצם אם היא בעצמה מוגדרת מסוג של מחלקה?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h10" value="a"> הפנייה לעצם המוכל המוצב ב-Heap</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h10" value="b"> העתק פיזי מלא של כל המחלקה</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">11. מה המשמעות של השורות: Turtle t1; Turtle t2 = t1; ?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h11" value="a"> שגיאת קומפילציה (שימוש במשתנה שלא אותחל)</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h11" value="b"> t2 יקבל ערך ברירת מחדל ויפעל</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">12. כיצד ניתן למנוע ממתודה לשנות עצם שנשלח אליה?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h12" value="a"> ליצור העתק חדש (Deep Copy) ולשלוח אותו</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h12" value="b"> להגדיר את העצם כ-null לפני השליחה</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">13. אם מחלקה לא כוללת בנאי (Constructor) מפורש, מה קורה ב-new?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h13" value="a"> הקומפיילר מספק בנאי ברירת מחדל ללא פרמטרים</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h13" value="b"> התוכנית תיכשל ולא תוכל ליצור עצמים</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">14. בקוד: Turtle a = new Turtle(); Turtle b = new Turtle(); a = b; b.Move(10); מה יקרה ל-a?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h14" value="a"> a יזוז 10 צעדים (הועברה אליו ההפנייה של b)</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h14" value="b"> a יישאר במקום המקורי שלו</label>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                                <h3 class="font-bold text-sm text-slate-900">15. מה המשמעות של העברת null למתודה המצפה לקבל עצם?</h3>
+                                <div class="space-y-1.5 text-xs">
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h15" value="a"> מועברת כתובת ריקה, וכל גישה אליה בתוך המתודה תגרום לקריסה</label>
+                                    <label class="flex items-center gap-2 p-2 bg-white rounded border border-slate-200 cursor-pointer"><input type="radio" name="h15" value="b"> המתודה תתעלם מהפרמטר ותייצר עצם חדש</label>
+                                </div>
+                            </div>
                         </div>
 
                         <button onclick="submitQuiz()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-all mt-4">
@@ -750,6 +1080,7 @@
                         </button>
                     </div>
 
+                    <!-- Score and Chart Box -->
                     <div class="lg:col-span-5 space-y-6 flex flex-col items-center justify-start">
                         <div class="w-full bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center space-y-4 sticky top-6">
                             <h3 class="font-bold text-slate-800 text-base">תוצאות ההערכה</h3>
@@ -764,6 +1095,7 @@
                 </div>
             </div>
         </section>
+
     </main>
 
     <!-- Modal for Bug Hunter Explanations -->

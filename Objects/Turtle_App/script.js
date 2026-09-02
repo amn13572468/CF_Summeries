@@ -353,7 +353,7 @@ function checkTask4Challenge() {
 }
 
 // --- Quiz Logic ---
-function switchLevel(level) {
+/*function switchLevel(level) {
     ['easy', 'medium', 'hard'].forEach(l => {
         document.getElementById(`level-${l}`).classList.add('hidden');
         document.getElementById(`btn-${l}`).classList.replace('text-indigo-600', 'text-slate-500');
@@ -369,7 +369,7 @@ function submitQuiz() {
     document.getElementById('score-display').innerText = "85 / 100";
     document.getElementById('score-feedback').innerText = "עבודה מצוינת! שליטה טובה בחומר.";
 }
-
+*/
 // --- Student Code Interpreter ---
 
 // Load code templates with English comments
@@ -486,3 +486,157 @@ function parseArgument(commandStr, defaultValue) {
     }
     return defaultValue;
 }
+/* ************ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  ************* */
+
+// Global level tracking
+// Current active level identifier
+let currentLevel = 'easy';
+
+// Initialize the chart canvas when DOM loading completes
+document.addEventListener("DOMContentLoaded", () => {
+    initQuizChart(null);
+});
+
+// Switch active difficulty level tab
+function switchLevel(level) {
+    currentLevel = level;
+
+    // Toggle level visibility
+    document.querySelectorAll('.quiz-level-group').forEach(el => el.classList.add('hidden'));
+    document.getElementById(`level-${level}`).classList.remove('hidden');
+
+    // Update tab styling
+    ['easy', 'medium', 'hard'].forEach(l => {
+        const btn = document.getElementById(`btn-${l}`);
+        btn.className = "py-2 px-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-all";
+    });
+    document.getElementById(`btn-${level}`).className = "py-2 px-4 font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 transition-all";
+
+    // Reset scores and chart view
+    document.getElementById('score-display').innerText = '-- / 100';
+    document.getElementById('score-feedback').innerText = 'בחרו רמה, ענו על השאלות ולחצו לבדיקה';
+    document.getElementById('score-feedback').className = 'text-xs text-slate-500';
+    initQuizChart(null);
+}
+
+// Calculate score based on user answers across the 3 categories
+function submitQuiz() {
+    const prefix = currentLevel.charAt(0); // Level prefix: 'e', 'm', or 'h'
+
+    // Validate that all 15 questions in the current tab are selected
+    for (let i = 1; i <= 15; i++) {
+        const selected = document.querySelector(`input[name="${prefix}${i}"]:checked`);
+        if (!selected) {
+            alert(`אנא ענה על שאלה מספר ${i} ברמה זו.`);
+            return;
+        }
+    }
+
+    // Count correct answers per category (Option 'a' is correct for all)
+    let cat1 = 0, cat2 = 0, cat3 = 0;
+
+    for (let i = 1; i <= 5; i++) {
+        if (document.querySelector(`input[name="${prefix}${i}"]:checked`).value === 'a') cat1++;
+    }
+    for (let i = 6; i <= 10; i++) {
+        if (document.querySelector(`input[name="${prefix}${i}"]:checked`).value === 'a') cat2++;
+    }
+    for (let i = 11; i <= 15; i++) {
+        if (document.querySelector(`input[name="${prefix}${i}"]:checked`).value === 'a') cat3++;
+    }
+
+    // Format scores as percentages (5 questions = 20% each)
+    const categoryScores = [
+        { label: 'new Concept', value: cat1 * 20 },
+        { label: 'Memory', value: cat2 * 20 },
+        { label: 'Methods', value: cat3 * 20 }
+    ];
+
+    const totalScore = Math.round(((cat1 + cat2 + cat3) / 15) * 100);
+
+    // Display total percentage
+    document.getElementById('score-display').innerText = totalScore + ' / 100';
+    const feedback = document.getElementById('score-feedback');
+
+    if (totalScore === 100) {
+        feedback.innerText = "🏆 שליטה מושלמת ברמה זו!";
+        feedback.className = "text-xs font-bold text-emerald-600";
+    } else if (totalScore >= 70) {
+        feedback.innerText = "👍 תוצאה טובה! ניתן לשפר את הנושאים הנמוכים בגרף.";
+        feedback.className = "text-xs font-bold text-amber-600";
+    } else {
+        feedback.innerText = "💡 מומלץ לחזור על הקורס ולנסות שוב.";
+        feedback.className = "text-xs font-bold text-rose-600";
+    }
+
+    // Render bar chart with calculated values
+    initQuizChart(categoryScores);
+}
+
+// Render dynamic HTML5 Canvas Bar Chart
+function initQuizChart(data) {
+    const canvas = document.getElementById('quizChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // Clear canvas before redrawing
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const categories = data || [
+        { label: 'new Concept', value: 0 },
+        { label: 'Memory', value: 0 },
+        { label: 'Methods', value: 0 }
+    ];
+
+    const paddingLeft = 35;
+    const paddingBottom = 30;
+    const chartWidth = canvas.width - paddingLeft - 10;
+    const chartHeight = canvas.height - paddingBottom - 20;
+
+    // Draw horizontal grid lines and Y-axis numeric labels
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.fillStyle = '#64748b';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'right';
+
+    for (let i = 0; i <= 5; i++) {
+        const val = i * 20;
+        const y = (canvas.height - paddingBottom) - (i * (chartHeight / 5));
+
+        ctx.beginPath();
+        ctx.moveTo(paddingLeft, y);
+        ctx.lineTo(canvas.width - 10, y);
+        ctx.stroke();
+
+        ctx.fillText(val.toString(), paddingLeft - 5, y + 3);
+    }
+
+    // Render category bars and X-axis text labels
+    const barSpace = chartWidth / categories.length;
+
+    categories.forEach((cat, index) => {
+        const x = paddingLeft + (index * barSpace);
+        const centerX = x + (barSpace / 2);
+        const barWidth = 30;
+        const barX = centerX - (barWidth / 2);
+
+        if (data !== null) {
+            const barHeight = (cat.value / 100) * chartHeight;
+            const barY = (canvas.height - paddingBottom) - barHeight;
+
+            ctx.fillStyle = '#6366f1';
+            if (barHeight > 0) {
+                ctx.fillRect(barX, barY, barWidth, barHeight);
+            }
+        }
+
+        // Render X-axis category label
+        ctx.fillStyle = '#334155';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(cat.label, centerX, canvas.height - 10);
+    });
+}
+
+/* ************ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  ************* */

@@ -121,6 +121,8 @@
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Objects\Bucket_App\index.html" />
+    <Content Include="Objects\Bucket_App\script.js" />
     <Content Include="Objects\Turtle_App\index.html" />
     <Content Include="Objects\Turtle_App\script.js" />
     <Content Include="Objects\Turtle_App\style.css" />
