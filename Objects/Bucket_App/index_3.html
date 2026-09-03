@@ -65,7 +65,7 @@
             <button onclick="switchTab('tab-theory')" id="nav-tab-theory" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">3. מילון מושגים וממשק Bucket</button>
             <button onclick="switchTab('tab-bugs')" id="nav-tab-bugs" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">4. ניתוח שגיאות נפוצות 🐛</button>
             <button onclick="switchTab('tab-worksheet')" id="nav-tab-worksheet" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">5. דף עבודה ותרגול מעשי 📝</button>
-            <button onclick="switchTab('tab-quiz')" id="nav-tab-quiz" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">6. בחן את עצמך 📊</button>
+            <button onclick="switchTab('tab-quiz')" id="nav-tab-quiz" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">6. בחן את עצמך (15 שאלות) 📊</button>
         </nav>
     </header>
 
@@ -412,10 +412,10 @@
 
                 <!-- DIFFICULTY TABS FOR QUIZ FILTERING -->
                 <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
-                    <button onclick="filterQuiz('all')" id="quiz-filter-all" class="px-4 py-2 rounded-lg text-xs font-bold bg-sky-600 text-white transition-all shadow-sm">📋 כל 45 השאלות</button>
-                    <button onclick="filterQuiz('easy')" id="quiz-filter-easy" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🟢 רמה קלה (15 שאלות)</button>
-                    <button onclick="filterQuiz('medium')" id="quiz-filter-medium" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🟡 רמה בינונית (15 שאלות)</button>
-                    <button onclick="filterQuiz('hard')" id="quiz-filter-hard" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🔴 רמה קשה (15 שאלות)</button>
+                    <button onclick="filterQuiz('all')" id="quiz-filter-all" class="px-4 py-2 rounded-lg text-xs font-bold bg-sky-600 text-white transition-all shadow-sm">📋 כל 15 השאלות</button>
+                    <button onclick="filterQuiz('easy')" id="quiz-filter-easy" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🟢 רמה קלה (5 שאלות)</button>
+                    <button onclick="filterQuiz('medium')" id="quiz-filter-medium" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🟡 רמה בינונית (5 שאלות)</button>
+                    <button onclick="filterQuiz('hard')" id="quiz-filter-hard" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🔴 רמה קשה (5 שאלות)</button>
                 </div>
 
                 <!-- MAIN LAYOUT: QUESTIONS ON RIGHT, SCORE ON LEFT -->
@@ -502,8 +502,552 @@
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
-    <script src="../common.js"></script>
-    <script src="questions.js"></script>
-    <script src="script.js"></script>
+    <script>
+        // Disable devtools contextmenu
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Navigation
+        function switchTab(tabId) {
+            const tabs = ['tab-intro', 'tab-simulator', 'tab-theory', 'tab-bugs', 'tab-worksheet', 'tab-quiz'];
+            tabs.forEach(t => {
+                const el = document.getElementById(t);
+                const navEl = document.getElementById('nav-' + t);
+                if (el) el.classList.add('hidden');
+                if (navEl) navEl.classList.remove('active-tab');
+            });
+            const targetEl = document.getElementById(tabId);
+            const targetNavEl = document.getElementById('nav-' + tabId);
+            if (targetEl) targetEl.classList.remove('hidden');
+            if (targetNavEl) targetNavEl.classList.add('active-tab');
+
+            if (tabId === 'tab-simulator') drawCanvas();
+        }
+
+        function checkThought(option) {
+            const fb = document.getElementById('thought-feedback');
+            fb.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-900', 'bg-rose-100', 'text-rose-900');
+            if (option === 2) {
+                fb.classList.add('bg-emerald-100', 'text-emerald-900');
+                fb.innerHTML = "✅ <strong>נכון מאוד!</strong> דלי b2 קיבל 3 ליטר והתמלא. ב-b1 נותרו 2 ליטר מים!";
+            } else {
+                fb.classList.add('bg-rose-100', 'text-rose-900');
+                fb.innerHTML = "❌ <strong>לא מדויק.</strong> זכור שדלי b2 יכול להכיל רק 3 ליטרים בתוכו.";
+            }
+        }
+
+        // BUCKET ENGINE FOR SIMULATOR
+        class BucketInstance {
+            constructor(id, capacity) {
+                this.id = id;
+                this.capacity = capacity;
+                this.currentAmount = 0;
+                this.ramAddress = "0x" + Math.floor(Math.random() * 16777215).toString(16).toUpperCase().padStart(4, '0');
+            }
+
+            fill() { this.currentAmount = this.capacity; drawCanvas(); updateMemoryUI(); }
+            empty() { this.currentAmount = 0; drawCanvas(); updateMemoryUI(); }
+            addWater(amount) {
+                this.currentAmount = Math.min(this.capacity, this.currentAmount + amount);
+                drawCanvas(); updateMemoryUI();
+            }
+            pourInto(otherBucket) {
+                const spaceLeft = otherBucket.capacity - otherBucket.currentAmount;
+                const amountToPour = Math.min(this.currentAmount, spaceLeft);
+                this.currentAmount -= amountToPour;
+                otherBucket.currentAmount += amountToPour;
+                drawCanvas(); updateMemoryUI();
+            }
+            isEmpty() { return this.currentAmount === 0; }
+            isFull() { return this.currentAmount === this.capacity; }
+            toString() { return `Cap:${this.capacity}, Water:${this.currentAmount}`; }
+        }
+
+        let buckets = { b1: null, b2: null };
+        const canvas = document.getElementById('bucketCanvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+
+        function createBucket(id) {
+            const cap = parseInt(document.getElementById('cap-' + id).value) || 5;
+            buckets[id] = new BucketInstance(id, cap);
+            drawCanvas();
+            updateMemoryUI();
+        }
+
+        function runCommand(action) {
+            const selectedId = document.getElementById('active-bucket-select').value;
+            const b = buckets[selectedId];
+            if (!b) { alert(`דלי ${selectedId} עדיין לא נוצר בזיכרון!`); return; }
+
+            if (action === 'fill') b.fill();
+            else if (action === 'empty') b.empty();
+            else if (action === 'addWater') {
+                const amt = parseInt(document.getElementById('input-amount').value) || 1;
+                b.addWater(amt);
+            }
+        }
+
+        function pourBucket(fromId, toId) {
+            if (!buckets[fromId] || !buckets[toId]) {
+                alert("שני הדליים חייבים להיות קיימים בזיכרון כדי לבצע מזיגה!");
+                return;
+            }
+            buckets[fromId].pourInto(buckets[toId]);
+        }
+
+        function resetSimulator() {
+            buckets = { b1: null, b2: null };
+            drawCanvas();
+            updateMemoryUI();
+        }
+
+        function runPresetScenario(type) {
+            resetSimulator();
+            if (type === 'diehard') {
+                document.getElementById('cap-b1').value = 5;
+                document.getElementById('cap-b2').value = 3;
+                createBucket('b1'); createBucket('b2');
+                buckets.b1.fill();
+                setTimeout(() => buckets.b1.pourInto(buckets.b2), 600);
+            } else if (type === 'aliasing') {
+                createBucket('b1');
+                buckets.b2 = buckets.b1;
+                updateMemoryUI();
+                alert("בוצעה ההשמה b2 = b1! שני המשתנים מצביעים על אותו דלי ב-Heap!");
+            }
+        }
+
+        function drawCanvas() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Background Grid
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+
+            if (buckets.b1) renderSingleBucket(buckets.b1, 140, 220, '#3b82f6');
+            if (buckets.b2 && buckets.b2 !== buckets.b1) renderSingleBucket(buckets.b2, 360, 220, '#06b6d4');
+        }
+
+        function renderSingleBucket(b, x, y, color) {
+            const width = 90;
+            const height = 140;
+
+            const waterHeight = (b.currentAmount / b.capacity) * height;
+            ctx.fillStyle = color;
+            ctx.fillRect(x - width / 2 + 4, y - waterHeight, width - 8, waterHeight);
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(x - width / 2, y - height, width, height);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 12px Rubik, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${b.id} (${b.currentAmount}L / ${b.capacity}L)`, x, y + 20);
+        }
+
+        function updateMemoryUI() {
+            ['b1', 'b2'].forEach(id => {
+                const b = buckets[id];
+                const card = document.getElementById('card-mem-' + id);
+                if (!b) {
+                    card.classList.add('opacity-50');
+                    document.getElementById(`mem-addr-${id}`).innerText = 'null';
+                    document.getElementById(`${id}-tostring`).innerText = '-';
+                    document.getElementById(`${id}-capacity`).innerText = '-';
+                    document.getElementById(`${id}-amount`).innerText = '-';
+                    document.getElementById(`${id}-empty`).innerText = '-';
+                    document.getElementById(`${id}-full`).innerText = '-';
+                } else {
+                    card.classList.remove('opacity-50');
+                    document.getElementById(`mem-addr-${id}`).innerText = b.ramAddress;
+                    document.getElementById(`${id}-tostring`).innerText = b.toString();
+                    document.getElementById(`${id}-capacity`).innerText = b.capacity;
+                    document.getElementById(`${id}-amount`).innerText = b.currentAmount;
+                    document.getElementById(`${id}-empty`).innerText = b.isEmpty();
+                    document.getElementById(`${id}-full`).innerText = b.isFull();
+                }
+            });
+        }
+
+        // BUG MODAL LOGIC
+        const bugDetails = {
+            1: { title: "NullReferenceException (חריגת הצבעה ריקה)", content: "<p>הנסיונות להפעיל פעולות כמו <span class='code-font code-ltr'>b1.Fill()</span> לפני ביצוע <span class='code-font code-ltr'>new Bucket(...)</span> קורסים מכיוון שהמשתנה b1 מציב ערך null ב-Stack ולא מפנה לשום עצם ב-Heap.</p>" },
+            2: { title: "Overflow Error (חריגה מקיבולת)", content: "<p>אם תוסיף מים ללא בדיקת תנאי של הקיבולת המקסימלית, הדלי יכיל כמות מים לא מציאותית. יש להשתמש ב-Math.Min או בתנאי if.</p>" },
+            3: { title: "Aliasing Bug (כפילות הפניות)", content: "<p>בביצוע <span class='code-font code-ltr'>b2 = b1</span>, לא מועתק עצם חדש! שני המשתנים מצביעים לאותה כתובת בזיכרון Heap, ושינוי ב-b2 ישפיע ישירות על b1.</p>" },
+            4: { title: "Private Field Violation", content: "<p>ניסיון לחטיפת שדות פרטיים <span class='code-font code-ltr'>b1.currentAmount = 10</span> יוכשל על ידי הקומפיילר עקב עקרון הכמוס (Encapsulation).</p>" }
+        };
+
+        function openBugModal(id) {
+            document.getElementById('modalBugTitle').innerHTML = "🔍 " + bugDetails[id].title;
+            document.getElementById('modalBugContent').innerHTML = bugDetails[id].content;
+            document.getElementById('bugModal').classList.remove('hidden');
+        }
+        function closeBugModal() { document.getElementById('bugModal').classList.add('hidden'); }
+
+        // TASK WORKSHEET ENGINE (TAB 5)
+        let currentTaskId = 1;
+
+        const taskDefinitions = {
+            1: {
+                title: "משימה 1: קל (מדידת 2 ליטר)",
+                desc: "נתונים שני דליים: <strong>b5</strong> (קיבולת 5) ו-<strong>b3</strong> (קיבולת 3). כתוב קוד שמביא את הדלי <strong>b5</strong> להכיל בדיוק <strong>2 ליטר מים</strong>.",
+                initialCode: "Bucket b5 = new Bucket(5);\nBucket b3 = new Bucket(3);\n\n// כתוב את הפתרון שלך כאן\nb5.Fill();\n",
+                solution: "b5.Fill();\nb5.PourInto(b3);",
+                validate: (b5, b3) => b5.currentAmount === 2
+            },
+            2: {
+                title: "משימה 2: בינוני (מדידת 4 ליטר)",
+                desc: "נתונים שני דליים: <strong>b5</strong> (קיבולת 5) ו-<strong>b3</strong> (קיבולת 3). כתוב קוד שמביא את הדלי <strong>b5</strong> להכיל בדיוק <strong>4 ליטר מים</strong>.",
+                initialCode: "Bucket b5 = new Bucket(5);\nBucket b3 = new Bucket(3);\n\n// כתוב את הפתרון שלך כאן\nb5.Fill();\n",
+                solution: "b5.Fill();\nb5.PourInto(b3);\nb3.Empty();\nb5.PourInto(b3);\nb5.Fill();\nb5.PourInto(b3);",
+                validate: (b5, b3) => b5.currentAmount === 4
+            },
+            3: {
+                title: "משימה 3: קשה (מדידת 1 ליטר)",
+                desc: "נתונים שני דליים: <strong>b7</strong> (קיבולת 7) ו-<strong>b4</strong> (קיבולת 4). כתוב קוד שמביא את הדלי <strong>b7</strong> להכיל בדיוק <strong>1 ליטר מים</strong>.",
+                initialCode: "Bucket b7 = new Bucket(7);\nBucket b4 = new Bucket(4);\n\n// כתוב את הפתרון שלך כאן\nb7.Fill();\n",
+                solution: "b7.Fill();\nb7.PourInto(b4);\nb4.Empty();\nb7.PourInto(b4);",
+                validate: (b7, b4) => b7.currentAmount === 1
+            }
+        };
+
+        function selectTask(id) {
+            currentTaskId = id;
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`task-btn-${i}`);
+                if (i === id) {
+                    btn.className = "px-4 py-2 rounded-lg text-xs font-bold bg-sky-600 text-white transition-all shadow-sm";
+                } else {
+                    btn.className = "px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all";
+                }
+            }
+
+            const task = taskDefinitions[id];
+            document.getElementById('task-description-box').innerHTML = `
+                    <h3 class="font-bold text-slate-900 text-base">${task.title}</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">${task.desc}</p>
+                `;
+            document.getElementById('student-code').value = task.initialCode;
+            document.getElementById('solution-code').innerText = task.solution;
+            document.getElementById('solution-box').classList.add('hidden');
+            document.getElementById('toggle-sol-btn').innerText = "💡 הצג פתרון";
+            document.getElementById('execution-feedback').innerHTML = '<p class="text-slate-400 italic">לחץ על "בדוק פתרון" כדי להריץ את הקוד שלך...</p>';
+        }
+
+        function resetTaskCode() {
+            document.getElementById('student-code').value = taskDefinitions[currentTaskId].initialCode;
+        }
+
+        function toggleSolution() {
+            const solBox = document.getElementById('solution-box');
+            const btn = document.getElementById('toggle-sol-btn');
+            if (solBox.classList.contains('hidden')) {
+                solBox.classList.remove('hidden');
+                btn.innerText = "🙈 הסתר פתרון";
+            } else {
+                solBox.classList.add('hidden');
+                btn.innerText = "💡 הצג פתרון";
+            }
+        }
+
+        function testStudentCode() {
+            const code = document.getElementById('student-code').value;
+            const feedbackEl = document.getElementById('execution-feedback');
+
+            let logs = [];
+            let b1, b2;
+
+            if (currentTaskId === 3) {
+                b1 = new BucketInstance('b7', 7);
+                b2 = new BucketInstance('b4', 4);
+            } else {
+                b1 = new BucketInstance('b5', 5);
+                b2 = new BucketInstance('b3', 3);
+            }
+
+            const lines = code.split('\n');
+
+            lines.forEach((line, idx) => {
+                const trimmed = line.trim();
+                if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('Bucket')) return;
+
+                try {
+                    if (trimmed.includes('.Fill()')) {
+                        const target = trimmed.startsWith('b7') || trimmed.startsWith('b5') ? b1 : b2;
+                        target.fill();
+                        logs.push(`שורה ${idx + 1}: מילוי ${target.id} 🟢 (מצב: ${b1.id}=${b1.currentAmount}, ${b2.id}=${b2.currentAmount})`);
+                    } else if (trimmed.includes('.Empty()')) {
+                        const target = trimmed.startsWith('b7') || trimmed.startsWith('b5') ? b1 : b2;
+                        target.empty();
+                        logs.push(`שורה ${idx + 1}: ריקון ${target.id} 🔴 (מצב: ${b1.id}=${b1.currentAmount}, ${b2.id}=${b2.currentAmount})`);
+                    } else if (trimmed.includes('.PourInto(')) {
+                        if (trimmed.startsWith(b1.id)) {
+                            b1.pourInto(b2);
+                        } else {
+                            b2.pourInto(b1);
+                        }
+                        logs.push(`שורה ${idx + 1}: מזיגה ${b1.id} ↔ ${b2.id} 💧 (מצב: ${b1.id}=${b1.currentAmount}, ${b2.id}=${b2.currentAmount})`);
+                    }
+                } catch (e) {
+                    logs.push(`❌ שגיאה בשורה ${idx + 1}: לא ניתן לפענח את הפקודה`);
+                }
+            });
+
+            const task = taskDefinitions[currentTaskId];
+            const isSuccess = task.validate(b1, b2);
+
+            let resultHtml = `<div class="font-bold text-xs ${isSuccess ? 'text-emerald-700 bg-emerald-50' : 'text-rose-700 bg-rose-50'} p-2.5 rounded-lg border ${isSuccess ? 'border-emerald-200' : 'border-rose-200'} mb-2">`;
+            if (isSuccess) {
+                resultHtml += `🎉 כל הכבוד! הפתרון נכון מאוד! (${b1.id} מכיל בדיוק ${b1.currentAmount} ליטר)`;
+            } else {
+                resultHtml += `❌ הפתרון עדיין אינו נכון. כרגע ב-${b1.id} יש ${b1.currentAmount} ליטרים. נסה שוב!`;
+            }
+            resultHtml += `</div>`;
+
+            resultHtml += `<div class="space-y-1 text-[11px] code-font text-slate-600 max-h-36 overflow-y-auto pt-1">`;
+            logs.forEach(log => {
+                resultHtml += `<div class="border-b border-slate-100 pb-0.5">${log}</div>`;
+            });
+            resultHtml += `</div>`;
+
+            feedbackEl.innerHTML = resultHtml;
+        }
+
+        // 15 QUIZ QUESTIONS (5 EASY, 5 MEDIUM, 5 HARD)
+        const quizQuestions = [
+            // EASY (0-4)
+            {
+                level: "easy",
+                q: "מה מייצג הטיפוס (Class) Bucket בקוד?",
+                a: ["א. מתכון / תבנית ליצירת דליים בזיכרון", "ב. דלי ספציפי בעל 5 ליטר", "ג. משתנה מספרי פשוט", "ד. פעולת מזיגה בלבד"],
+                c: 0,
+                explanation: "המחלקה (Class) היא התבנית המגדירה שדות ומתודות. המופעים (Objects) שנוצרים בעזרת new הם הדליים הפיזיים בזיכרון."
+            },
+            {
+                level: "easy",
+                q: "מה יחזיר הביטוי b.IsEmpty() בדלי שנוצר כרגע (new Bucket(5))?",
+                a: ["א. true", "ב. false", "ג. null", "ד. 0"],
+                c: 0,
+                explanation: "בעת יצירת דלי בבנאי, כמות המים ההתחלתית (currentAmount) מתאפסת ל-0, ולכן הפעולה IsEmpty מחזירה אמת (true)."
+            },
+            {
+                level: "easy",
+                q: "מה מבצעת הפעולה b1.Fill()?",
+                a: ["א. ממלאת את b1 מים עד הנפח המקסימלי (capacity)", "ב. מוסיפה 1 ליטר מים לדלי", "ג. מרוקנת את הדלי ל-0", "ד. מוזגת את המים לדלי אחר"],
+                c: 0,
+                explanation: "הפעולה Fill מעדכנת את currentAmount להיות שווה ל-capacity המקסימלי של הדלי."
+            },
+            {
+                level: "easy",
+                q: "מהי מטרת המילת שמורה new ב-Bucket b = new Bucket(3)?",
+                a: ["א. הקצאת זיכרון עבור אובייקט חדש בערימה (Heap)", "ב. מחיקת דלי ישן מהזיכרון", "ג. בדיקה אם הדלי מלא", "ד. הדפסת ערך הדלי"],
+                c: 0,
+                explanation: "המילה new מקצה זיכרון דינמי ב-Heap עבור האובייקט החדש ומפעילה את ה-Constructor."
+            },
+            {
+                level: "easy",
+                q: "איזה טיפוס נתונים מחזירה הפעולה IsFull()?",
+                a: ["א. bool (אמת/שקר)", "ב. int (מספר שלם)", "ג. double (מספר עשרוני)", "ד. void (ללא החזרה)"],
+                c: 0,
+                explanation: "הפעולה IsFull היא פעולה שואלת (Predicate) שמחזירה true אם הדלי מלא ו-false אחרת."
+            },
+
+            // MEDIUM (5-9)
+            {
+                level: "medium",
+                q: "מה קורה בזיכרון בעת ביצוע הפקודה Bucket b = new Bucket(4)?",
+                a: ["א. נוצר מופע בערימה (Heap) וההפניה נשמרת במחסנית (Stack)", "ב. נוצר משתנה במחסנית בלבד", "ג. הקוד לא מתקמפל", "ד. הדלי מתמלא אוטומטית במים"],
+                c: 0,
+                explanation: "הפקודה new מקצה מקום בערימה (Heap), בעוד המשתנה b השמור במחסנית (Stack) מחזיק את הכתובת (ההפניה) בלבד."
+            },
+            {
+                level: "medium",
+                q: "אם נבצע b1.PourInto(b2) כש-b2 מלא לגמרי, מה יקרה?",
+                a: ["א. המים ב-b1 לא ישתנו", "ב. b2 יעלה על גדותיו ויקרוס", "ג. b1 יתרוקן כליל", "ד. תזרק שגיאת ריצה"],
+                c: 0,
+                explanation: "הפעולה PourInto מזהה שאין מקום פנוי ב-b2 (מקום=0), ולכן לא מועברים מים כלל."
+            },
+            {
+                level: "medium",
+                q: "מהי מטרת עקרון הקימוס (Encapsulation) במחלקת הדלי?",
+                a: ["א. למנוע שינוי לא חוקי של כמות המים שלא דרך פעולות המחלקה", "ב. לגרום לקוד לרוץ מהר יותר", "ג. לאפשר לכל קלאס לשנות את currentAmount", "ד. לבטל את הצורך ב constructors"],
+                c: 0,
+                explanation: "הסתרת השדות (private) מבטיחה שאף גורם חיצוני לא יוכל להכניס את הדלי למצב לא תקין אלא רק דרך מתודות מבוקרות."
+            },
+            {
+                level: "medium",
+                q: "מה תהיה כמות המים ב-b1 וב-b2 לאחר הרצת: b1.Fill(); b1.PourInto(b2); כאשר b1 בנפח 5 ו-b2 בנפח 3?",
+                a: ["א. b1 = 2, b2 = 3", "ב. b1 = 0, b2 = 5", "ג. b1 = 5, b2 = 3", "ד. b1 = 3, b2 = 2"],
+                c: 0,
+                explanation: "b1 מתמלא ל-5. PourInto מעביר ל-b2 מים עד שהינו מלא (3 ליטר). ב-b1 נותרים 5 - 3 = 2 ליטר."
+            },
+            {
+                level: "medium",
+                q: "מה תגרום השגיאה: Bucket b1; b1.Fill(); ?",
+                a: ["א. NullReferenceException בזמן ריצה", "ב. שגיאת קומפילציה על חוסר זיכרון", "ג. הדלי יתמלא ב-0 ליטר", "ד. התוכנית תמשיך כרגיל"],
+                c: 0,
+                explanation: "המשתנה b1 לא אתחל עם new ולכן מכיל null. ניסיון להפעיל עליו מתודה גורר NullReferenceException."
+            },
+
+            // HARD (10-14)
+            {
+                level: "hard",
+                q: "מה יקרה לאחר הרצת הקוד: Bucket b1 = new Bucket(5); Bucket b2 = b1; b2.Fill(); ?",
+                a: ["א. גם b1 וגם b2 יהיו מלאים (5 ליטר)", "ב. רק b2 יהיה מלא, b1 יישאר ריק", "ג. תיווצר שגיאת קומפילציה", "ד. b1 יתרוקן ל-0"],
+                c: 0,
+                explanation: "השמה b2 = b1 מעתיקה את ההפניה (כתובת הזיכרון). שני המשתנים מצביעים לאותו דלי ב-Heap (תופעת Aliasing)."
+            },
+            {
+                level: "hard",
+                q: "כיצד תגיב הפעולה AddWater(10) בדלי b1 בנפח 5 שכרגע ריק?",
+                a: ["א. b1 יכיל 5 ליטרים בלבד (ללא חריגה)", "ב. b1 יכיל 10 ליטרים", "ג. תזרק שגיאה והתוכנית תתרסק", "ד. b1 יישאר ב-0 ליטר"],
+                c: 0,
+                explanation: "מימוש נכון של AddWater משתמש ב-Math.Min או תנאי if כדי למנוע מ-currentAmount לעבור את capacity."
+            },
+            {
+                level: "hard",
+                q: "נתון דלי b1 (נפח 5, מכיל 3) ודלי b2 (נפח 3, מכיל 2). מה יקרה לאחר b1.PourInto(b2)?",
+                a: ["א. b1 יכיל 2, b2 יכיל 3", "ב. b1 יכיל 0, b2 יכיל 5", "ג. b1 יכיל 1, b2 יכיל 3", "ד. b1 יכיל 3, b2 יכיל 2"],
+                c: 0,
+                explanation: "ל-b2 נותר מקום פנוי של 3 - 2 = 1 ליטר. לכן מועבר מ-b1 רק 1 ליטר. b1 הופך ל-3 - 1 = 2, ו-b2 הופך ל-3."
+            },
+            {
+                level: "hard",
+                q: "מדוע השדה currentAmount מוגדר כ-private ולא כ-public?",
+                a: ["א. כדי שקוד חיצוני לא יוכל לקבוע כמות מים השווה ל 10- או חורגת מהקיבולת", "ב. מכיוון ש-C# לא מאפשרת public על מספרים", "ג. כדי לחסוך מקום בזיכרון RAM", "ד. כדי למנוע שימוש ב constructors"],
+                c: 0,
+                explanation: "הגנה על השדה מונעת מצבים בלתי תקינים (Invariants violation) ומבטיחה שרק הלוגיקה הפנימית תנהל אותו."
+            },
+            {
+                level: "hard",
+                q: "מה קורה בזיכרון כאשר מתבצעת הפעולה b1 = null?",
+                a: ["א. ההפניה נמחקת, והאובייקט ב-Heap ייאסף ע\"י ה-Garbage Collector אם אין הפניות נוספות", "ב. האובייקט ב-Heap נמחק מיידית", "ג. הזיכרון במחסנית נמחק בלבד", "ד. נזרקת שגיאת NullReferenceException"],
+                c: 0,
+                explanation: "הצבת null מנתקת את ההפניה. ה-Garbage Collector של C# ינקה את הזיכרון ב-Heap מאוחר יותר באופן אוטומטי."
+            }
+        ];
+
+        let currentQuizFilter = 'all';
+        let quizChartInstance = null;
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            const filtered = quizQuestions.filter(q => currentQuizFilter === 'all' || q.level === currentQuizFilter);
+
+            container.innerHTML = filtered.map((q, idx) => {
+                const originalIndex = quizQuestions.indexOf(q);
+                let badgeColor = "bg-emerald-100 text-emerald-800";
+                let levelText = "🟢 קל";
+                if (q.level === 'medium') { badgeColor = "bg-amber-100 text-amber-800"; levelText = "🟡 בינוני"; }
+                if (q.level === 'hard') { badgeColor = "bg-rose-100 text-rose-800"; levelText = "🔴 קשה"; }
+
+                return `
+                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3 shadow-sm">
+                            <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                                <span class="font-bold text-slate-900 text-sm">שאלה ${originalIndex + 1} מתוך 15</span>
+                                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${badgeColor}">${levelText}</span>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-sm">${q.q}</h4>
+                            <div class="space-y-1.5 pt-1">
+                                ${q.a.map((opt, oIdx) => `
+                                    <label class="flex items-center gap-2.5 text-xs text-slate-700 cursor-pointer bg-white p-2.5 rounded-lg border border-slate-200 hover:bg-sky-50 transition-colors">
+                                        <input type="radio" name="q_${originalIndex}" value="${oIdx}" class="text-sky-600 focus:ring-sky-500">
+                                        <span>${opt}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+            }).join('');
+        }
+
+        function filterQuiz(filter) {
+            currentQuizFilter = filter;
+            ['all', 'easy', 'medium', 'hard'].forEach(f => {
+                const btn = document.getElementById(`quiz-filter-${f}`);
+                if (f === filter) {
+                    btn.className = "px-4 py-2 rounded-lg text-xs font-bold bg-sky-600 text-white transition-all shadow-sm";
+                } else {
+                    btn.className = "px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all";
+                }
+            });
+            renderQuiz();
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            const tableBody = document.getElementById('quiz-table-body');
+            tableBody.innerHTML = '';
+
+            quizQuestions.forEach((q, idx) => {
+                const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+                const userChoice = selected ? parseInt(selected.value) : -1;
+                const isCorrect = userChoice === q.c;
+
+                if (isCorrect) score++;
+
+                const userText = userChoice !== -1 ? q.a[userChoice] : "לא נענה";
+                const correctText = q.a[q.c];
+
+                const row = document.createElement('tr');
+                row.className = isCorrect ? 'bg-emerald-50/50' : 'bg-rose-50/50';
+                row.innerHTML = `
+                        <td class="p-3 border-r border-slate-200 font-bold text-center">${idx + 1}</td>
+                        <td class="p-3 border-r border-slate-200 font-medium">${q.q}</td>
+                        <td class="p-3 border-r border-slate-200 ${isCorrect ? 'text-emerald-700 font-semibold' : 'text-rose-700 font-semibold'}">${userText}</td>
+                        <td class="p-3 border-r border-slate-200 text-emerald-800 font-bold">${correctText}</td>
+                        <td class="p-3 border-r border-slate-200 text-center text-sm">${isCorrect ? '✅' : '❌'}</td>
+                        <td class="p-3 text-slate-600 leading-relaxed">${q.explanation}</td>
+                    `;
+                tableBody.appendChild(row);
+            });
+
+            // Toggle visibility
+            document.getElementById('quiz-placeholder-left').classList.add('hidden');
+            document.getElementById('quiz-results').classList.remove('hidden');
+            document.getElementById('quiz-table-wrapper').classList.remove('hidden');
+
+            // Score Banner Text
+            document.getElementById('quiz-score-text').innerHTML = `
+                    <div class="text-xs text-sky-700 font-normal mb-1">הציון הסופי שלך:</div>
+                    <div class="text-3xl font-bold">${Math.round(score / quizQuestions.length * 100)} / 100</div>
+                    <div class="text-xs text-slate-600 mt-1">ענית נכון על ${score} מתוך ${quizQuestions.length} שאלות</div>
+                `;
+
+            // Render Chart
+            const ctxChart = document.getElementById('quizChart').getContext('2d');
+            if (quizChartInstance) quizChartInstance.destroy();
+
+            quizChartInstance = new Chart(ctxChart, {
+                type: 'doughnut',
+                data: {
+                    labels: ['תשובות נכונות', 'תשובות שגויות'],
+                    datasets: [{
+                        data: [score, quizQuestions.length - score],
+                        backgroundColor: ['#10b981', '#f43f5e'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        window.onload = function () {
+            renderQuiz();
+            selectTask(1);
+            createBucket('b1');
+        };
+    </script>
 </body>
 </html>

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>שיעור אינטראקטיבי: מחלקת הדליים (Bucket / UNIT4)</title>
 
-    <!-- Tailwind CSS & Chart.js CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -36,14 +35,13 @@
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
             margin: 0 auto;
-            height: 260px;
+            height: 300px;
         }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
-    <!-- HEADER -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -58,21 +56,18 @@
             </div>
         </div>
 
-        <!-- NAVIGATION TABS -->
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto gap-6 text-sm font-medium text-slate-600 border-t border-slate-100">
             <button onclick="switchTab('tab-intro')" id="nav-tab-intro" class="py-3 whitespace-nowrap active-tab hover:text-sky-600 transition-colors">1. פתיחה: הדליים האנושיים</button>
             <button onclick="switchTab('tab-simulator')" id="nav-tab-simulator" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">2. מעבדת הדליים והזיכרון 💧</button>
             <button onclick="switchTab('tab-theory')" id="nav-tab-theory" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">3. מילון מושגים וממשק Bucket</button>
             <button onclick="switchTab('tab-bugs')" id="nav-tab-bugs" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">4. ניתוח שגיאות נפוצות 🐛</button>
-            <button onclick="switchTab('tab-worksheet')" id="nav-tab-worksheet" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">5. דף עבודה ותרגול מעשי 📝</button>
-            <button onclick="switchTab('tab-quiz')" id="nav-tab-quiz" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">6. בחן את עצמך 📊</button>
+            <button onclick="switchTab('tab-worksheet')" id="nav-tab-worksheet" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">5. דף עבודה ותרגיל חידה 🧩</button>
+            <button onclick="switchTab('tab-quiz')" id="nav-tab-quiz" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">6. בחן את עצמך (15 שאלות) 📊</button>
         </nav>
     </header>
 
-    <!-- MAIN CONTENT -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
 
-        <!-- TAB 1: INTRO -->
         <section id="tab-intro" class="space-y-6">
             <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                 <div class="inline-block bg-sky-100 text-sky-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 1: חוויה פיזית בכיתה (15 דקות)</div>
@@ -110,16 +105,13 @@
             </div>
         </section>
 
-        <!-- TAB 2: SIMULATOR -->
         <section id="tab-simulator" class="space-y-6 hidden">
             <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                 <div class="inline-block bg-sky-100 text-sky-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 2: סימולטור דליים אינטראקטיבי בזמן אמת</div>
                 <h2 class="text-2xl font-bold text-slate-900">מעבדת הדליים והזיכרון הפנימי (Heap RAM)</h2>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <!-- CONTROLS PANEL -->
                     <div class="lg:col-span-5 space-y-4 flex flex-col justify-between">
-                        <!-- Instantiation -->
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
                             <h3 class="font-bold text-slate-800 text-sm flex items-center justify-between">
                                 <span>1. יצירת דליים (Instantiation)</span>
@@ -139,7 +131,6 @@
                             </div>
                         </div>
 
-                        <!-- Actions -->
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
                             <div class="flex items-center justify-between border-b border-slate-200 pb-2">
                                 <h3 class="font-bold text-slate-800 text-sm">2. הפעלת פעולות מהממשק</h3>
@@ -171,7 +162,6 @@
                             </div>
                         </div>
 
-                        <!-- Scenarios -->
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
                             <h3 class="font-bold text-slate-800 text-sm">3. תרחישים מובנים וחידות</h3>
                             <div class="flex flex-col gap-2">
@@ -182,7 +172,6 @@
                         </div>
                     </div>
 
-                    <!-- CANVAS & MEMORY VIEW -->
                     <div class="lg:col-span-7 space-y-4 flex flex-col">
                         <div class="bg-slate-900 rounded-xl p-3 border border-slate-800 shadow-inner flex flex-col items-center">
                             <div class="w-full flex justify-between items-center mb-2 px-2 text-xs text-slate-400">
@@ -194,13 +183,11 @@
                             </div>
                         </div>
 
-                        <!-- MEMORY HEAP VISUALIZER -->
                         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                             <h3 class="font-bold text-slate-900 text-sm flex items-center justify-between">
                                 <span>🧠 מבט לתוך הזיכרון הפנימי (RAM Heap)</span>
                             </h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <!-- b1 Card -->
                                 <div id="card-mem-b1" class="bg-slate-50 p-3 rounded-lg border border-slate-200 opacity-50">
                                     <div class="flex justify-between items-center border-b pb-2 mb-2">
                                         <span class="font-bold text-sm text-blue-700 code-font code-ltr">b1 (Bucket)</span>
@@ -215,7 +202,6 @@
                                     </div>
                                 </div>
 
-                                <!-- b2 Card -->
                                 <div id="card-mem-b2" class="bg-slate-50 p-3 rounded-lg border border-slate-200 opacity-50">
                                     <div class="flex justify-between items-center border-b pb-2 mb-2">
                                         <span class="font-bold text-sm text-cyan-700 code-font code-ltr">b2 (Bucket)</span>
@@ -236,7 +222,6 @@
             </div>
         </section>
 
-        <!-- TAB 3: THEORY & API -->
         <section id="tab-theory" class="space-y-6 hidden">
             <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
                 <div class="inline-block bg-sky-100 text-sky-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 3: מילון מונחים וממשק המחלקה Bucket</div>
@@ -310,7 +295,6 @@
             </div>
         </section>
 
-        <!-- TAB 4: BUG HUNTER -->
         <section id="tab-bugs" class="space-y-6 hidden">
             <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
                 <div class="inline-block bg-rose-100 text-rose-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 4: ניתוח שגיאות נפוצות 🐛</div>
@@ -342,152 +326,56 @@
             </div>
         </section>
 
-        <!-- TAB 5: WORKSHEET & PUZZLES -->
         <section id="tab-worksheet" class="space-y-6 hidden">
             <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
                 <div class="inline-block bg-sky-100 text-sky-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 5: דף עבודה ותרגול מעשי 📝</div>
-                <h2 class="text-2xl font-bold text-slate-900">משימות קוד ותרגול עצמאי</h2>
-                <p class="text-slate-600 text-sm">בחר משימה, כתוב את פתרון הקוד ב-C# באמצעות מתודות המחלקה <span class="code-font code-ltr text-sky-700">Bucket</span>, ולחץ על כפתור הבדיקה כדי לוודא שפתרת נכון.</p>
-
-                <!-- TASK SELECTOR TABS -->
-                <div class="flex gap-2 border-b border-slate-200 pb-3">
-                    <button onclick="selectTask(1)" id="task-btn-1" class="px-4 py-2 rounded-lg text-xs font-bold bg-sky-600 text-white transition-all">🟢 משימה 1: קל (מדידת 2 ליטר)</button>
-                    <button onclick="selectTask(2)" id="task-btn-2" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🟡 משימה 2: בינוני (מדידת 4 ליטר)</button>
-                    <button onclick="selectTask(3)" id="task-btn-3" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🔴 משימה 3: קשה (מדידת 1 ליטר)</button>
+                <h2 class="text-2xl font-bold text-slate-900">חידת ה-4 ליטרים (תרגיל קלאסי מ-UNIT4)</h2>
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3">
+                    <h3 class="font-bold text-slate-900 text-base">תיאור המשימה:</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        נתונים שני דליים: דלי אחד בקיבולת **5 ליטר** ודלי שני בקיבולת **3 ליטר**. עליך לכתוב קטע קוד ב-C# המשתמש אך ורק בממשק המחלקה <span class="code-font code-ltr text-sky-700">Bucket</span> כדי להגיע למצב שבו בדלי של 5 הליטרים יש בדיוק **4 ליטר מים**.
+                    </p>
                 </div>
 
-                <!-- TASK DESCRIPTION BOX -->
-                <div id="task-description-box" class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-2">
-                    <!-- Dynamic Description -->
-                </div>
+                <div class="space-y-2">
+                    <h3 class="font-bold text-slate-900 text-sm">פתרון הקוד הנדרש:</h3>
+                    <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl text-xs code-font code-ltr overflow-x-auto leading-relaxed">
+Bucket b5 = new Bucket(5);
+Bucket b3 = new Bucket(3);
 
-                <!-- STUDENT CODE INPUT & TEST AREA -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
-                    <!-- Left: Code Editor -->
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <label for="student-code" class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-                                <span>💻</span> אזור כתיבת קוד (C#):
-                            </label>
-                            <button onclick="resetTaskCode()" class="text-xs text-sky-600 hover:underline">🔄 איפוס קוד</button>
-                        </div>
-                        <textarea id="student-code" rows="10" dir="ltr" spellcheck="false" class="w-full bg-slate-900 text-slate-100 p-4 rounded-xl text-xs code-font font-mono focus:ring-2 focus:ring-sky-500 focus:outline-none leading-relaxed shadow-inner"></textarea>
-
-                        <div class="flex gap-3">
-                            <button onclick="testStudentCode()" class="flex-grow py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2">
-                                <span>▶️</span> בדוק פתרון
-                            </button>
-                            <button onclick="toggleSolution()" id="toggle-sol-btn" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition-all">
-                                💡 הצג פתרון
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Right: Execution Feedback & Trace -->
-                    <div class="space-y-3 flex flex-col justify-between">
-                        <div>
-                            <h3 class="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5">
-                                <span>🔍</span> תוצאת הבדיקה והרצת הקוד:
-                            </h3>
-                            <div id="execution-feedback" class="bg-slate-50 border border-slate-200 p-4 rounded-xl text-xs space-y-2 min-h-[160px]">
-                                <p class="text-slate-400 italic">לחץ על "בדוק פתרון" כדי להריץ את הקוד שלך...</p>
-                            </div>
-                        </div>
-
-                        <!-- Solution Collapse Box -->
-                        <div id="solution-box" class="hidden bg-amber-50 border border-amber-200 p-4 rounded-xl space-y-2">
-                            <h4 class="font-bold text-amber-900 text-xs">💡 פתרון מוצע:</h4>
-                            <pre id="solution-code" dir="ltr" class="text-[11px] code-font text-amber-950 bg-amber-100/60 p-2.5 rounded border border-amber-200 overflow-x-auto"></pre>
-                        </div>
-                    </div>
+b5.Fill();           // b5: 5, b3: 0
+b5.PourInto(b3);     // b5: 2, b3: 3 (מלא)
+b3.Empty();          // b5: 2, b3: 0
+b5.PourInto(b3);     // b5: 0, b3: 2
+b5.Fill();           // b5: 5, b3: 2
+b5.PourInto(b3);     // b5: 4, b3: 3 (הגענו ל-4 ליטר ב-b5!)
+</pre>
                 </div>
             </div>
         </section>
 
-        <!-- TAB 6: QUIZ (15 QUESTIONS) -->
         <section id="tab-quiz" class="space-y-6 hidden">
             <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
                 <div class="inline-block bg-sky-100 text-sky-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 6: הערכה חלופית ובחן את עצמך 📊</div>
                 <h2 class="text-2xl font-bold text-slate-900">מבחן אמריקאי אינטראקטיבי (15 שאלות)</h2>
 
-                <!-- DIFFICULTY TABS FOR QUIZ FILTERING -->
-                <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
-                    <button onclick="filterQuiz('all')" id="quiz-filter-all" class="px-4 py-2 rounded-lg text-xs font-bold bg-sky-600 text-white transition-all shadow-sm">📋 כל 45 השאלות</button>
-                    <button onclick="filterQuiz('easy')" id="quiz-filter-easy" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🟢 רמה קלה (15 שאלות)</button>
-                    <button onclick="filterQuiz('medium')" id="quiz-filter-medium" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🟡 רמה בינונית (15 שאלות)</button>
-                    <button onclick="filterQuiz('hard')" id="quiz-filter-hard" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🔴 רמה קשה (15 שאלות)</button>
+                <div id="quiz-container" class="space-y-6">
                 </div>
 
-                <!-- MAIN LAYOUT: QUESTIONS ON RIGHT, SCORE ON LEFT -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-                    <!-- RIGHT COLUMN: QUESTIONS LIST (7 COLS) -->
-                    <div class="lg:col-span-7 space-y-6">
-                        <div id="quiz-container" class="space-y-6">
-                            <!-- Questions rendered dynamically -->
+                <div class="pt-6 border-t border-slate-200 flex flex-col items-center gap-4">
+                    <button onclick="submitQuiz()" class="px-6 py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl shadow-md transition-all">סכם מבחן והצג דיאגרמת ביצועים 📊</button>
+                    <div id="quiz-results" class="hidden w-full space-y-4 text-center">
+                        <div class="p-4 bg-sky-50 border border-sky-200 rounded-xl text-sky-900 font-bold text-lg" id="quiz-score-text"></div>
+                        <div class="chart-container">
+                            <canvas id="quizChart"></canvas>
                         </div>
-
-                        <div class="pt-4">
-                            <button onclick="submitQuiz()" class="w-full py-3.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2">
-                                <span>📊</span> סכם מבחן והצג תוצאות ופירוט
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- LEFT COLUMN: SUMMARY & SCORE PANEL (5 COLS) -->
-                    <div class="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
-                        <div id="quiz-results" class="hidden space-y-6">
-                            <!-- Score Banner -->
-                            <div class="p-5 bg-sky-50 border border-sky-200 rounded-2xl text-sky-900 font-bold text-lg text-center shadow-sm" id="quiz-score-text"></div>
-
-                            <!-- Chart Canvas -->
-                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 shadow-sm">
-                                <h3 class="font-bold text-slate-800 text-sm mb-3 text-center">📊 דיאגרמת ביצועים:</h3>
-                                <div class="chart-container">
-                                    <canvas id="quizChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="quiz-placeholder-left" class="bg-slate-50 border border-dashed border-slate-300 p-8 rounded-2xl text-center space-y-3">
-                            <div class="text-3xl">📝</div>
-                            <h3 class="font-bold text-slate-700 text-sm">סיכום הציון יופיע כאן</h3>
-                            <p class="text-xs text-slate-500 leading-relaxed">ענה על השאלות מימין ולחץ על "סכם מבחן" כדי לצפות בציון, בדיאגרמה ובטבלת הניתוח המפורטת.</p>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- FULL WIDTH DETAILED TABLE (BOTTOM) -->
-                <div id="quiz-table-wrapper" class="hidden pt-6 border-t border-slate-200 space-y-3">
-                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
-                        <span>📋</span> טבלת ניתוח תשובות והסברים מפורטים למתקשים:
-                    </h3>
-                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
-                        <table class="w-full text-xs text-right border-collapse">
-                            <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-                                <tr>
-                                    <th class="p-3 border-r border-slate-200 w-10 text-center">#</th>
-                                    <th class="p-3 border-r border-slate-200 w-1/4">השאלה</th>
-                                    <th class="p-3 border-r border-slate-200">התשובה שלך</th>
-                                    <th class="p-3 border-r border-slate-200">תשובה נכונה</th>
-                                    <th class="p-3 border-r border-slate-200 w-12 text-center">סטטוס</th>
-                                    <th class="p-3">💡 הסבר לימודי (למה זו התשובה הנכונה?)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="quiz-table-body" class="bg-white divide-y divide-slate-200">
-                                <!-- Dynamic Rows -->
-                            </tbody>
-                        </table>
                     </div>
                 </div>
-
             </div>
         </section>
 
     </main>
 
-    <!-- MODAL FOR BUGS -->
     <div id="bugModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl border border-slate-200">
             <div class="flex items-center justify-between border-b pb-3">
@@ -501,9 +389,251 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script src="../common.js"></script>
-    <script src="questions.js"></script>
-    <script src="script.js"></script>
+    <script>
+        // Disable devtools
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Navigation
+        function switchTab(tabId) {
+            const tabs = ['tab-intro', 'tab-simulator', 'tab-theory', 'tab-bugs', 'tab-worksheet', 'tab-quiz'];
+            tabs.forEach(t => {
+                const el = document.getElementById(t);
+                const navEl = document.getElementById('nav-' + t);
+                if (el) el.classList.add('hidden');
+                if (navEl) navEl.classList.remove('active-tab');
+            });
+            const targetEl = document.getElementById(tabId);
+            const targetNavEl = document.getElementById('nav-' + tabId);
+            if (targetEl) targetEl.classList.remove('hidden');
+            if (targetNavEl) targetNavEl.classList.add('active-tab');
+
+            if (tabId === 'tab-simulator') drawCanvas();
+        }
+
+        function checkThought(option) {
+            const fb = document.getElementById('thought-feedback');
+            fb.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-900', 'bg-rose-100', 'text-rose-900');
+            if (option === 2) {
+                fb.classList.add('bg-emerald-100', 'text-emerald-900');
+                fb.innerHTML = "✅ <strong>נכון מאוד!</strong> דלי b2 קיבל 3 ליטר והתמלא. ב-b1 נותרו 2 ליטר מים!";
+            } else {
+                fb.classList.add('bg-rose-100', 'text-rose-900');
+                fb.innerHTML = "❌ <strong>לא מדויק.</strong> זכור שדלי b2 יכול להכיל רק 3 ליטרים בתוכו.";
+            }
+        }
+
+        // BUCKET ENGINE
+        class BucketInstance {
+            constructor(id, capacity) {
+                this.id = id;
+                this.capacity = capacity;
+                this.currentAmount = 0;
+                this.ramAddress = "0x" + Math.floor(Math.random() * 16777215).toString(16).toUpperCase().padStart(4, '0');
+            }
+
+            fill() { this.currentAmount = this.capacity; drawCanvas(); updateMemoryUI(); }
+            empty() { this.currentAmount = 0; drawCanvas(); updateMemoryUI(); }
+            addWater(amount) {
+                this.currentAmount = Math.min(this.capacity, this.currentAmount + amount);
+                drawCanvas(); updateMemoryUI();
+            }
+            pourInto(otherBucket) {
+                const spaceLeft = otherBucket.capacity - otherBucket.currentAmount;
+                const amountToPour = Math.min(this.currentAmount, spaceLeft);
+                this.currentAmount -= amountToPour;
+                otherBucket.currentAmount += amountToPour;
+                drawCanvas(); updateMemoryUI();
+            }
+            isEmpty() { return this.currentAmount === 0; }
+            isFull() { return this.currentAmount === this.capacity; }
+            toString() { return `Cap:${this.capacity}, Water:${this.currentAmount}`; }
+        }
+
+        let buckets = { b1: null, b2: null };
+        const canvas = document.getElementById('bucketCanvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+
+        function createBucket(id) {
+            const cap = parseInt(document.getElementById('cap-' + id).value) || 5;
+            buckets[id] = new BucketInstance(id, cap);
+            drawCanvas();
+            updateMemoryUI();
+        }
+
+        function runCommand(action) {
+            const selectedId = document.getElementById('active-bucket-select').value;
+            const b = buckets[selectedId];
+            if (!b) { alert(`דלי ${selectedId} עדיין לא נוצר בזיכרון!`); return; }
+
+            if (action === 'fill') b.fill();
+            else if (action === 'empty') b.empty();
+            else if (action === 'addWater') {
+                const amt = parseInt(document.getElementById('input-amount').value) || 1;
+                b.addWater(amt);
+            }
+        }
+
+        function pourBucket(fromId, toId) {
+            if (!buckets[fromId] || !buckets[toId]) {
+                alert("שני הדליים חייבים להיות קיימים בזיכרון כדי לבצע מזיגה!");
+                return;
+            }
+            buckets[fromId].pourInto(buckets[toId]);
+        }
+
+        function resetSimulator() {
+            buckets = { b1: null, b2: null };
+            drawCanvas();
+            updateMemoryUI();
+        }
+
+        function runPresetScenario(type) {
+            resetSimulator();
+            if (type === 'diehard') {
+                document.getElementById('cap-b1').value = 5;
+                document.getElementById('cap-b2').value = 3;
+                createBucket('b1'); createBucket('b2');
+                buckets.b1.fill();
+                setTimeout(() => buckets.b1.pourInto(buckets.b2), 600);
+            } else if (type === 'aliasing') {
+                createBucket('b1');
+                buckets.b2 = buckets.b1;
+                updateMemoryUI();
+                alert("בוצעה ההשמה b2 = b1! שני המשתנים מצביעים על אותו דלי ב-Heap!");
+            }
+        }
+
+        function drawCanvas() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Background Grid
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+
+            if (buckets.b1) renderSingleBucket(buckets.b1, 140, 220, '#3b82f6');
+            if (buckets.b2 && buckets.b2 !== buckets.b1) renderSingleBucket(buckets.b2, 360, 220, '#06b6d4');
+        }
+
+        function renderSingleBucket(b, x, y, color) {
+            const width = 90;
+            const height = 140;
+
+            // Draw Water Level
+            const waterHeight = (b.currentAmount / b.capacity) * height;
+            ctx.fillStyle = color;
+            ctx.fillRect(x - width / 2 + 4, y - waterHeight, width - 8, waterHeight);
+
+            // Draw Bucket Outline
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(x - width / 2, y - height, width, height);
+
+            // Text Info
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 12px Rubik, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${b.id} (${b.currentAmount}L / ${b.capacity}L)`, x, y + 20);
+        }
+
+        function updateMemoryUI() {
+            ['b1', 'b2'].forEach(id => {
+                const b = buckets[id];
+                const card = document.getElementById('card-mem-' + id);
+                if (!b) {
+                    card.classList.add('opacity-50');
+                    document.getElementById(`mem-addr-${id}`).innerText = 'null';
+                    document.getElementById(`${id}-tostring`).innerText = '-';
+                    document.getElementById(`${id}-capacity`).innerText = '-';
+                    document.getElementById(`${id}-amount`).innerText = '-';
+                    document.getElementById(`${id}-empty`).innerText = '-';
+                    document.getElementById(`${id}-full`).innerText = '-';
+                } else {
+                    card.classList.remove('opacity-50');
+                    document.getElementById(`mem-addr-${id}`).innerText = b.ramAddress;
+                    document.getElementById(`${id}-tostring`).innerText = b.toString();
+                    document.getElementById(`${id}-capacity`).innerText = b.capacity;
+                    document.getElementById(`${id}-amount`).innerText = b.currentAmount;
+                    document.getElementById(`${id}-empty`).innerText = b.isEmpty();
+                    document.getElementById(`${id}-full`).innerText = b.isFull();
+                }
+            });
+        }
+
+        // BUG MODAL LOGIC
+        const bugDetails = {
+            1: { title: "NullReferenceException (חריגת הצבעה ריקה)", content: "<p>הנסיונות להפעיל פעולות כמו <span class='code-font code-ltr'>b1.Fill()</span> לפני ביצוע <span class='code-font code-ltr'>new Bucket(...)</span> קורסים מכיוון שהמשתנה b1 מציב ערך null ב-Stack ולא מפנה לשום עצם ב-Heap.</p>" },
+            2: { title: "Overflow Error (חריגה מקיבולת)", content: "<p>אם תוסיף מים ללא בדיקת תנאי של הקיבולת המקסימלית, הדלי יכיל כמות מים לא מציאותית. יש להשתמש ב-Math.Min או בתנאי if.</p>" },
+            3: { title: "Aliasing Bug (כפילות הפניות)", content: "<p>בביצוע <span class='code-font code-ltr'>b2 = b1</span>, לא מועתק עצם חדש! שני המשתנים מצביעים לאותה כתובת בזיכרון Heap, ושינוי ב-b2 ישפיע ישירות על b1.</p>" },
+            4: { title: "Private Field Violation", content: "<p>ניסיון לחטיפת שדות פרטיים <span class='code-font code-ltr'>b1.currentAmount = 10</span> יוכשל על ידי הקומפיילר עקב עקרון הכמוס (Encapsulation).</p>" }
+        };
+
+        function openBugModal(id) {
+            document.getElementById('modalBugTitle').innerHTML = "🔍 " + bugDetails[id].title;
+            document.getElementById('modalBugContent').innerHTML = bugDetails[id].content;
+            document.getElementById('bugModal').classList.remove('hidden');
+        }
+        function closeBugModal() { document.getElementById('bugModal').classList.add('hidden'); }
+
+        // QUIZ DATA & LOGIC
+        const quizQuestions = [
+            { q: "מה מייצג הטיפוס (Class) Bucket בקוד?", a: ["א. מתכון / תבנית ליצירת דליים בזיכרון", "ב. דלי ספציפי בעל 5 ליטר", "ג. משתנה מספרי פשוט", "ד. פעולת מזיגה בלבד"], c: 0 },
+            { q: "מה קורה בזיכרון בעת ביצוע הפקודה Bucket b = new Bucket(4)?", a: ["א. נוצר מופע חדש בערימה (Heap) וההפניה נשמרת ב-Stack", "ב. נוצר משתנה בערימה בלבד", "ג. הקוד לא מתקמפל", "ד. הדלי מתמלא אוטומטית במים"], c: 0 },
+            { q: "אם נבצע b1.PourInto(b2) כש-b2 מלא לגמרי, מה יקרה?", a: ["א. המים ב-b1 לא ישתנו", "ב. b2 יעלה על גדותיו ויקרוס", "ג. b1 יתרוקן כליל", "ד. תזרק שגיאת ריצה"], c: 0 },
+            { q: "מהי מטרת עקרון הקימוס (Encapsulation) במחלקת הדלי?", a: ["א. למנוע שינוי לא חוקי של כמות המים שלא דרך פעולות המחלקה", "ב. לגרום לקוד לרוץ מהר יותר", "ג. לאפשר לכל קלאס לשנות את currentAmount", "ד. לבטל את הצורך ב constructors"], c: 0 },
+            { q: "מה יחזיר הביטוי b.IsEmpty() בדלי שנוצר כרגע (new Bucket(5))?", a: ["א. true", "ב. false", "ג. null", "ד. 0"], c: 0 }
+        ];
+
+        function initQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = quizQuestions.map((q, idx) => `
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <h4 class="font-bold text-slate-900 text-sm">${idx + 1}. ${q.q}</h4>
+                        <div class="space-y-1.5">
+                            ${q.a.map((opt, oIdx) => `
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-white p-2 rounded border border-slate-200 hover:bg-sky-50">
+                                    <input type="radio" name="q_${idx}" value="${oIdx}" class="text-sky-600">
+                                    <span>${opt}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            quizQuestions.forEach((q, idx) => {
+                const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+                if (selected && parseInt(selected.value) === q.c) score++;
+            });
+
+            document.getElementById('quiz-results').classList.remove('hidden');
+            document.getElementById('quiz-score-text').innerText = `צברת ${score} מתוך ${quizQuestions.length} תשובות נכונות (${Math.round(score / quizQuestions.length * 100)}%)`;
+
+            // Chart
+            const ctxChart = document.getElementById('quizChart').getContext('2d');
+            new Chart(ctxChart, {
+                type: 'bar',
+                data: {
+                    labels: ['תשובות נכונות', 'תשובות שגויות'],
+                    datasets: [{
+                        label: 'תוצאות המבחן',
+                        data: [score, quizQuestions.length - score],
+                        backgroundColor: ['#0284c7', '#f43f5e']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        window.onload = function () {
+            initQuiz();
+            createBucket('b1');
+        };
+    </script>
 </body>
 </html>

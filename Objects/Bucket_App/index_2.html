@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>שיעור אינטראקטיבי: מחלקת הדליים (Bucket / UNIT4)</title>
 
-    <!-- Tailwind CSS & Chart.js CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -36,14 +35,13 @@
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
             margin: 0 auto;
-            height: 260px;
+            height: 300px;
         }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
-    <!-- HEADER -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -58,21 +56,18 @@
             </div>
         </div>
 
-        <!-- NAVIGATION TABS -->
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto gap-6 text-sm font-medium text-slate-600 border-t border-slate-100">
             <button onclick="switchTab('tab-intro')" id="nav-tab-intro" class="py-3 whitespace-nowrap active-tab hover:text-sky-600 transition-colors">1. פתיחה: הדליים האנושיים</button>
             <button onclick="switchTab('tab-simulator')" id="nav-tab-simulator" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">2. מעבדת הדליים והזיכרון 💧</button>
             <button onclick="switchTab('tab-theory')" id="nav-tab-theory" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">3. מילון מושגים וממשק Bucket</button>
             <button onclick="switchTab('tab-bugs')" id="nav-tab-bugs" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">4. ניתוח שגיאות נפוצות 🐛</button>
-            <button onclick="switchTab('tab-worksheet')" id="nav-tab-worksheet" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">5. דף עבודה ותרגול מעשי 📝</button>
-            <button onclick="switchTab('tab-quiz')" id="nav-tab-quiz" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">6. בחן את עצמך 📊</button>
+            <button onclick="switchTab('tab-worksheet')" id="nav-tab-worksheet" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">5. דף עבודה ותרגיל חידה 🧩</button>
+            <button onclick="switchTab('tab-quiz')" id="nav-tab-quiz" class="py-3 whitespace-nowrap hover:text-sky-600 transition-colors">6. בחן את עצמך (15 שאלות) 📊</button>
         </nav>
     </header>
 
-    <!-- MAIN CONTENT -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
-
-        <!-- TAB 1: INTRO -->
+        <!-- 1 -->
         <section id="tab-intro" class="space-y-6">
             <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                 <div class="inline-block bg-sky-100 text-sky-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 1: חוויה פיזית בכיתה (15 דקות)</div>
@@ -109,17 +104,14 @@
                 </div>
             </div>
         </section>
-
-        <!-- TAB 2: SIMULATOR -->
+        <!-- 2 -->
         <section id="tab-simulator" class="space-y-6 hidden">
             <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                 <div class="inline-block bg-sky-100 text-sky-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 2: סימולטור דליים אינטראקטיבי בזמן אמת</div>
                 <h2 class="text-2xl font-bold text-slate-900">מעבדת הדליים והזיכרון הפנימי (Heap RAM)</h2>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <!-- CONTROLS PANEL -->
                     <div class="lg:col-span-5 space-y-4 flex flex-col justify-between">
-                        <!-- Instantiation -->
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
                             <h3 class="font-bold text-slate-800 text-sm flex items-center justify-between">
                                 <span>1. יצירת דליים (Instantiation)</span>
@@ -139,7 +131,6 @@
                             </div>
                         </div>
 
-                        <!-- Actions -->
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
                             <div class="flex items-center justify-between border-b border-slate-200 pb-2">
                                 <h3 class="font-bold text-slate-800 text-sm">2. הפעלת פעולות מהממשק</h3>
@@ -171,7 +162,6 @@
                             </div>
                         </div>
 
-                        <!-- Scenarios -->
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
                             <h3 class="font-bold text-slate-800 text-sm">3. תרחישים מובנים וחידות</h3>
                             <div class="flex flex-col gap-2">
@@ -182,7 +172,6 @@
                         </div>
                     </div>
 
-                    <!-- CANVAS & MEMORY VIEW -->
                     <div class="lg:col-span-7 space-y-4 flex flex-col">
                         <div class="bg-slate-900 rounded-xl p-3 border border-slate-800 shadow-inner flex flex-col items-center">
                             <div class="w-full flex justify-between items-center mb-2 px-2 text-xs text-slate-400">
@@ -194,13 +183,11 @@
                             </div>
                         </div>
 
-                        <!-- MEMORY HEAP VISUALIZER -->
                         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                             <h3 class="font-bold text-slate-900 text-sm flex items-center justify-between">
                                 <span>🧠 מבט לתוך הזיכרון הפנימי (RAM Heap)</span>
                             </h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <!-- b1 Card -->
                                 <div id="card-mem-b1" class="bg-slate-50 p-3 rounded-lg border border-slate-200 opacity-50">
                                     <div class="flex justify-between items-center border-b pb-2 mb-2">
                                         <span class="font-bold text-sm text-blue-700 code-font code-ltr">b1 (Bucket)</span>
@@ -215,7 +202,6 @@
                                     </div>
                                 </div>
 
-                                <!-- b2 Card -->
                                 <div id="card-mem-b2" class="bg-slate-50 p-3 rounded-lg border border-slate-200 opacity-50">
                                     <div class="flex justify-between items-center border-b pb-2 mb-2">
                                         <span class="font-bold text-sm text-cyan-700 code-font code-ltr">b2 (Bucket)</span>
@@ -235,8 +221,7 @@
                 </div>
             </div>
         </section>
-
-        <!-- TAB 3: THEORY & API -->
+        <!-- 3 -->
         <section id="tab-theory" class="space-y-6 hidden">
             <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
                 <div class="inline-block bg-sky-100 text-sky-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 3: מילון מונחים וממשק המחלקה Bucket</div>
@@ -309,8 +294,7 @@
                 </div>
             </div>
         </section>
-
-        <!-- TAB 4: BUG HUNTER -->
+        <!-- 4 -->
         <section id="tab-bugs" class="space-y-6 hidden">
             <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
                 <div class="inline-block bg-rose-100 text-rose-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 4: ניתוח שגיאות נפוצות 🐛</div>
@@ -341,7 +325,7 @@
                 </div>
             </div>
         </section>
-
+        <!-- 5 -->
         <!-- TAB 5: WORKSHEET & PUZZLES -->
         <section id="tab-worksheet" class="space-y-6 hidden">
             <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
@@ -403,33 +387,25 @@
                 </div>
             </div>
         </section>
-
-        <!-- TAB 6: QUIZ (15 QUESTIONS) -->
+        <!-- 6 -->
+        <!-- TAB 6: QUIZ -->
         <section id="tab-quiz" class="space-y-6 hidden">
             <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
                 <div class="inline-block bg-sky-100 text-sky-800 text-xs font-semibold px-3 py-1 rounded-md">חלק 6: הערכה חלופית ובחן את עצמך 📊</div>
-                <h2 class="text-2xl font-bold text-slate-900">מבחן אמריקאי אינטראקטיבי (15 שאלות)</h2>
+                <h2 class="text-2xl font-bold text-slate-900">מבחן אמריקאי אינטראקטיבי</h2>
 
-                <!-- DIFFICULTY TABS FOR QUIZ FILTERING -->
-                <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
-                    <button onclick="filterQuiz('all')" id="quiz-filter-all" class="px-4 py-2 rounded-lg text-xs font-bold bg-sky-600 text-white transition-all shadow-sm">📋 כל 45 השאלות</button>
-                    <button onclick="filterQuiz('easy')" id="quiz-filter-easy" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🟢 רמה קלה (15 שאלות)</button>
-                    <button onclick="filterQuiz('medium')" id="quiz-filter-medium" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🟡 רמה בינונית (15 שאלות)</button>
-                    <button onclick="filterQuiz('hard')" id="quiz-filter-hard" class="px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">🔴 רמה קשה (15 שאלות)</button>
-                </div>
-
-                <!-- MAIN LAYOUT: QUESTIONS ON RIGHT, SCORE ON LEFT -->
+                <!-- MAIN GRID LAYOUT: QUESTIONS ON RIGHT, SCORE & SUMMARY ON LEFT -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
                     <!-- RIGHT COLUMN: QUESTIONS LIST (7 COLS) -->
                     <div class="lg:col-span-7 space-y-6">
                         <div id="quiz-container" class="space-y-6">
-                            <!-- Questions rendered dynamically -->
+                            <!-- Questions will be rendered dynamically -->
                         </div>
 
                         <div class="pt-4">
-                            <button onclick="submitQuiz()" class="w-full py-3.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2">
-                                <span>📊</span> סכם מבחן והצג תוצאות ופירוט
+                            <button onclick="submitQuiz()" class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2">
+                                <span>📊</span> סכם מבחן והצג תוצאות
                             </button>
                         </div>
                     </div>
@@ -485,9 +461,9 @@
             </div>
         </section>
 
+
     </main>
 
-    <!-- MODAL FOR BUGS -->
     <div id="bugModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl border border-slate-200">
             <div class="flex items-center justify-between border-b pb-3">
@@ -501,9 +477,6 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script src="../common.js"></script>
-    <script src="questions.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

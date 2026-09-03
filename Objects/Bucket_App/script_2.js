@@ -1,4 +1,4 @@
-﻿// Disable devtools contextmenu
+﻿// Disable devtools
 document.addEventListener('contextmenu', e => e.preventDefault());
 
 // Navigation
@@ -30,7 +30,7 @@ function checkThought(option) {
     }
 }
 
-// BUCKET ENGINE FOR SIMULATOR
+// BUCKET ENGINE
 class BucketInstance {
     constructor(id, capacity) {
         this.id = id;
@@ -130,14 +130,17 @@ function renderSingleBucket(b, x, y, color) {
     const width = 90;
     const height = 140;
 
+    // Draw Water Level
     const waterHeight = (b.currentAmount / b.capacity) * height;
     ctx.fillStyle = color;
     ctx.fillRect(x - width / 2 + 4, y - waterHeight, width - 8, waterHeight);
 
+    // Draw Bucket Outline
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 4;
     ctx.strokeRect(x - width / 2, y - height, width, height);
 
+    // Text Info
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 12px Rubik, sans-serif';
     ctx.textAlign = 'center';
@@ -183,7 +186,28 @@ function openBugModal(id) {
 }
 function closeBugModal() { document.getElementById('bugModal').classList.add('hidden'); }
 
-// TASK WORKSHEET ENGINE (TAB 5)
+function initQuiz() {
+    const container = document.getElementById('quiz-container');
+    container.innerHTML = quizQuestions.map((q, idx) => `
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <h4 class="font-bold text-slate-900 text-sm">${idx + 1}. ${q.q}</h4>
+                        <div class="space-y-1.5">
+                            ${q.a.map((opt, oIdx) => `
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer bg-white p-2 rounded border border-slate-200 hover:bg-sky-50">
+                                    <input type="radio" name="q_${idx}" value="${oIdx}" class="text-sky-600">
+                                    <span>${opt}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+}
+
+window.onload = function () {
+    initQuiz();
+    createBucket('b1');
+};
+// TASK WORKSHEET ENGINE
 let currentTaskId = 1;
 
 const taskDefinitions = {
@@ -223,9 +247,9 @@ function selectTask(id) {
 
     const task = taskDefinitions[id];
     document.getElementById('task-description-box').innerHTML = `
-                    <h3 class="font-bold text-slate-900 text-base">${task.title}</h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">${task.desc}</p>
-                `;
+                <h3 class="font-bold text-slate-900 text-base">${task.title}</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">${task.desc}</p>
+            `;
     document.getElementById('student-code').value = task.initialCode;
     document.getElementById('solution-code').innerText = task.solution;
     document.getElementById('solution-box').classList.add('hidden');
@@ -265,6 +289,7 @@ function testStudentCode() {
     }
 
     const lines = code.split('\n');
+    let hasError = false;
 
     lines.forEach((line, idx) => {
         const trimmed = line.trim();
@@ -288,6 +313,7 @@ function testStudentCode() {
                 logs.push(`שורה ${idx + 1}: מזיגה ${b1.id} ↔ ${b2.id} 💧 (מצב: ${b1.id}=${b1.currentAmount}, ${b2.id}=${b2.currentAmount})`);
             }
         } catch (e) {
+            hasError = true;
             logs.push(`❌ שגיאה בשורה ${idx + 1}: לא ניתן לפענח את הפקודה`);
         }
     });
@@ -312,57 +338,48 @@ function testStudentCode() {
     feedbackEl.innerHTML = resultHtml;
 }
 
-// 15 QUIZ QUESTIONS (5 EASY, 5 MEDIUM, 5 HARD)
-// 45 QUIZ QUESTIONS (15 EASY, 15 MEDIUM, 15 HARD)
+// Initialize task on load
+const originalOnLoad = window.onload;
+window.onload = function () {
+    if (originalOnLoad) originalOnLoad();
+    selectTask(1);
+};
+/* ** TAB 6 ****************************************************************************** */
+// QUIZ DATA WITH EXPLANATIONS
+const quizQuestions = [
+    {
+        q: "מה מייצג הטיפוס (Class) Bucket בקוד?",
+        a: ["א. מתכון / תבנית ליצירת דליים בזיכרון", "ב. דלי ספציפי בעל 5 ליטר", "ג. משתנה מספרי פשוט", "ד. פעולת מזיגה בלבד"],
+        c: 0,
+        explanation: "המחלקה (Class) היא רק התבנית/המתכון המגדיר אילו שדות ופעולות יהיו לדלי. המופעים (Objects) שנוצרים ממנה בעזרת new הם הדליים הפיזיים בזיכרון."
+    },
+    {
+        q: "מה קורה בזיכרון בעת ביצוע הפקודה Bucket b = new Bucket(4)?",
+        a: ["א. נוצר מופע חדש בערימה (Heap) וההפניה נשמרת ב-Stack", "ב. נוצר משתנה בערימה בלבד", "ג. הקוד לא מתקמפל", "ד. הדלי מתמלא אוטומטית במים"],
+        c: 0,
+        explanation: "הפקודה new מקצה מקום בזיכרון ה-Heap עבור האובייקט החדש, בעוד המשתנה b השמור ב-Stack מחזיק רק את הכתובת (ההפניה/Reference) אל האובייקט הזה."
+    },
+    {
+        q: "אם נבצע b1.PourInto(b2) כש-b2 מלא לגמרי, מה יקרה?",
+        a: ["א. המים ב-b1 לא ישתנו", "ב. b2 יעלה על גדותיו ויקרוס", "ג. b1 יתרוקן כליל", "ד. תזרק שגיאת ריצה"],
+        c: 0,
+        explanation: "הפעולה PourInto בודקת כמה מקום נותר ב-b2. מכיוון ש-b2 מלא לגמרי (נשאר 0 מקום פנוי), לא יועברו מים בכלל וכמות המים ב-b1 תישאר ללא שינוי."
+    },
+    {
+        q: "מהי מטרת עקרון הקימוס (Encapsulation) במחלקת הדלי?",
+        a: ["א. למנוע שינוי לא חוקי של כמות המים שלא דרך פעולות המחלקה", "ב. לגרום לקוד לרוץ מהר יותר", "ג. לאפשר לכל קלאס לשנות את currentAmount", "ד. לבטל את הצורך ב constructors"],
+        c: 0,
+        explanation: "הסתרת השדות (private) מבטיחה שאף גורם חיצוני לא יוכל להכניס את הדלי למצב לא תקין (כמו כמות מים שלילית או גדולה מהקיבולת) אלא רק דרך מתודות מבוקרות."
+    },
+    {
+        q: "מה יחזיר הביטוי b.IsEmpty() בדלי שנוצר כרגע (new Bucket(5))?",
+        a: ["א. true", "ב. false", "ג. null", "ד. 0"],
+        c: 0,
+        explanation: "בעת יצירת דלי חדש בבנאי (Constructor), כמות המים ההתחלתית (currentAmount) מתאפסת ל-0, ולכן הפעולה IsEmpty מחזירה אמת (true)."
+    }
+];
 
-// Updated filter function with exact count display in buttons
-function filterQuiz(filter) {
-    currentQuizFilter = filter;
-    ['all', 'easy', 'medium', 'hard'].forEach(f => {
-        const btn = document.getElementById(`quiz-filter-${f}`);
-        if (!btn) return;
-        if (f === filter) {
-            btn.className = "px-4 py-2 rounded-lg text-xs font-bold bg-sky-600 text-white transition-all shadow-sm";
-        } else {
-            btn.className = "px-4 py-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all";
-        }
-    });
-    renderQuiz();
-}
-
-let currentQuizFilter = 'all';
 let quizChartInstance = null;
-
-function renderQuiz() {
-    const container = document.getElementById('quiz-container');
-    const filtered = quizQuestions.filter(q => currentQuizFilter === 'all' || q.level === currentQuizFilter);
-
-    container.innerHTML = filtered.map((q, idx) => {
-        const originalIndex = quizQuestions.indexOf(q);
-        let badgeColor = "bg-emerald-100 text-emerald-800";
-        let levelText = "🟢 קל";
-        if (q.level === 'medium') { badgeColor = "bg-amber-100 text-amber-800"; levelText = "🟡 בינוני"; }
-        if (q.level === 'hard') { badgeColor = "bg-rose-100 text-rose-800"; levelText = "🔴 קשה"; }
-
-        return `
-                        <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3 shadow-sm">
-                            <div class="flex items-center justify-between border-b border-slate-200 pb-2">
-                                <span class="font-bold text-slate-900 text-sm">שאלה ${originalIndex + 1} מתוך 15</span>
-                                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${badgeColor}">${levelText}</span>
-                            </div>
-                            <h4 class="font-bold text-slate-800 text-sm">${q.q}</h4>
-                            <div class="space-y-1.5 pt-1">
-                                ${q.a.map((opt, oIdx) => `
-                                    <label class="flex items-center gap-2.5 text-xs text-slate-700 cursor-pointer bg-white p-2.5 rounded-lg border border-slate-200 hover:bg-sky-50 transition-colors">
-                                        <input type="radio" name="q_${originalIndex}" value="${oIdx}" class="text-sky-600 focus:ring-sky-500">
-                                        <span>${opt}</span>
-                                    </label>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-    }).join('');
-}
 
 function submitQuiz() {
     let score = 0;
@@ -382,13 +399,13 @@ function submitQuiz() {
         const row = document.createElement('tr');
         row.className = isCorrect ? 'bg-emerald-50/50' : 'bg-rose-50/50';
         row.innerHTML = `
-                        <td class="p-3 border-r border-slate-200 font-bold text-center">${idx + 1}</td>
-                        <td class="p-3 border-r border-slate-200 font-medium">${q.q}</td>
-                        <td class="p-3 border-r border-slate-200 ${isCorrect ? 'text-emerald-700 font-semibold' : 'text-rose-700 font-semibold'}">${userText}</td>
-                        <td class="p-3 border-r border-slate-200 text-emerald-800 font-bold">${correctText}</td>
-                        <td class="p-3 border-r border-slate-200 text-center text-sm">${isCorrect ? '✅' : '❌'}</td>
-                        <td class="p-3 text-slate-600 leading-relaxed">${q.explanation}</td>
-                    `;
+                    <td class="p-3 border-r border-slate-200 font-bold text-center">${idx + 1}</td>
+                    <td class="p-3 border-r border-slate-200 font-medium">${q.q}</td>
+                    <td class="p-3 border-r border-slate-200 ${isCorrect ? 'text-emerald-700 font-semibold' : 'text-rose-700 font-semibold'}">${userText}</td>
+                    <td class="p-3 border-r border-slate-200 text-emerald-800 font-bold">${correctText}</td>
+                    <td class="p-3 border-r border-slate-200 text-center text-sm">${isCorrect ? '✅' : '❌'}</td>
+                    <td class="p-3 text-slate-600 leading-relaxed">${q.explanation}</td>
+                `;
         tableBody.appendChild(row);
     });
 
@@ -399,10 +416,10 @@ function submitQuiz() {
 
     // Score Banner Text
     document.getElementById('quiz-score-text').innerHTML = `
-                    <div class="text-xs text-sky-700 font-normal mb-1">הציון הסופי שלך:</div>
-                    <div class="text-3xl font-bold">${Math.round(score / quizQuestions.length * 100)} / 100</div>
-                    <div class="text-xs text-slate-600 mt-1">ענית נכון על ${score} מתוך ${quizQuestions.length} שאלות</div>
-                `;
+                <div class="text-xs text-sky-700 font-normal mb-1">הציון הסופי שלך:</div>
+                <div class="text-3xl font-bold">${Math.round(score / quizQuestions.length * 100)} / 100</div>
+                <div class="text-xs text-slate-600 mt-1">ענית נכון על ${score} מתוך ${quizQuestions.length} שאלות</div>
+            `;
 
     // Render Chart
     const ctxChart = document.getElementById('quizChart').getContext('2d');
@@ -429,8 +446,5 @@ function submitQuiz() {
     });
 }
 
-window.onload = function () {
-    renderQuiz();
-    selectTask(1);
-    createBucket('b1');
-};
+
+/* ** TAB 6 ****************************************************************************** */
