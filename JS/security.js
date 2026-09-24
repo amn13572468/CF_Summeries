@@ -1,6 +1,14 @@
-﻿// מניעת פתיחת תפריט קליק ימני (Right Click)
-document.addEventListener('contextmenu', function (e) {
+﻿// Blocking right-click on the entire page (or on a specific element)
+document.addEventListener('contextmenu', event => event.preventDefault());
+/*document.addEventListener('contextmenu', function (e) {
     e.preventDefault();
+});
+*/
+// Blocking the copy operation
+document.addEventListener('copy', (e) => {
+    e.preventDefault();
+    //alert('העתקת תוכן מאתר זה אינה מורשית.');
+    alert('Copying content from this site is not permitted.');
 });
 
 // חסימת מקשי קיצור לפתיחת כלי פיתוח וצפייה בקוד

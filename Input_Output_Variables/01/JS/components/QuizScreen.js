@@ -2,16 +2,6 @@
  * QuizScreen Component
  * Fixed Hebrew text direction (RTL) for questions and explanations.
  */
-
-// Blocking right-click on the entire page (or on a specific element)
-document.addEventListener('contextmenu', event => event.preventDefault());
-
-// Blocking the copy operation
-document.addEventListener('copy', (e) => {
-    e.preventDefault();
-    alert('העתקת תוכן מאתר זה אינה מורשית.');
-});
-
 const getLevelBadge = (level) => {
     switch (level) {
         case 'easy':
