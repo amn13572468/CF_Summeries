@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אתגר הקוד ב-#C</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel standalone for JSX processing in browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Fira+Code&display=swap');
+
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        .code-font {
+            font-family: 'Fira Code', monospace;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .ltr-content {
+            direction: ltr;
+            text-align: left;
+        }
+
+        .soft-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- 1. Security & Protection Script (Loaded First) -->
+    <!--<script src="../JS/security.js"></script>-->
+
+    <!-- Load configurations, utilities, and questions database first -->
+    <script src="JS/config.js"></script>
+    <script src="JS/utils.js"></script>
+    <script src="JS/questions.js"></script>
+
+    <!-- Load React component modules -->
+    <script type="text/babel" src="JS/components/WelcomeScreen.js"></script>
+    <script type="text/babel" src="JS/components/QuizScreen.js"></script>
+    <script type="text/babel" src="JS/components/SummaryScreen.js"></script>
+
+    <!-- Load main application module -->
+    <script type="text/babel" src="JS/App.js"></script>
+    <!-- Mount React Application -->
+    <script type="text/babel">
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
