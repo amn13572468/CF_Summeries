@@ -1,0 +1,9 @@
+﻿body {
+}
+.no-select {
+    -webkit-user-select: none; /* ספארי וכרום */
+    -moz-user-select: none; /* פיירפוקס */
+    -ms-user-select: none; /* אינטרנט אקספלורר/אדג' */
+    user-select: none; /* סטנדרט עדכני */
+}
+

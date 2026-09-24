@@ -2,6 +2,16 @@
  * QuizScreen Component
  * Fixed Hebrew text direction (RTL) for questions and explanations.
  */
+
+// Blocking right-click on the entire page (or on a specific element)
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// Blocking the copy operation
+document.addEventListener('copy', (e) => {
+    e.preventDefault();
+    alert('העתקת תוכן מאתר זה אינה מורשית.');
+});
+
 const getLevelBadge = (level) => {
     switch (level) {
         case 'easy':
@@ -96,7 +106,7 @@ const QuizScreen = ({
                     </div>
 
                     {/* C# Code Container (Always LTR for code) */}
-                    <div className="rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shadow-inner" dir="ltr">
+                    <div className="rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shadow-inner no-select" dir="ltr">
                         <div className="bg-slate-800/80 px-3 py-1 flex items-center justify-between text-[11px] text-slate-400 font-mono border-b border-slate-700/50">
                             <span>C# Code</span>
                         </div>
