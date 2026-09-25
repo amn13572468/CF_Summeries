@@ -1,0 +1,969 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מדריך למידה אינטראקטיבי: יסודות מדעי המחשב</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 360px;
+            }
+        }
+
+        .tab-btn.active {
+            background-color: #0f766e;
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+    <!-- Chosen Palette: Slate & Teal Modern Neutral -->
+    <!-- Application Structure Plan: The application is structured into five core interactive hubs (Theory Library, Interactive Visualizations, Slide Deck Presentation, Hands-on Lab & Calculators, and Interactive 30-Question Quiz Bank). This structure converts static educational material into an engaging, multi-modal learning experience. Users can explore concepts, test bit manipulations live, view structured presentation slides, convert numbers dynamically, and test their knowledge with instant feedback. -->
+    <!-- Visualization & Content Choices: 1. Byte Bit Toggler: Custom interactive HTML/JS grid showing 8 bits with toggles, calculating bit weights, decimal sum, and ASCII character to clarify binary representation (No SVG). 2. System Architecture Stack: Clickable styled HTML layer stack showing OS/Kernel hierarchy (No SVG/Mermaid). 3. Memory Units Chart: Chart.js Bar chart mapping memory sizes on a logarithmic scale (No SVG). 4. Presentation Viewer: Custom slide deck viewer with progress and thumbnails. 5. Interactive Quiz: Filterable 30-question bank with dynamic scoring, answer state, and explanation disclosure. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!-- Header & App Bar -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="bg-teal-500 text-slate-900 p-2.5 rounded-xl font-black text-xl tracking-wider">0101</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">יסודות מדעי המחשב ומערכות הפעלה</h1>
+                    <p class="text-xs text-slate-400">סביבת למידה אינטראקטיבית למעבד, בינארי ו-OS</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 text-xs font-medium">
+                <div class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+                    <span>התקדמות בחין: </span>
+                    <span id="quiz-progress-text" class="text-teal-400 font-bold">0 / 30</span>
+                </div>
+                <div class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+                    <span>ציון נוכחי: </span>
+                    <span id="quiz-score-text" class="text-emerald-400 font-bold">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-slate-800 border-t border-slate-700">
+            <div class="max-w-7xl mx-auto px-2 flex overflow-x-auto space-x-1 space-x-reverse text-sm font-medium py-2">
+                <button onclick="switchTab('theory')" id="tab-theory" class="tab-btn active px-4 py-2 rounded-lg flex items-center gap-2 transition whitespace-nowrap">
+                    <span>📚</span> חומר לימוד ומושגים
+                </button>
+                <button onclick="switchTab('visuals')" id="tab-visuals" class="tab-btn px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 flex items-center gap-2 transition whitespace-nowrap">
+                    <span>📊</span> סימולטור ותצוגות חזותיות
+                </button>
+                <button onclick="switchTab('slides')" id="tab-slides" class="tab-btn px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 flex items-center gap-2 transition whitespace-nowrap">
+                    <span>🖥️</span> מצגת מנהלים (10 שקופיות)
+                </button>
+                <button onclick="switchTab('lab')" id="tab-lab" class="tab-btn px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 flex items-center gap-2 transition whitespace-nowrap">
+                    <span>🧪</span> מעבדה ומחשבונים
+                </button>
+                <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn px-4 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-700 flex items-center gap-2 transition whitespace-nowrap">
+                    <span>✏️</span> בנק תרגול (30 שאלות)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8">
+
+        <!-- SECTION 1: THEORY -->
+        <section id="sec-theory" class="space-y-6">
+            <div class="bg-teal-900 text-teal-100 p-6 rounded-2xl border border-teal-800 shadow-sm">
+                <h2 class="text-2xl font-bold mb-2">חלק א': הסבר מקיף ומעמיק של כל נושאי הלימוד</h2>
+                <p class="text-sm text-teal-200">
+                    ברוכים הבאים לפורטל הלימוד. חלק זה מרכז את כל מושגי היסוד במדעי המחשב - החל מרמת האות החשמלי במעבד, דרך שיטות ספירה בינאריות והקסדצימליות, קידוד טקסט (ASCII/Unicode), ועד לארכיטקטורת מערכת ההפעלה, הקרנל והדרייברים.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="p-2 bg-amber-100 text-amber-800 rounded-lg text-lg">⚡</span>
+                        <h3 class="text-lg font-bold text-slate-800">1. כיצד מחשב חושב ומייצג מידע</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-650 leading-relaxed">
+                        <li><strong class="text-slate-800">שפת החומרה:</strong> המחשב מבוסס מכלול מעגלים חשמליים המבינים שני מצבים: זרם (ON = 1) ואין זרם (OFF = 0).</li>
+                        <li><strong class="text-slate-800">תאי זיכרון:</strong> רכיבי RAM/קבלים אוגרים מטען חשמלי יחיד המייצג ביט בודד (0/1).</li>
+                        <li><strong class="text-slate-800">שפת מכונה:</strong> ה-CPU מבין פקודות אך ורק כרצפים ארוכים של 0 ו-1. כל פעולת תוכנה מתורגמת לבינארי.</li>
+                    </ul>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="p-2 bg-blue-100 text-blue-800 rounded-lg text-lg">🔢</span>
+                        <h3 class="text-lg font-bold text-slate-800">2. מערכות ספירה: בינארי מול דצימלי</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-650 leading-relaxed">
+                        <li><strong class="text-slate-800">בסיס 10 (דצימלי):</strong> 10 ספרות (0-9). כל מיקום מייצג חזקה של 10 ($10^0, 10^1, 10^2$).</li>
+                        <li><strong class="text-slate-800">בסיס 2 (בינארי):</strong> 2 ספרות (0, 1). Bit = סיבית בודדת. Byte = 8 ביטים רציפים.</li>
+                        <li><strong class="text-slate-800">כלל מפתח:</strong> מספר אי-זוגי יסתיים תמיד ב-1 בביט הימני ביותר ($2^0 = 1$), מכיוון שכל שאר הביטים הם כפולות זוגיות.</li>
+                    </ul>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="p-2 bg-emerald-100 text-emerald-800 rounded-lg text-lg">📦</span>
+                        <h3 class="text-lg font-bold text-slate-800">3. גדלים ויחידות מידה בזיכרון</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-650 leading-relaxed">
+                        <li><strong class="text-slate-800">1 Byte:</strong> מכיל 8 Bits (256 ערכים שונים, בטווח 0 עד 255).</li>
+                        <li><strong class="text-slate-800">חזקות 2:</strong> $1\text{KB} = 1024\text{Bytes} = 2^{10}$, $1\text{MB} = 1024\text{KB} = 2^{20}$, $1\text{GB} = 1024\text{MB} = 2^{30}$.</li>
+                        <li><strong class="text-slate-800">מדוע 64GB, 128GB?</strong> כי קווי הכתובות וארכיטקטורת החומרה מתוכננים בבסיס 2.</li>
+                    </ul>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="p-2 bg-purple-100 text-purple-800 rounded-lg text-lg">🔤</span>
+                        <h3 class="text-lg font-bold text-slate-800">4. ייצוג טקסט ותווים (ASCII & Unicode)</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-650 leading-relaxed">
+                        <li><strong class="text-slate-800">ASCII:</strong> טבלה של 128 תווים באנגלית וסימני בקרה. כל תו תופס בדיוק 1 Byte.</li>
+                        <li><strong class="text-slate-800">Unicode:</strong> תקן גלובלי התומך במעל 150,000 תווים (עברית, ערבית, אימוג'ים) באמצעות 2-4 בייטים לתו.</li>
+                        <li><strong class="text-slate-800">סיומות קבצים (.txt, .png):</strong> מורות למערכת ההפעלה כיצד לפענח את הבתים שבזיכרון.</li>
+                    </ul>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="p-2 bg-indigo-100 text-indigo-800 rounded-lg text-lg">💻</span>
+                        <h3 class="text-lg font-bold text-slate-800">5. שפות תכנות ובסיס הקסדצימלי (Hex)</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-650 leading-relaxed">
+                        <li><strong class="text-slate-800">Assembly (Low-Level):</strong> שפה קרובה לחומרה המאפשרת שליטה ישירה באוגרים ובמעבד.</li>
+                        <li><strong class="text-slate-800">High-Level (Python/Java):</strong> שפות עיליות המספקות הפשטה (Abstraction) ופקודות באנגלית.</li>
+                        <li><strong class="text-slate-800">Hexadecimal (בסיס 16):</strong> 16 סימנים (0-9, A-F). כל ספרת Hex מייצגת בדיוק 4 ביטים (Nibble).</li>
+                    </ul>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="p-2 bg-rose-100 text-rose-800 rounded-lg text-lg">⚙️</span>
+                        <h3 class="text-lg font-bold text-slate-800">6. ארכיטקטורת מערכות הפעלה (OS)</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-650 leading-relaxed">
+                        <li><strong class="text-slate-800">קרנל (Kernel):</strong> הליבה בעלת הרשאות השיא המנהלת זיכרון, מעבד ותהליכים.</li>
+                        <li><strong class="text-slate-800">דרייבר (Driver):</strong> תוכנה המתווכת בין מערכת ההפעלה לרכיב חומרה ספציפי.</li>
+                        <li><strong class="text-slate-800">API:</strong> פרוטוקול מוסכם המאפשר לאפליקציות לבקש שירותים ממהעורכת.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: INTERACTIVE VISUALIZATIONS -->
+        <section id="sec-visuals" class="space-y-8 hidden">
+            <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-sm">
+                <h2 class="text-2xl font-bold mb-2">חלק ב': הסברים גרפיים ותקשורת חזותית</h2>
+                <p class="text-sm text-slate-300">
+                    בחלק זה תוכל לחקור באופן חזותי ואינטראקטיבי את המבנים הדינמיים של הזיכרון, טבלת משקלי הבייט, מדרג יחידות האחסון ואת שכבות החומרה והתוכנה במחשב.
+                </p>
+            </div>
+
+            <!-- Interactive Bit Byte Toggler -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b pb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">סימולטור 8-Bit (Byte) אינטראקטיבי</h3>
+                        <p class="text-xs text-slate-500">לחץ על הביטים כדי להדליק (1) או לכבות (0) ולראות את החישוב בזמן אמת</p>
+                    </div>
+                    <div class="flex items-center gap-4 bg-slate-100 px-4 py-2 rounded-xl text-sm font-semibold">
+                        <span>ערך דצימלי: <span id="bit-decimal-val" class="text-teal-700 text-lg font-black">0</span></span>
+                        <span>| Hex: <span id="bit-hex-val" class="text-purple-700 text-lg font-black">0x00</span></span>
+                        <span>| תו ASCII: <span id="bit-ascii-val" class="text-blue-700 text-lg font-black">N/A</span></span>
+                    </div>
+                </div>
+
+                <!-- 8 Bit Grid -->
+                <div class="grid grid-cols-4 sm:grid-cols-8 gap-2 text-center dir-ltr">
+                    <!-- Bit 7 -->
+                    <div onclick="toggleBit(7)" class="cursor-pointer border-2 border-slate-200 rounded-xl p-3 bg-slate-50 hover:border-teal-500 transition select-none flex flex-col items-center">
+                        <span class="text-xs font-bold text-slate-400">bit 7</span>
+                        <span class="text-xs text-slate-500 font-mono mb-1">($2^7 = 128$)</span>
+                        <span id="bit-val-7" class="text-2xl font-black text-slate-400">0</span>
+                    </div>
+                    <!-- Bit 6 -->
+                    <div onclick="toggleBit(6)" class="cursor-pointer border-2 border-slate-200 rounded-xl p-3 bg-slate-50 hover:border-teal-500 transition select-none flex flex-col items-center">
+                        <span class="text-xs font-bold text-slate-400">bit 6</span>
+                        <span class="text-xs text-slate-500 font-mono mb-1">($2^6 = 64$)</span>
+                        <span id="bit-val-6" class="text-2xl font-black text-slate-400">0</span>
+                    </div>
+                    <!-- Bit 5 -->
+                    <div onclick="toggleBit(5)" class="cursor-pointer border-2 border-slate-200 rounded-xl p-3 bg-slate-50 hover:border-teal-500 transition select-none flex flex-col items-center">
+                        <span class="text-xs font-bold text-slate-400">bit 5</span>
+                        <span class="text-xs text-slate-500 font-mono mb-1">($2^5 = 32$)</span>
+                        <span id="bit-val-5" class="text-2xl font-black text-slate-400">0</span>
+                    </div>
+                    <!-- Bit 4 -->
+                    <div onclick="toggleBit(4)" class="cursor-pointer border-2 border-slate-200 rounded-xl p-3 bg-slate-50 hover:border-teal-500 transition select-none flex flex-col items-center">
+                        <span class="text-xs font-bold text-slate-400">bit 4</span>
+                        <span class="text-xs text-slate-500 font-mono mb-1">($2^4 = 16$)</span>
+                        <span id="bit-val-4" class="text-2xl font-black text-slate-400">0</span>
+                    </div>
+                    <!-- Bit 3 -->
+                    <div onclick="toggleBit(3)" class="cursor-pointer border-2 border-slate-200 rounded-xl p-3 bg-slate-50 hover:border-teal-500 transition select-none flex flex-col items-center">
+                        <span class="text-xs font-bold text-slate-400">bit 3</span>
+                        <span class="text-xs text-slate-500 font-mono mb-1">($2^3 = 8$)</span>
+                        <span id="bit-val-3" class="text-2xl font-black text-slate-400">0</span>
+                    </div>
+                    <!-- Bit 2 -->
+                    <div onclick="toggleBit(2)" class="cursor-pointer border-2 border-slate-200 rounded-xl p-3 bg-slate-50 hover:border-teal-500 transition select-none flex flex-col items-center">
+                        <span class="text-xs font-bold text-slate-400">bit 2</span>
+                        <span class="text-xs text-slate-500 font-mono mb-1">($2^2 = 4$)</span>
+                        <span id="bit-val-2" class="text-2xl font-black text-slate-400">0</span>
+                    </div>
+                    <!-- Bit 1 -->
+                    <div onclick="toggleBit(1)" class="cursor-pointer border-2 border-slate-200 rounded-xl p-3 bg-slate-50 hover:border-teal-500 transition select-none flex flex-col items-center">
+                        <span class="text-xs font-bold text-slate-400">bit 1</span>
+                        <span class="text-xs text-slate-500 font-mono mb-1">($2^1 = 2$)</span>
+                        <span id="bit-val-1" class="text-2xl font-black text-slate-400">0</span>
+                    </div>
+                    <!-- Bit 0 -->
+                    <div onclick="toggleBit(0)" class="cursor-pointer border-2 border-slate-200 rounded-xl p-3 bg-slate-50 hover:border-teal-500 transition select-none flex flex-col items-center">
+                        <span class="text-xs font-bold text-slate-400">bit 0</span>
+                        <span class="text-xs text-slate-500 font-mono mb-1">($2^0 = 1$)</span>
+                        <span id="bit-val-0" class="text-2xl font-black text-slate-400">0</span>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-600 bg-teal-50 p-3 rounded-lg border border-teal-100 flex justify-between items-center">
+                    <span>💡 <strong>תרגיל מהיר:</strong> נסה להדליק את הביטים 6 ו-0. תקבל את המספר 65 המייצג את האות 'A' ב-ASCII!</span>
+                    <button onclick="resetBits()" class="text-teal-700 underline font-semibold">אפס ביטים</button>
+                </div>
+            </div>
+
+            <!-- Architecture Stack & Chart Grid -->
+            <div class="grid lg:grid-cols-2 gap-6">
+                <!-- System Architecture Layer Visualizer -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-lg font-bold text-slate-800">ארכיטקטורת השכבות של המחשב</h3>
+                    <p class="text-xs text-slate-500">לחץ על שכבה במערכת לצפייה באחריות ותפקיד במערכת</p>
+
+                    <div class="space-y-2 text-sm font-semibold">
+                        <div onclick="selectArchLayer('user')" class="arch-layer p-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 cursor-pointer flex justify-between items-center">
+                            <span>👤 משתמש (User)</span>
+                            <span class="text-xs font-normal">ממשק משתמש & GUI</span>
+                        </div>
+                        <div onclick="selectArchLayer('app')" class="arch-layer p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 cursor-pointer flex justify-between items-center">
+                            <span>📱 אפליקציות ותוכנות (Apps)</span>
+                            <span class="text-xs font-normal">Chrome, Word, Python</span>
+                        </div>
+                        <div onclick="selectArchLayer('api')" class="arch-layer p-3 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-900 border border-cyan-200 cursor-pointer flex justify-between items-center">
+                            <span>🔌 ממשק API</span>
+                            <span class="text-xs font-normal">פרוטוקול תקשורת מוסכם</span>
+                        </div>
+                        <div onclick="selectArchLayer('os')" class="arch-layer p-3 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 cursor-pointer flex justify-between items-center">
+                            <span>⚙️ מערכת הפעלה וקרנל (OS & Kernel)</span>
+                            <span class="text-xs font-normal">ניהול משאבים, CPU & RAM</span>
+                        </div>
+                        <div onclick="selectArchLayer('driver')" class="arch-layer p-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 cursor-pointer flex justify-between items-center">
+                            <span>🖨️ דרייברים (Drivers)</span>
+                            <span class="text-xs font-normal">מנהלי התקנים ספציפיים</span>
+                        </div>
+                        <div onclick="selectArchLayer('hw')" class="arch-layer p-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-300 cursor-pointer flex justify-between items-center">
+                            <span>💻 חומרה פיזית (Hardware)</span>
+                            <span class="text-xs font-normal">טרנזיסטורים, מעבד, זיכרון</span>
+                        </div>
+                    </div>
+
+                    <div id="arch-info-box" class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 leading-relaxed">
+                        לחץ על אחת השכבות למעלה כדי לראות את הפירוט הארכיטקטוני שלה.
+                    </div>
+                </div>
+
+                <!-- Memory Units Chart.js Container -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">מדרג יחידות הזיכרון (יחס בבתים)</h3>
+                        <p class="text-xs text-slate-500">השוואה כמותית של גדלי הזיכרון בסולם לוגריתמי ($2^{10}$ חזקות)</p>
+                    </div>
+
+                    <div class="chart-container my-auto">
+                        <canvas id="memoryChart"></canvas>
+                    </div>
+
+                    <div class="text-xs text-slate-500 text-center">
+                        כל מדרגה גדולה פי 1,024 ($2^{10}$) מקודמתה: $1\text{KB} = 1024\text{B}$, $1\text{MB} = 1024\text{KB}$
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: SLIDE SHOW PRESENTATION -->
+        <section id="sec-slides" class="space-y-6 hidden">
+            <div class="bg-indigo-900 text-indigo-100 p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold mb-1">חלק ג': סיכום מנהלים ומצגת (10 שקופיות)</h2>
+                    <p class="text-xs text-indigo-200">מציג שקופיות אינטראקטיבי להצגת הנושאים המרכזיים</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="prevSlide()" class="px-4 py-2 bg-indigo-700 hover:bg-indigo-600 rounded-lg text-sm font-bold transition">❮ הקודם</button>
+                    <span id="slide-num-indicator" class="px-3 py-2 bg-indigo-950 rounded-lg text-xs font-mono font-bold">1 / 10</span>
+                    <button onclick="nextSlide()" class="px-4 py-2 bg-indigo-700 hover:bg-indigo-600 rounded-lg text-sm font-bold transition">הבא ❯</button>
+                </div>
+            </div>
+
+            <!-- Active Slide Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 min-h-[380px] flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center border-b pb-4 mb-6">
+                        <span id="slide-badge" class="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-xs font-bold">שקופית 1</span>
+                        <span class="text-xs text-slate-400">קורס יסודות מדעי המחשב</span>
+                    </div>
+
+                    <h3 id="slide-title" class="text-2xl font-black text-slate-800 mb-4">כותרת השקופית</h3>
+                    <ul id="slide-bullets" class="space-y-3 text-base text-slate-700 list-disc list-inside leading-relaxed">
+                        <!-- Bullets injected dynamically -->
+                    </ul>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mt-6 text-xs text-slate-600">
+                    <strong class="text-slate-800">💡 דגש מרצה:</strong>
+                    <span id="slide-note">הערת מרצה תיפלט כאן</span>
+                </div>
+            </div>
+
+            <!-- Slide Thumbnails Grid -->
+            <div class="grid grid-cols-5 sm:grid-cols-10 gap-2">
+                <button onclick="goToSlide(0)" class="slide-thumb p-2 rounded-lg border text-xs font-bold bg-white hover:border-teal-500">1</button>
+                <button onclick="goToSlide(1)" class="slide-thumb p-2 rounded-lg border text-xs font-bold bg-white hover:border-teal-500">2</button>
+                <button onclick="goToSlide(2)" class="slide-thumb p-2 rounded-lg border text-xs font-bold bg-white hover:border-teal-500">3</button>
+                <button onclick="goToSlide(3)" class="slide-thumb p-2 rounded-lg border text-xs font-bold bg-white hover:border-teal-500">4</button>
+                <button onclick="goToSlide(4)" class="slide-thumb p-2 rounded-lg border text-xs font-bold bg-white hover:border-teal-500">5</button>
+                <button onclick="goToSlide(5)" class="slide-thumb p-2 rounded-lg border text-xs font-bold bg-white hover:border-teal-500">6</button>
+                <button onclick="goToSlide(6)" class="slide-thumb p-2 rounded-lg border text-xs font-bold bg-white hover:border-teal-500">7</button>
+                <button onclick="goToSlide(7)" class="slide-thumb p-2 rounded-lg border text-xs font-bold bg-white hover:border-teal-500">8</button>
+                <button onclick="goToSlide(8)" class="slide-thumb p-2 rounded-lg border text-xs font-bold bg-white hover:border-teal-500">9</button>
+                <button onclick="goToSlide(9)" class="slide-thumb p-2 rounded-lg border text-xs font-bold bg-white hover:border-teal-500">10</button>
+            </div>
+        </section>
+
+        <!-- SECTION 4: LAB & CALCULATORS -->
+        <section id="sec-lab" class="space-y-8 hidden">
+            <div class="bg-emerald-900 text-emerald-100 p-6 rounded-2xl shadow-sm">
+                <h2 class="text-2xl font-bold mb-2">חלק ד': מעבדה מעשית ותרגילים מודרכים</h2>
+                <p class="text-sm text-emerald-200">
+                    השתמש במחשבוני ההמרה החיים והתנסה בפתרון התרגילים המודרכים מתוך סילבוס הלימוד.
+                </p>
+            </div>
+
+            <!-- Real-time Base Converter -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <h3 class="text-xl font-bold text-slate-800 mb-2">מחשבון המרת בסיסים חי (Decimal leftrightarrow Binary leftrightarrow Hex)</h3>
+
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">דצימלי (בסיס 10)</label>
+                        <input type="number" id="input-dec" oninput="convertFromDec()" placeholder="לדוגמה: 45" class="w-full p-3 border border-slate-300 rounded-xl font-mono text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">בינארי (בסיס 2)</label>
+                        <input type="text" id="input-bin" oninput="convertFromBin()" placeholder="לדוגמה: 00101101" class="w-full p-3 border border-slate-300 rounded-xl font-mono text-sm focus:ring-2 focus:ring-teal-500 outline-none dir-ltr">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">הקסדצימלי (בסיס 16)</label>
+                        <input type="text" id="input-hex" oninput="convertFromHex()" placeholder="לדוגמה: 2D" class="w-full p-3 border border-slate-300 rounded-xl font-mono text-sm focus:ring-2 focus:ring-teal-500 outline-none dir-ltr">
+                    </div>
+                </div>
+                <div id="converter-breakdown" class="text-xs bg-slate-50 p-3 rounded-lg border text-slate-650">
+                    הכנס ערך באחד השדות לקבלת המרה מיידית וניתוח חלוקה לביטים.
+                </div>
+            </div>
+
+            <!-- Guided Lab Exercises -->
+            <div class="space-y-4">
+                <h3 class="text-xl font-bold text-slate-800">תרגילי מעבדה מודרכים עם פתרון מלא</h3>
+
+                <!-- Lab Ex 1 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-slate-800">תרגיל מעבדה 1: המרת מספרים בינאריים לדצימליים</h4>
+                        <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-md text-xs font-bold">תרגיל מודרך</span>
+                    </div>
+                    <p class="text-sm text-slate-600">חשב את הערך הדצימלי של המספרים הבינאריים הבאים: <code class="bg-slate-100 px-1 py-0.5 rounded dir-ltr inline-block">00101000₂</code>, <code class="bg-slate-100 px-1 py-0.5 rounded dir-ltr inline-block">01000001₂</code>, <code class="bg-slate-100 px-1 py-0.5 rounded dir-ltr inline-block">11110000₂</code>.</p>
+                    <button onclick="toggleLabSolution('lab1')" class="text-xs font-bold text-teal-700 underline">הצג/הסתר פתרון הדרכתי</button>
+                    <div id="lab1-sol" class="hidden p-4 bg-teal-50 border border-teal-100 rounded-xl text-xs text-slate-700 space-y-2">
+                        <p><strong>פתרון:</strong></p>
+                        <ol class="list-decimal list-inside space-y-1">
+                            <li><code class="dir-ltr inline-block">00101000₂</code>: ביטים פעילים הם ביט 5 ($32$) וביט 3 ($8$). סה"כ: $32 + 8 = 40$.</li>
+                            <li><code class="dir-ltr inline-block">01000001₂</code>: ביטים פעילים הם ביט 6 ($64$) וביט 0 ($1$). סה"כ: $64 + 1 = 65$ (תו ASCII 'A').</li>
+                            <li><code class="dir-ltr inline-block">11110000₂</code>: ביטים פעילים הם $128 + 64 + 32 + 16 = 240$.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Lab Ex 2 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-slate-800">תרגיל מעבדה 2: ניתוח נפח קובץ טקסט ב-ASCII</h4>
+                        <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-md text-xs font-bold">תרגיל מודרך</span>
+                    </div>
+                    <p class="text-sm text-slate-600">נתון קובץ טקסט בגודל 5 KB המכיל תווים באנגלית בלבד בקידוד ASCII. כמה תווים מדויקים מכיל הקובץ?</p>
+                    <button onclick="toggleLabSolution('lab2')" class="text-xs font-bold text-teal-700 underline">הצג/הסתר פתרון הדרכתי</button>
+                    <div id="lab2-sol" class="hidden p-4 bg-teal-50 border border-teal-100 rounded-xl text-xs text-slate-700 space-y-2">
+                        <p><strong>פתרון:</strong></p>
+                        <p>$1\text{ KB} = 1024\text{ Bytes}$. נפח הקובץ בבייטים: $5 \times 1024 = 5120\text{ Bytes}$. מכיוון שב-ASCII כל תו תופס בדיוק 1 Byte, הקובץ מכיל בדיוק <strong>5,120 תווים</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Lab Ex 3 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-slate-800">תרגיל מעבדה 3: ניקוי שגיאות הקסדצימליות</h4>
+                        <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-md text-xs font-bold">תרגיל מודרך</span>
+                    </div>
+                    <p class="text-sm text-slate-600">המר את המספר ההקסדצימלי <code class="bg-slate-100 px-1 py-0.5 rounded dir-ltr inline-block">2F₁₆</code> למספר דצימלי ולמספר בינארי.</p>
+                    <button onclick="toggleLabSolution('lab3')" class="text-xs font-bold text-teal-700 underline">הצג/הסתר פתרון הדרכתי</button>
+                    <div id="lab3-sol" class="hidden p-4 bg-teal-50 border border-teal-100 rounded-xl text-xs text-slate-700 space-y-2">
+                        <p><strong>פתרון:</strong></p>
+                        <p>ספרה ימנית $F = 15$. ספרה שמאלית $2 = 2 \times 16 = 32$. ערך דצימלי: $32 + 15 = 47_{10}$.</p>
+                        <p>בינארי: 2 ב-Hex הוא <code class="dir-ltr inline-block">0010</code>, ו-F הוא <code class="dir-ltr inline-block">1111</code>. חיבור רצפים: <code class="dir-ltr inline-block">00101111₂</code>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: QUIZ BANK (30 QUESTIONS) -->
+        <section id="sec-quiz" class="space-y-6 hidden">
+            <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold mb-1">חלק ה': בנק שאלות ותרגול מקיף (30 שאלות מדורגות)</h2>
+                    <p class="text-xs text-slate-300">תרגול אמריקאי אינטראקטיבי עם משוב מיידי והסבר מפורט לכל תשובה.</p>
+                </div>
+
+                <!-- Quiz Level Filters -->
+                <div class="flex overflow-x-auto gap-2 text-xs font-bold">
+                    <button onclick="filterQuiz('all')" id="qfilter-all" class="qfilter-btn px-3 py-2 rounded-lg bg-teal-600 text-white">הכל (30)</button>
+                    <button onclick="filterQuiz('easy')" id="qfilter-easy" class="qfilter-btn px-3 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">רמה 1: בינוני (10)</button>
+                    <button onclick="filterQuiz('medium')" id="qfilter-medium" class="qfilter-btn px-3 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">רמה 2: בינוני+ (10)</button>
+                    <button onclick="filterQuiz('hard')" id="qfilter-hard" class="qfilter-btn px-3 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">רמה 3: קשה (10)</button>
+                </div>
+            </div>
+
+            <!-- Quiz Items Container -->
+            <div id="quiz-container" class="space-y-6">
+                <!-- Dynamic Quiz Questions injected here -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 py-6 text-center text-xs mt-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>© 2026 מדריך למידה אינטראקטיבי - יסודות מדעי המחשב, ייצוג מידע ומערכות הפעלה</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // GLOBAL STATE
+        let activeTab = 'theory';
+        let bitArray = [0, 0, 0, 0, 0, 0, 0, 0];
+        let currentSlide = 0;
+        let quizAnswers = {}; // { qId: chosenIndex }
+
+        // SLIDES DATA
+        const slidesData = [
+            {
+                title: "שער המצגת: יסודות מדעי המחשב",
+                bullets: [
+                    "כיצד מחשב חושב? אותות חשמליים ושפת מכונה בינארית.",
+                    "מערכות ספירה: בסיס 2 (בינארי), בסיס 10 (עשרוני) ובסיס 16 (הקסדצימלי).",
+                    "ייצוג טקסט ותווים: תקן ASCII מול תקן Unicode.",
+                    "תפקידה ומרכיביה של מערכת ההפעלה (OS), הקרנל והדרייברים."
+                ],
+                note: "שקופית פתיחה המגדירה את נושאי הלימוד ואת מדרג ההפשטה מהחומרה לתוכנה."
+            },
+            {
+                title: "השפה של המחשב – הכל מתחיל בחשמל",
+                bullets: [
+                    "המחשב מכיר שני מצבים פיזיים בלבד: יש זרם (1) / אין זרם (0).",
+                    "תא זיכרון: יחידה פיזית (קבל/טרנזיסטור) השומרת מטען חשמלי יחיד.",
+                    "מעבד (CPU): מבצע פקודות המורכבות אך ורק מרצפים בינאריים בשפת מכונה."
+                ],
+                note: "הסבירו כי המחשב אינו מבין שפה אנושית, אלא תרגום פיזי של מתחים חשמליים."
+            },
+            {
+                title: "מערכות ספירה – דצימלי מול בינארי",
+                bullets: [
+                    "דצימלי (בסיס 10): 10 ספרות (0-9), חזקות של 10 מימין לשמאל.",
+                    "בינארי (בסיס 2): 2 ספרות (0, 1), חזקות של 2.",
+                    "ביט (Bit): ספרה בינארית בודדת.",
+                    "בייט (Byte): מקבץ רציף של 8 ביטים."
+                ],
+                note: "הדגישו את החשיבות של הבייט כיחידת היסוד של ייצוג נתונים במחשב."
+            },
+            {
+                title: "איך מחשבים מספרים בינאריים?",
+                bullets: [
+                    "ערכי המיקומים בבייט: 128, 64, 32, 16, 8, 4, 2, 1.",
+                    "דוגמה: 00001101₂ = 8 + 4 + 1 = 13 בבסיס 10.",
+                    "כלל אצבע: מספר אי-זוגי יסתיים תמיד בספרה 1 בביט הימני ביותר (ביט 0)."
+                ],
+                note: "הראו לתלמידים כיצד לבדוק אי-זוגיות בשבריר שנייה לפי ביט 0."
+            },
+            {
+                title: "יחידות זיכרון ואחסון במחשב",
+                bullets: [
+                    "1 Byte = 8 Bits (מייצג 256 ערכים שונים, 0-255).",
+                    "1 KB = 1024 Bytes, 1 MB = 1024 KB, 1 GB = 1024 MB.",
+                    "נפחי אחסון נמכרים בכפולות חזקות של 2 (64GB, 128GB, 256GB)."
+                ],
+                note: "הסבירו מדוע 1KB הוא 1024 ולא 1000 עקב ארכיטקטורת בסיס 2 (2¹⁰)."
+            },
+            {
+                title: "ייצוג טקסט – ASCII מול Unicode",
+                bullets: [
+                    "טבלת ASCII: 128 תווים בסיסיים באנגלית, 1 בייט לתו.",
+                    "תקן Unicode: מעל 150,000 תווים בכל שפות העולם + אימוג'ים (2-4 בייטים לתו).",
+                    "סיומת קובץ מגדירה כיצד לפענח ולפרש את רצף הבתים שבזיכרון."
+                ],
+                note: "הדגימו כיצד אותו רצף בתים מפורש אחרת כתמונה או כטקסט לפי הסיומת."
+            },
+            {
+                title: "רמות שפות תכנות ובסיס הקסדצימלי",
+                bullets: [
+                    "Low-Level (Assembly): עבודה ישירה מול המעבד והאוגרים.",
+                    "High-Level (Python, Java): שפות עיליות מופשטות וקריאות.",
+                    "הקסדצימלי (בסיס 16): 16 סימנים (0-9, A-F). כל ספרת Hex מייצגת 4 ביטים (Nibble)."
+                ],
+                note: "Hex מקצר רצפים בינאריים ארוכים - למשל FF במקום 11111111."
+            },
+            {
+                title: "מהי מערכת הפעלה (OS)?",
+                bullets: [
+                    "הגנה ושליטה ישירה על רכיבי החומרה (CPU, RAM, GPU, Disk).",
+                    "ניהול משאבים וריבוי משימות (Multitasking) למניעת התנגשויות זיכרון.",
+                    "מתן ממשק משתמש נוח (GUI / CLI)."
+                ],
+                note: "מערכת ההפעלה פועלת כמנצח על התזמורת בין החומרה לתוכנות."
+            },
+            {
+                title: "ארכיטקטורת מערכת ההפעלה – רכיבי מפתח",
+                bullets: [
+                    "קרנל (Kernel): הליבה הפנימית המנהלת זיכרון ותהליכים ברמת הרשאה עליונה.",
+                    "דרייברים (Drivers): תוכנות מקשרות לרכיבי חומרה יעודיים.",
+                    "API: פרוטוקול אחיד לתקשורת וראשי תיבות Application Programming Interface."
+                ],
+                note: "הדגישו את ההפרדה שבין הקרנל לבין אפליקציות המשתמש לשמירה על יציבות."
+            },
+            {
+                title: "סיכום השיעור ומסקנות",
+                bullets: [
+                    "המחשב פועל אך ורק על זרמים חשמליים וקוד בינארי (0 ו-1).",
+                    "באמצעות שיטות קידוד (ASCII/Unicode/Hex) מייצגים כל מידע בעולם.",
+                    "מערכת ההפעלה מנהלת את המורכבות ומאפשרת עבודה נוחה למשתמש."
+                ],
+                note: "חזרו על שלושת עמודי התווך: חומרה חשמלית, ייצוג בינארי, ומערכת הפעלה."
+            }
+        ];
+
+        // QUIZ DATA (30 QUESTIONS)
+        const quizData = [
+            // Level 1: Easy (1-10)
+            { id: 1, level: 'easy', q: "מה מייצג מצב שבו עובר זרם חשמלי (ON) בתא זיכרון במחשב?", opts: ["הספרה 0", "הספרה 1", "קוד Unicode", "דרייבר"], ans: 1, exp: "זרם חשמלי (ON) מיוצג בלוגיקה הבינארית על ידי הספרה 1, והעדר זרם (OFF) על ידי 0." },
+            { id: 2, level: 'easy', q: "כמה ביטים (Bits) מרכיבים בייט בודד (Byte)?", opts: ["2", "4", "8", "16"], ans: 2, exp: "הגדרת יסוד במחשבים: 1 Byte = 8 Bits." },
+            { id: 3, level: 'easy', q: "מהם הבסיסים של השיטה הדצימלית והשיטה הבינארית בהתאמה?", opts: ["בסיס 10 ובסיס 2", "בסיס 2 ובסיס 10", "בסיס 16 ובסיס 8", "בסיס 10 ובסיס 16"], ans: 0, exp: "השיטה הדצימלית מבוססת על 10 ספרות (0-9), והבינארית על 2 ספרות (0, 1)." },
+            { id: 4, level: 'easy', q: "כיצד ניתן לדעת באופן מיידי האם מספר בינארי הוא אי-זוגי?", opts: ["אם הביט השמאלי ביותר הוא 1", "אם הביט הימני ביותר (ביט 0) הוא 1", "אם יש במספר מספר זוגי של אחדות", "אם המספר ארוך מ-4 ביטים"], ans: 1, exp: "ביט 0 מייצג את 2⁰ = 1. כל שאר הביטים הם חזקות זוגיות של 2." },
+            { id: 5, level: 'easy', q: "מהו היתרון המרכזי של תקן Unicode על פני תקן ASCII?", opts: ["Unicode מהיר יותר בחישובים", "Unicode תומך במעל 150,000 תווים מכל שפות העולם ואימוג'ים", "Unicode תופס פחות זיכרון מ-ASCII", "Unicode מיועד לאותיות באנגלית בלבד"], ans: 1, exp: "ASCII הוגבל ל-128 תווים באנגלית, בעוד Unicode פותח לתמיכה בינלאומית רחבה." },
+            { id: 6, level: 'easy', q: "איזה רכיב במערכת ההפעלה פועל ברמת ההרשאות הגבוהה ביותר ומנהל זיכרון ותהליכים?", opts: ["הדרייבר (Driver)", "הקרנל (Kernel)", "ממשק ה-API", "הדפדפן"], ans: 1, exp: "הקרנל (Kernel) הוא ליבת מערכת ההפעלה המנהלת משאבים קריטיים." },
+            { id: 7, level: 'easy', q: "מהו תפקידו המרכזי של דרייבר (Driver)?", opts: ["לתרגם קוד Python לשפת Assembly", "לאפשר למערכת ההפעלה לתקשר עם רכיב חומרה ספציפי", "לבצע המרה בין בינארי להקסדצימלי", "להציג את שולחן העבודה"], ans: 1, exp: "דרייבר מקשר בין מערכת ההפעלה לרכיב חומרה ייעודי (מדפסת, כרטיס מסך)." },
+            { id: 8, level: 'easy', q: "מדוע רכיבי זיכרון ואחסון מגיעים בכפולות כגון 64GB, 128GB ו-256GB?", opts: ["בגלל מגבלה פיזית של גודל הדיסק", "מכיוון שארכיטקטורת המחשב בנויה על חזקות של בסיס 2", "כדי להתאים למספר האותיות ב-ASCII", "משיקולי שיווק בלבד"], ans: 1, exp: "ארכיטקטורת החומרה וקווי הכתובות פועלים בבסיס 2, ולכן הקיבולת מוכפלת בחזקות 2." },
+            { id: 9, level: 'easy', q: "כמה ספרות/סימנים קיימים בבסיס הקסדצימלי (Hex)?", opts: ["8", "10", "16 (הספרות 0-9 והאותיות A-F)", "256"], ans: 2, exp: "בסיס 16 עושה שימוש ב-16 דיגיטים: 0 עד 9 ו-A עד F." },
+            { id: 10, level: 'easy', q: "מה מורה סיומת קובץ (כגון .txt או .png) למערכת ההפעלה?", opts: ["את מחיר הקובץ", "כיצד לפענח ולפרש את רצף הבתים שבזיכרון", "את מהירות המעבד הנדרשת", "כמה זרם חשמלי הקובץ צורך"], ans: 1, exp: "כל קובץ נשמר כבתים, והסיומת מגדירה למערכת באיזו תוכנה וכללים לפענח אותם." },
+
+            // Level 2: Medium (11-20)
+            { id: 11, level: 'medium', q: "מהו הערך הדצימלי של המספר הבינארי 00001101₂?", opts: ["11", "13", "15", "25"], ans: 1, exp: "חיבור חזקות 2 הפעילות: 8 + 4 + 1 = 13." },
+            { id: 12, level: 'medium', q: "כמה ערכים שונים ניתן לייצג באמצעות בייט אחד (1 Byte)?", opts: ["128", "255", "256 (מ-0 עד 255)", "1024"], ans: 2, exp: "2⁸ = 256 צירופים שונים, בטווח המספרי 0 עד 255." },
+            { id: 13, level: 'medium', q: "כמה בייטים (Bytes) מדויקים יש ב-1 Kilobyte (KB)?", opts: ["1000", "1024", "8000", "65536"], ans: 1, exp: "בעולם המחשוב 1 KB = 2¹⁰ = 1024 Bytes." },
+            { id: 14, level: 'medium', q: "אם התו 'H' מיוצג ב-ASCII ע\"י הערך הדצימלי 72, מהו ייצוגו הבינארי ב-8 ביטים?", opts: ["01001000₂", "01000100₂", "00111000₂", "01010000₂"], ans: 0, exp: "72 = 64 + 8. במיקומים הבינאריים: ביט 6 (64) וביט 3 (8) פועלים = 01001000₂." },
+            { id: 15, level: 'medium', q: "כמה ביטים מיוצגים על ידי ספרה הקסדצימלית בודדת (Hex Digit)?", opts: ["2", "4 ביטים (Nibble)", "8", "16"], ans: 1, exp: "ספרת Hex מכילה ערכים מ-0 עד 15, הנדרשים לבדיוק 4 ביטים (2⁴ = 16)." },
+            { id: 16, level: 'medium', q: "מהו הערך הדצימלי השקול למספר ההקסדצימלי 1A₁₆?", opts: ["16", "26", "32", "110"], ans: 1, exp: "A = 10, והספרה משמאל מייצגת 1 × 16. סה\"כ: 16 + 10 = 26." },
+            { id: 17, level: 'medium', q: "מהו תפקידו של ממשק API?", opts: ["לנהל את קירור המעבד", "להוות פרוטוקול מוסכם המאפשר לתוכנות ולאפליקציות לתקשר בצורה אחידה", "להמיר קובצי תמונה לקובצי טקסט", "לבצע פרמוט לדיסק הקשיח"], ans: 1, exp: "API مسפק ממשק מוגדר שבאמצעותו תוכנות מבקשות שירותים מרכיבים אחרים." },
+            { id: 18, level: 'medium', q: "באיזו שפת תכנות עדיף להשתמש לפיתוח דרייבר הקרוב לחומרה ולמעבד?", opts: ["Python", "JavaScript", "Assembly", "HTML"], ans: 2, exp: "Assembly היא שפה נמוכה (Low-Level) המאפשרת שליטה ישירה באוגרים ובחומרה." },
+            { id: 19, level: 'medium', q: "מהי המטרה המרכזית של מנגנון Multitasking (ריבוי משימות) במערכת ההפעלה?", opts: ["להכפיל את המהירות הפיזית של המעבד", "להקצות זמן מעבד וזיכרון לתוכנות במקביל ולמנוע דריסת זיכרון הדדית", "להגדיל את שטח הדיסק הקשיח", "לתקן שגיאות כתיב"], ans: 1, exp: "ניהול משאבים וריבוי משימות מבטיח יציבות ועבודה מקבילה של תוכנות רבות." },
+            { id: 20, level: 'medium', q: "אילו מבין מערכות ההפעלה הבאות מוגדרות כייעודיות למכשירים ניידים (Mobile)?", opts: ["Windows ו-macOS", "Linux ו-Unix", "Android ו-iOS", "DOS ו-Assembly"], ans: 2, exp: "Android ו-iOS הן מערכות ההפעלה המובילות בסמארטפונים וטאבלטים." },
+
+            // Level 3: Hard (21-30)
+            { id: 21, level: 'hard', q: "נתון המספר הבינארי 10101010₂. מהו הערך הדצימלי שלו והאם הוא זוגי או אי-זוגי?", opts: ["170, זוגי", "171, אי-זוגי", "85, זוגי", "128, אי-זוגי"], ans: 0, exp: "חישוב: 128 + 32 + 8 + 2 = 170. כיוון שביט 0 הוא 0, המספר בוודאות זוגי." },
+            { id: 22, level: 'hard', q: "קובץ טקסט בגודל 2 MB מכיל תווים בקידוד ASCII בלבד. כמה תווים בקירוב ישנם בקובץ?", opts: ["כ-200,000 תווים", "כ-2,097,152 תווים (כ-2.09 מיליון תווים)", "כ-16,000,000 תווים", "כ-1024 תווים"], ans: 1, exp: "2 MB = 2 × 1024 × 1024 = 2,097,152 Bytes. ב-ASCII כל תו הוא בייט אחד." },
+            { id: 23, level: 'hard', q: "מהם הערכים השקולים בדצימלי ובהקסדצימלי למספר הבינארי 11111111₂?", opts: ["256 בדצימלי ו-100 בהקסדצימלי", "255 בדצימלי ו-FF בהקסדצימלי", "128 בדצימלי ו-F0 בהקסדצימלי", "255 בדצימלי ו-AA בהקסדצימלי"], ans: 1, exp: "סכום כל 8 הביטים הוא 255. ב-Hex, כל 4 אחדות (1111₂) שוות ל-F, ולכן FF₁₆." },
+            { id: 24, level: 'hard', q: "כיצד נקראת יחידת המידה של 4 ביטים (חצי בייט) ומה הזיקה שלה לייצוג הקסדצימלי?", opts: ["Bit-Set, מייצגת שתי ספרות Hex", "Nibble, וכל ספרה הקסדצימלית מייצגת בדיוק Nibble אחד", "Octet, מייצגת תו ASCII מלא", "Kernel-Chunk, מייצגת כתובת זיכרון"], ans: 1, exp: "4 ביטים נקראים Nibble. מכיוון ש-2⁴ = 16, כל ספרת Hex מיוצגת בדיוק על ידי Nibble אחד." },
+            { id: 25, level: 'hard', q: "מה יתרחש אם אפליקציה אחת תנסה לגשת ישירות לתא זיכרון השייך לאפליקציה אחרת?", opts: ["המחשב יכפיל את המהירות", "מערכת ההפעלה/הקרנל תחסום את הפעולה ותמנע דריסת זיכרון", "האפליקציה תמיר את הזיכרון ל-ASCII", "המספר הבינארי יהפוך לאי-זוגי"], ans: 1, exp: "הגנת הזיכרון וניהול המשאבים ע\"י הקרנל מונעים מתוכנות לדרוס תאי זיכרון של תהליכים אחרים." },
+            { id: 26, level: 'hard', q: "מהו רצף 8 הביטים המייצג את המספר הדצימלי 45₁₀?", opts: ["00101101₂", "00101011₂", "00111000₂", "01000101₂"], ans: 0, exp: "45 = 32 + 8 + 4 + 1. הביטים הפעילים: ביט 5 (32), ביט 3 (8), ביט 2 (4) וביט 0 (1)." },
+            { id: 27, level: 'hard', q: "מדוע תקן ASCII המקורי הכיל רק 128 תווים (0 עד 127) למרות שנשמר בבייט בודד (8 ביטים)?", opts: ["מכיוון שמעבדים ישנים לא ידעו לספור מעבר ל-128", "מכיוון ש-ASCII השתמש ב-7 ביטים לייצוג התו, והביט השמיני שימש כביט זוגיות/בקרה (Parity)", "מפני שלא היו מספיק אותיות באנגלית", "בגלל מגבלת חשמל"], ans: 1, exp: "ב-ASCII המקורי השתמשו ב-7 ביטים למידע (2⁷ = 128), והביט ה-8 שימש לבקרת שגיאות." },
+            { id: 28, level: 'hard', q: "מהו ההבדל הארכיטקטוני המהותי בין שפת Python (High-Level) לבין Assembly (Low-Level)?", opts: ["Python מבינה זרם חשמלי באופן ישיר", "Python מסתירה את מורכבות הבינארי ומספקת הפשטה באנגלית, בעוד Assembly דורשת שליטה ישירה באוגרי המעבד", "Assembly משתמשת ב-Unicode בלבד", "אין הבדל ביניהן"], ans: 1, exp: "שפות עיליות מספקות רמת הפשטה גבוהה (Abstraction), בעוד שפות נמוכות פועלות ישירות מול רכיבי החומרה." },
+            { id: 29, level: 'hard', q: "מהי השלשלת התהליכית כאשר משתמש מקליד את התו '8' במקלדת בתוכנת טקסט?", opts: ["הלחיצה יוצרת אות חשמלי ← הדרייבר ומערכת ההפעלה מזהים את קוד ASCII (56) ← הקוד נשמר בזיכרון כ-00111000₂ ← המסך מציג את התו", "הלחיצה מעבירה את המספר 8 ישירות לדיסק הקשיח", "המעבד ממיר את 8 ל-Hex ורק אז קורא לו 'H'", "המקלדת שולחת זרם של 8 וולט למסך"], ans: 0, exp: "זוהי השלשלת המלאה מהחומרה, דרך הדרייבר, הקרנל, הייצוג בזיכרון והתצוגה למשתמש." },
+            { id: 30, level: 'hard', q: "כתובת זיכרון מוצגת בייצוג הקסדצימלי כ-0xFF₁₆. מהו הערך הדצימלי של הכתובת וכמה ביטים נדרשים לאחסונה?", opts: ["100 דצימלי, 4 ביטים", "255 דצימלי, 8 ביטים (1 Byte)", "256 דצימלי, 16 ביטים", "512 דצימלי, 32 ביטים"], ans: 1, exp: "FF₁₆ = 15 × 16 + 15 = 255₁₀. ערך זה דורש בדיוק 8 ביטים (11111111₂)." }
+        ];
+
+        // ARCHITECTURE LAYERS DATA
+        const archDetails = {
+            user: "שכבת המשתמש (User): הקצה העליון שבו פועל גורם האנוש. המשתמש מפעיל תוכנות דרך ממשק גרפי (GUI) או ממשק שורת פקודה (CLI).",
+            app: "שכבת האפליקציות (Apps): תוכנות עיליות (דפדפנים, מעבדי תמלילים, משחקים) הרצות בסביבת המשתמש ומשתמשות ב-API כדי לבקש משאבים.",
+            api: "ממשק API (Application Programming Interface): סטנדרט מוסכם של הפשטה המאפשר לאפליקציה לבקש שירותים (כגון פתיחת קובץ או גישה לרשת) ממערכת ההפעלה.",
+            os: "מערכת ההפעלה והקרנל (OS & Kernel): הרכיב המרכזי המנהל את הזיכרון (RAM), זמן המעבד (CPU Scheduling), הגנת זיכרון וניהול קבצים.",
+            driver: "דרייברים (Drivers): רכיבי תוכנה ייעודיים המתקשרים ישירות מול רכיבי חומרה ספציפיים (כגון כרטיס מסך, מקלדת, מדפסת) ומתרגמים עבור ה-OS.",
+            hw: "חומרה פיזית (Hardware): הרכיבים האלקטרוניים הפיזיים - מעבד (CPU), זיכרון (RAM), דיסק קשיח, שערים לוגיים וטרנזיסטורים."
+        };
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            renderSlide();
+            renderQuiz('all');
+        });
+
+        // TAB SWITCHING
+        function switchTab(tabId) {
+            activeTab = tabId;
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('text-slate-300');
+            });
+
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.add('active');
+            activeBtn.classList.remove('text-slate-300');
+        }
+
+        // BIT SIMULATOR LOGIC
+        function toggleBit(index) {
+            bitArray[index] = bitArray[index] === 0 ? 1 : 0;
+            const bitEl = document.getElementById(`bit-val-${index}`);
+            const parentBox = bitEl.parentElement;
+
+            if (bitArray[index] === 1) {
+                bitEl.textContent = '1';
+                bitEl.className = 'text-2xl font-black text-teal-600';
+                parentBox.className = 'cursor-pointer border-2 border-teal-500 rounded-xl p-3 bg-teal-50 transition select-none flex flex-col items-center shadow-sm';
+            } else {
+                bitEl.textContent = '0';
+                bitEl.className = 'text-2xl font-black text-slate-400';
+                parentBox.className = 'cursor-pointer border-2 border-slate-200 rounded-xl p-3 bg-slate-50 hover:border-teal-500 transition select-none flex flex-col items-center';
+            }
+
+            updateBitCalculations();
+        }
+
+        function resetBits() {
+            bitArray = [0, 0, 0, 0, 0, 0, 0, 0];
+            for (let i = 0; i < 8; i++) {
+                const bitEl = document.getElementById(`bit-val-${i}`);
+                const parentBox = bitEl.parentElement;
+                bitEl.textContent = '0';
+                bitEl.className = 'text-2xl font-black text-slate-400';
+                parentBox.className = 'cursor-pointer border-2 border-slate-200 rounded-xl p-3 bg-slate-50 hover:border-teal-500 transition select-none flex flex-col items-center';
+            }
+            updateBitCalculations();
+        }
+
+        function updateBitCalculations() {
+            let decSum = 0;
+            for (let i = 0; i < 8; i++) {
+                if (bitArray[i] === 1) {
+                    decSum += Math.pow(2, i);
+                }
+            }
+
+            document.getElementById('bit-decimal-val').textContent = decSum;
+
+            let hexStr = decSum.toString(16).toUpperCase();
+            if (hexStr.length < 2) hexStr = '0' + hexStr;
+            document.getElementById('bit-hex-val').textContent = '0x' + hexStr;
+
+            if (decSum >= 32 && decSum <= 126) {
+                document.getElementById('bit-ascii-val').textContent = `'${String.fromCharCode(decSum)}'`;
+            } else {
+                document.getElementById('bit-ascii-val').textContent = 'N/A (לא הדפיסי)';
+            }
+        }
+
+        // ARCHITECTURE STACK CLICK
+        function selectArchLayer(layerKey) {
+            document.getElementById('arch-info-box').textContent = archDetails[layerKey];
+        }
+
+        // CHART.JS INITIALIZATION
+        function initChart() {
+            const ctx = document.getElementById('memoryChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Byte (B)', 'Kilobyte (KB)', 'Megabyte (MB)', 'Gigabyte (GB)'],
+                    datasets: [{
+                        label: 'נפח יחסי בבתים (סולם log10)',
+                        data: [1, 1024, 1048576, 1073741824],
+                        backgroundColor: [
+                            'rgba(20, 184, 166, 0.7)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(147, 51, 234, 0.7)',
+                            'rgba(244, 63, 94, 0.7)'
+                        ],
+                        borderColor: [
+                            '#0d9488',
+                            '#2563eb',
+                            '#7e22ce',
+                            '#e11d48'
+                        ],
+                        borderWidth: 1.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'בתים (Bytes - סולם לוגריתמי)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` נפח: ${context.raw.toLocaleString()} Bytes`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // SLIDES LOGIC
+        function renderSlide() {
+            const slide = slidesData[currentSlide];
+            document.getElementById('slide-badge').textContent = `שקופית ${currentSlide + 1} מתוך 10`;
+            document.getElementById('slide-num-indicator').textContent = `${currentSlide + 1} / 10`;
+            document.getElementById('slide-title').textContent = slide.title;
+
+            const bulletsUl = document.getElementById('slide-bullets');
+            bulletsUl.innerHTML = slide.bullets.map(b => `<li>${b}</li>`).join('');
+
+            document.getElementById('slide-note').textContent = slide.note;
+
+            document.querySelectorAll('.slide-thumb').forEach((thumb, idx) => {
+                if (idx === currentSlide) {
+                    thumb.className = 'slide-thumb p-2 rounded-lg border text-xs font-bold bg-teal-600 text-white border-teal-700';
+                } else {
+                    thumb.className = 'slide-thumb p-2 rounded-lg border text-xs font-bold bg-white text-slate-700 hover:border-teal-500';
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < slidesData.length - 1) {
+                currentSlide++;
+                renderSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide();
+            }
+        }
+
+        function goToSlide(idx) {
+            currentSlide = idx;
+            renderSlide();
+        }
+
+        // LAB CONVERTER LOGIC
+        function convertFromDec() {
+            const val = parseInt(document.getElementById('input-dec').value);
+            if (isNaN(val)) {
+                clearConverters();
+                return;
+            }
+            document.getElementById('input-bin').value = val.toString(2);
+            document.getElementById('input-hex').value = val.toString(16).toUpperCase();
+            updateConverterBreakdown(val);
+        }
+
+        function convertFromBin() {
+            const str = document.getElementById('input-bin').value.trim();
+            const val = parseInt(str, 2);
+            if (isNaN(val)) {
+                clearConverters();
+                return;
+            }
+            document.getElementById('input-dec').value = val;
+            document.getElementById('input-hex').value = val.toString(16).toUpperCase();
+            updateConverterBreakdown(val);
+        }
+
+        function convertFromHex() {
+            const str = document.getElementById('input-hex').value.trim();
+            const val = parseInt(str, 16);
+            if (isNaN(val)) {
+                clearConverters();
+                return;
+            }
+            document.getElementById('input-dec').value = val;
+            document.getElementById('input-bin').value = val.toString(2);
+            updateConverterBreakdown(val);
+        }
+
+        function clearConverters() {
+            document.getElementById('converter-breakdown').innerHTML = 'הכנס ערך תקין לקבלת ניתוח המרה.';
+        }
+
+        function updateConverterBreakdown(val) {
+            const binStr = val.toString(2).padStart(8, '0');
+            const isOdd = val % 2 !== 0;
+            document.getElementById('converter-breakdown').innerHTML = `
+                <strong>ניתוח המספר ${val}:</strong>
+                <br>• בינארי: <code class="dir-ltr font-mono font-bold">${binStr}</code> | הקסדצימלי: <code class="dir-ltr font-mono font-bold">0x${val.toString(16).toUpperCase()}</code>
+                <br>• זוגיות: <strong>${isOdd ? 'אי-זוגי (ביט 0 הוא 1)' : 'זוגי (ביט 0 הוא 0)'}</strong>
+                <br>• גודל מינימלי להכלה: <strong>${Math.ceil(Math.log2(val + 1 || 1))} Bits</strong>
+            `;
+        }
+
+        function toggleLabSolution(solId) {
+            const el = document.getElementById(`${solId}-sol`);
+            el.classList.toggle('hidden');
+        }
+
+        // QUIZ RENDER & INTERACTION
+        function filterQuiz(level) {
+            document.querySelectorAll('.qfilter-btn').forEach(btn => {
+                btn.className = 'qfilter-btn px-3 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700';
+            });
+            document.getElementById(`qfilter-${level}`).className = 'qfilter-btn px-3 py-2 rounded-lg bg-teal-600 text-white font-bold';
+            renderQuiz(level);
+        }
+
+        function renderQuiz(levelFilter) {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            const filtered = levelFilter === 'all' ? quizData : quizData.filter(q => q.level === levelFilter);
+
+            filtered.forEach(q => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4";
+
+                const isAnswered = quizAnswers.hasOwnProperty(q.id);
+                const chosen = quizAnswers[q.id];
+
+                let levelBadge = '';
+                if (q.level === 'easy') levelBadge = '<span class="px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs font-bold">בינוני</span>';
+                else if (q.level === 'medium') levelBadge = '<span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs font-bold">בינוני+</span>';
+                else levelBadge = '<span class="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-xs font-bold">קשה</span>';
+
+                let optionsHtml = '';
+                q.opts.forEach((opt, idx) => {
+                    let optStyle = "w-full text-right p-3 rounded-xl border border-slate-200 text-sm hover:border-teal-500 transition flex justify-between items-center";
+
+                    if (isAnswered) {
+                        if (idx === q.ans) {
+                            optStyle = "w-full text-right p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold flex justify-between items-center";
+                        } else if (idx === chosen) {
+                            optStyle = "w-full text-right p-3 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-900 font-bold flex justify-between items-center";
+                        } else {
+                            optStyle = "w-full text-right p-3 rounded-xl border border-slate-200 text-slate-400 opacity-60 flex justify-between items-center";
+                        }
+                    }
+
+                    const letters = ['א', 'ב', 'ג', 'ד'];
+                    optionsHtml += `
+                        <button onclick="answerQuestion(${q.id}, ${idx}, '${levelFilter}')" ${isAnswered ? 'disabled' : ''} class="${optStyle}">
+                            <span>${letters[idx]}. ${opt}</span>
+                            ${isAnswered && idx === q.ans ? '<span>✓</span>' : ''}
+                            ${isAnswered && idx === chosen && chosen !== q.ans ? '<span>✗</span>' : ''}
+                        </button>
+                    `;
+                });
+
+                let expHtml = '';
+                if (isAnswered) {
+                    expHtml = `
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 mt-2">
+                            <strong class="text-slate-900">הסבר:</strong> ${q.exp}
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-2">
+                        <h4 class="font-bold text-slate-800 text-base">שאלה ${q.id}: ${q.q}</h4>
+                        ${levelBadge}
+                    </div>
+                    <div class="space-y-2">
+                        ${optionsHtml}
+                    </div>
+                    ${expHtml}
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function answerQuestion(qId, chosenIdx, currentFilter) {
+            quizAnswers[qId] = chosenIdx;
+            updateQuizScore();
+            renderQuiz(currentFilter);
+        }
+
+        function updateQuizScore() {
+            const answeredCount = Object.keys(quizAnswers).length;
+            let correctCount = 0;
+
+            quizData.forEach(q => {
+                if (quizAnswers[q.id] === q.ans) {
+                    correctCount++;
+                }
+            });
+
+            document.getElementById('quiz-progress-text').textContent = `${answeredCount} / 30`;
+            const pct = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
+            document.getElementById('quiz-score-text').textContent = `${pct}% (${correctCount} נכונות)`;
+        }
+    </script>
+</body>
+</html>

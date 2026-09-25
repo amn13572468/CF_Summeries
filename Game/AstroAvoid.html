@@ -1,0 +1,379 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astro-Avoid - הישרדות בחלל</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #050505;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            user-select: none;
+        }
+
+        #game-container {
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 150, 255, 0.3);
+            border: 2px solid #333;
+            border-radius: 8px;
+            background: black;
+        }
+
+        canvas {
+            display: block;
+            cursor: none;
+        }
+
+        #ui-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        #menu-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 60px;
+            margin-bottom: 10px;
+            color: #00d2ff;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #ccc;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 20px;
+            background: transparent;
+            color: #00d2ff;
+            border: 2px solid #00d2ff;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+            .btn:hover {
+                background: #00d2ff;
+                color: black;
+                box-shadow: 0 0 20px #00d2ff;
+            }
+
+        #game-over-text {
+            display: none;
+        }
+
+        .score-board {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="ui-overlay">
+            <div class="score-board">ניקוד: <span id="scoreVal">0</span></div>
+            <div class="score-board">שיא: <span id="highScoreVal">0</span></div>
+        </div>
+
+        <div id="menu-overlay">
+            <div id="start-menu">
+                <h1>ASTRO-AVOID</h1>
+                <p>השתמש בעכבר כדי לנווט. אל תיגע באסטרואידים!</p>
+                <button class="btn" onclick="startGame()">התחל משחק</button>
+            </div>
+
+            <div id="game-over-text">
+                <h1 style="color: #ff416c;">המשחק נגמר</h1>
+                <p id="final-score-text"></p>
+                <button class="btn" onclick="startGame()">נסה שוב</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('scoreVal');
+        const highScoreElement = document.getElementById('highScoreVal');
+        const menuOverlay = document.getElementById('menu-overlay');
+        const startMenu = document.getElementById('start-menu');
+        const gameOverMenu = document.getElementById('game-over-text');
+        const finalScoreText = document.getElementById('final-score-text');
+
+        // הגדרות גודל
+        canvas.width = 800;
+        canvas.height = 600;
+
+        let gameActive = false;
+        let score = 0;
+        let highScore = localStorage.getItem('astroAvoidHighScore') || 0;
+        highScoreElement.textContent = highScore;
+
+        let player = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 15,
+            color: '#00d2ff'
+        };
+
+        let asteroids = [];
+        let particles = [];
+        let stars = [];
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height / 2;
+
+        // יצירת רקע כוכבים
+        for (let i = 0; i < 100; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2,
+                speed: Math.random() * 0.5 + 0.1
+            });
+        }
+
+        // מאזיני אירועים
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
+
+        function startGame() {
+            gameActive = true;
+            score = 0;
+            scoreElement.textContent = score;
+            asteroids = [];
+            particles = [];
+            menuOverlay.style.display = 'none';
+            player.x = mouseX;
+            player.y = mouseY;
+            animate();
+        }
+
+        function gameOver() {
+            gameActive = false;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('astroAvoidHighScore', highScore);
+                highScoreElement.textContent = highScore;
+            }
+
+            startMenu.style.display = 'none';
+            gameOverMenu.style.display = 'block';
+            finalScoreText.innerHTML = `הגעת לניקוד: ${Math.floor(score)}<br>השיא שלך: ${highScore}`;
+            menuOverlay.style.display = 'flex';
+        }
+
+        class Asteroid {
+            constructor() {
+                this.radius = Math.random() * 25 + 10;
+
+                // התחלה מחוץ למסך
+                if (Math.random() < 0.5) {
+                    this.x = Math.random() < 0.5 ? -this.radius : canvas.width + this.radius;
+                    this.y = Math.random() * canvas.height;
+                } else {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() < 0.5 ? -this.radius : canvas.height + this.radius;
+                }
+
+                // כיוון למרכז המסך בערך
+                const angle = Math.atan2(canvas.height / 2 - this.y, canvas.width / 2 - this.x);
+                const speed = Math.random() * 2 + 1 + (score / 1000); // מהירות עולה עם הזמן
+                this.dx = Math.cos(angle) * speed + (Math.random() - 0.5);
+                this.dy = Math.sin(angle) * speed + (Math.random() - 0.5);
+
+                this.rotation = 0;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.1;
+                this.points = Math.floor(Math.random() * 3) + 5; // צלעות לאסטרואיד
+            }
+
+            update() {
+                this.x += this.dx;
+                this.y += this.dy;
+                this.rotation += this.rotationSpeed;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.beginPath();
+                ctx.strokeStyle = '#888';
+                ctx.lineWidth = 2;
+
+                for (let i = 0; i < this.points; i++) {
+                    const angle = (i / this.points) * Math.PI * 2;
+                    const r = this.radius * (0.8 + Math.random() * 0.2); // קצת חספסוס
+                    const px = Math.cos(angle) * r;
+                    const py = Math.sin(angle) * r;
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+
+                ctx.closePath();
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = Math.random() * 3;
+                this.dx = (Math.random() - 0.5) * 8;
+                this.dy = (Math.random() - 0.5) * 8;
+                this.alpha = 1;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            update() {
+                this.x += this.dx;
+                this.y += this.dy;
+                this.alpha -= 0.02;
+            }
+        }
+
+        function createExplosion(x, y, color) {
+            for (let i = 0; i < 20; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
+        function animate() {
+            if (!gameActive) return;
+
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.2)'; // אפקט טשטוש קל
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // ציור כוכבים
+            ctx.fillStyle = 'white';
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+                star.y += star.speed;
+                if (star.y > canvas.height) star.y = 0;
+            });
+
+            // עדכון שחקן
+            player.x += (mouseX - player.x) * 0.1;
+            player.y += (mouseY - player.y) * 0.1;
+
+            // ציור שחקן (חללית קטנה)
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+            ctx.strokeStyle = player.color;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            // ליבה זוהרת
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+
+            // ניהול אסטרואידים
+            if (Math.random() < 0.05 + (score / 10000)) {
+                asteroids.push(new Asteroid());
+            }
+
+            for (let i = asteroids.length - 1; i >= 0; i--) {
+                const a = asteroids[i];
+                a.update();
+                a.draw();
+
+                // בדיקת התנגשות
+                const dist = Math.hypot(player.x - a.x, player.y - a.y);
+                if (dist < player.radius + a.radius) {
+                    createExplosion(player.x, player.y, player.color);
+                    createExplosion(a.x, a.y, '#888');
+                    gameOver();
+                }
+
+                // הסרה אם מחוץ למסך
+                if (a.x < -100 || a.x > canvas.width + 100 || a.y < -100 || a.y > canvas.height + 100) {
+                    asteroids.splice(i, 1);
+                }
+            }
+
+            // חלקיקים
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].alpha <= 0) particles.splice(i, 1);
+            }
+
+            score += 0.1;
+            scoreElement.textContent = Math.floor(score);
+
+            requestAnimationFrame(animate);
+        }
+
+        // ציור ראשוני של הרקע
+        function drawStatic() {
+            ctx.fillStyle = '#050505';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        drawStatic();
+    </script>
+</body>
+</html>

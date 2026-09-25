@@ -1,0 +1,352 @@
+﻿<!-- חדר בריחה: מבוך המערכים - מצב נעילה -->
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חדר בריחה: מערכי C#</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- html2pdf.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Fira+Code:wght@400;500&family=Orbitron:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .code-font {
+            font-family: 'Fira Code', monospace;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .cyber-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .ltr-content {
+            direction: ltr;
+            text-align: left;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 5px rgba(99, 102, 241, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+            }
+
+            100% {
+                box-shadow: 0 0 5px rgba(99, 102, 241, 0.2);
+            }
+        }
+
+        .cyber-card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            animation: pulse-glow 4s infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0%;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        .scanner::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(34, 197, 94, 0.5);
+            top: 0;
+            left: 0;
+            animation: scan 3s linear infinite;
+            box-shadow: 0 0 15px #22c55e;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background-color: white !important;
+                color: black !important;
+            }
+
+            .cyber-card {
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+                background: white !important;
+            }
+
+            .code-font {
+                color: black !important;
+                background: #f0f0f0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const CONFIG = {
+            TEACHER_EMAIL: "avivah@kdror.co.il",
+            SCRIPT_URL: "https://script.google.com/macros/s/AKfycbw4_oyjz9GoV67_ct4X_a04mcT2SRvKaxZZEyY1X2XpAoWnsBuPG8Z5iFoODVhlRYJ6qg/exec",
+            SHEET_NAME: "EscapRoom0"
+        };
+
+        const questions = [
+            { id: 1, code: "int[] nums = { 2, 4, 6, 8 };\nint sum = 0;\nfor (int i = 0; i < nums.Length; i++)\n    sum += nums[i];\nConsole.WriteLine(sum / nums.Length);", question: "מה יהיה הפלט של הקוד הבא? (חישוב ממוצע)", options: ["20", "5", "4", "0"], answer: 1, explanation: "סכום המספרים הוא 2+4+6+8 = 20. חלוקה באורך המערך (4) נותנת 5." },
+            { id: 2, code: "int[] arr = { 10, 20, 30 };\nint[] brr = arr;\nbrr[1] = 50;\nConsole.WriteLine(arr[1]);", question: "מה יודפס למסך לאחר שינוי ערך במערך המועתק?", options: ["20", "50", "10", "שגיאת הרצה"], answer: 1, explanation: "מערכים הם Reference Types. המשתנה brr מצביע לאותו אובייקט בזיכרון כמו arr, לכן שינוי ב-brr משפיע ישירות על arr." },
+            { id: 3, code: "int[] data = new int[4] { 1, 2, 3, 4 };\nfor (int i = 0; i < data.Length; i++)\n    data[i] *= 2;\nConsole.WriteLine(data[2]);", question: "מה יהיה הערך של data[2] בסיום הלולאה?", options: ["3", "4", "6", "8"], answer: 2, explanation: "הלולאה מכפילה כל איבר ב-2. האיבר באינדקס 2 היה 3, ולאחר ההכפלה הוא הופך ל-6." },
+            { id: 4, code: "string[] words = { \"A\", \"B\", \"C\" };\nwords[words.Length] = \"D\";", question: "מה יקרה כשננסה להוסיף איבר בצורה כזו?", options: ["המערך יגדל אוטומטית ל-4", "שגיאת IndexOutOfRangeException", "האות D תתווסף לסוף", "שגיאת קומפילציה"], answer: 1, explanation: "מערכים ב-C# הם בגודל קבוע. האינדקס האחרון הוא Length-1. גישה לאינדקס השווה ל-Length היא מחוץ לגבולות המערך." },
+            { id: 5, code: "int[] n = { 5, 2, 9, 1 };\nint max = n[0];\nfor(int i=1; i<n.Length; i++) \n  if(n[i] > max) max = n[i];", question: "מה מייצג המשתנה max בסוף הלולאה?", options: ["הערך הקטן ביותר", "הערך הגדול ביותר", "סכום המערך", "הממוצע"], answer: 1, explanation: "זהו אלגוריתם קלאסי למציאת המקסימום: משווים כל איבר למקסימום הנוכחי ומעדכנים אם מצאנו ערך גדול יותר." },
+            { id: 6, code: "int[] arr = new int[10];\nConsole.WriteLine(arr[5]);", question: "מהו ערך ברירת המחדל של איבר במערך int שזה עתה הוקצה?", options: ["null", "0", "שגיאת הרצה", "ערך אקראי"], answer: 1, explanation: "כאשר מקצים מערך של טיפוסים מספריים (כמו int), C# מאתחלת אוטומטית את כל האיברים ל-0." },
+            { id: 7, code: "int[] vals = { 1, 2, 3, 4, 5 };\nfor (int i = 0; i < vals.Length / 2; i++) {\n  int temp = vals[i];\n  vals[i] = vals[vals.Length - 1 - i];\n  vals[vals.Length - 1 - i] = temp;\n}", question: "מה מבצע קטע הקוד הזה על המערך?", options: ["ממיין את המערך", "מוחק את המערך", "הופך את סדר האיברים (Reverse)", "מכפיל את המערך"], answer: 2, explanation: "זהו אלגוריתם להיפוך מערך במקום. הוא מחליף את האיבר הראשון עם האחרון, השני עם הלפני-אחרון וכו'." },
+            { id: 8, code: "int[] a = { 1, 2 };\nint[] b = { 1, 2 };\nConsole.WriteLine(a == b);", question: "מה יהיה פלט ההשוואה (a == b)?", options: ["True", "False", "שגיאת קומפילציה", "1"], answer: 1, explanation: "האופרטור == על מערכים משווה כתובות בזיכרון (References). מכיוון שאלו שני אובייקטים שונים, התוצאה היא False, למרות שהתוכן זהה." },
+            { id: 9, code: "int[] x = { 10, 20, 30, 40 };\nint y = x[1]++;\nConsole.WriteLine(x[1]);", question: "מה יהיה הערך של x[1] לאחר הפקודות?", options: ["20", "21", "10", "11"], answer: 1, explanation: "האופרטור ++ מגדיל את הערך בתוך המערך. x[1] היה 20, וכעת הוא 21." },
+            { id: 10, code: "int[] sequence = new int[5];\nfor(int i=0; i<5; i++) sequence[i] = i * i;", question: "מהו הערך ב-sequence[3]?", options: ["3", "6", "9", "12"], answer: 2, explanation: "הלולאה מציבה בכל תא את ריבוע האינדקס. עבור i=3, התוצאה היא 3*3 = 9." }
+        ];
+
+        const App = () => {
+            const [step, setStep] = useState('welcome');
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [selectedOption, setSelectedOption] = useState(null);
+            const [isChecked, setIsChecked] = useState(false);
+            const [userAnswers, setUserAnswers] = useState([]);
+            const [formData, setFormData] = useState({ firstName: '', lastName: '', teacher: 'אביבה' });
+            const [isSending, setIsSending] = useState(false);
+            const [sendSuccess, setSendSuccess] = useState(null);
+            const [finalScore, setFinalScore] = useState(0);
+
+            const summaryRef = useRef();
+
+            const handleStart = () => {
+                setStep('quiz');
+                setCurrentQuestion(0);
+                setUserAnswers([]);
+                setSelectedOption(null);
+                setIsChecked(false);
+                setSendSuccess(null);
+            };
+
+            const handleCheck = () => setIsChecked(true);
+
+            const handleNext = () => {
+                const isCorrect = selectedOption === questions[currentQuestion].answer;
+                const newAnswers = [...userAnswers, {
+                    questionId: questions[currentQuestion].id,
+                    questionText: questions[currentQuestion].question,
+                    code: questions[currentQuestion].code,
+                    correct: isCorrect,
+                    selectedText: questions[currentQuestion].options[selectedOption],
+                    correctText: questions[currentQuestion].options[questions[currentQuestion].answer],
+                    explanation: questions[currentQuestion].explanation
+                }];
+
+                setUserAnswers(newAnswers);
+
+                if (currentQuestion < questions.length - 1) {
+                    setCurrentQuestion(currentQuestion + 1);
+                    setSelectedOption(null);
+                    setIsChecked(false);
+                } else {
+                    const score = Math.round((newAnswers.filter(a => a.correct).length / questions.length) * 100);
+                    setFinalScore(score);
+                    setStep('summary');
+                }
+            };
+
+            const sendToSheets = async () => {
+                if (!formData.firstName || !formData.lastName) return;
+                setIsSending(true);
+                const detailedErrReport = userAnswers.filter(a => !a.correct).map(a => `ש' ${a.questionId}: שגוי`).join(' | ');
+                const detailedSuccReport = userAnswers.filter(a => a.correct).map(a => `ש' ${a.questionId}: נכון`).join(' | ');
+                const payload = { sheetName: CONFIG.SHEET_NAME, firstName: formData.firstName, lastName: formData.lastName, teacher: formData.teacher, score: finalScore, detailedErrReport, detailedSuccReport };
+                try {
+                    await fetch(CONFIG.SCRIPT_URL, { method: 'POST', mode: 'no-cors', cache: 'no-cache', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    setSendSuccess(true);
+                } catch (error) { setSendSuccess(false); } finally { setIsSending(false); }
+            };
+
+            if (step === 'welcome') {
+                return (
+                    <div className="min-h-screen flex items-center justify-center p-4 bg-[#020617]">
+                        <div className="max-w-xl w-full cyber-card rounded-3xl p-10 text-center relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent"></div>
+                            <div className="cyber-font text-indigo-400 text-sm tracking-[0.3em] mb-4">SYSTEM BREACH DETECTED</div>
+                            <h1 className="text-4xl font-black cyber-font text-white mb-6 uppercase tracking-tight">Escape Room:<br/><span className="text-indigo-500">Array Specialist</span></h1>
+                            <div className="text-slate-400 mb-10 leading-relaxed text-right space-y-4">
+                                <p>סוכן יקר, המערכת ננעלה. כדי לצאת מהשרף בבטחה, עליך לפצח 10 שכבות של קוד המבוססות על מערכים ב-#C.</p>
+                                <p>כל שכבה תהיה מורכבת יותר מקודמתה. טעות אחת לא תעצור אותך, אבל היא תתועד בדוח הסופי.</p>
+                            </div>
+                            <button onClick={handleStart} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white cyber-font font-bold py-5 rounded-xl transition-all shadow-[0_0_20px_rgba(79,70,229,0.4)] transform hover:scale-[1.02] active:scale-95">START DECRYPTION</button>
+                            <div className="mt-6 text-[10px] text-slate-600 cyber-font">v2.0 // ADVANCED_ARRAYS_MODE</div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (step === 'quiz') {
+                const q = questions[currentQuestion];
+                const progress = ((currentQuestion) / questions.length) * 100;
+                return (
+                    <div className="min-h-screen py-10 px-4 flex flex-col items-center">
+                        <div className="max-w-3xl w-full cyber-card rounded-3xl overflow-hidden border border-indigo-500/20 shadow-2xl">
+                            <div className="w-full bg-slate-800 h-1.5 flex">
+                                <div className="bg-indigo-500 h-full transition-all duration-700 shadow-[0_0_10px_#6366f1]" style={{ width: `${progress}%` }}></div>
+                            </div>
+                            <div className="p-8">
+                                <div className="flex justify-between items-center mb-8">
+                                    <div className="cyber-font text-indigo-400 text-xs tracking-widest">LAYER_{currentQuestion + 1}.0</div>
+                                    <div className="text-slate-500 text-xs font-mono">ENCRYPTED_DATA // BLOCK_{q.id}</div>
+                                </div>
+                                <h2 className="text-2xl font-bold text-white mb-8 leading-tight text-right">{q.question}</h2>
+                                <div className="relative scanner mb-8">
+                                    <div className="code-font bg-black/60 text-emerald-400 p-8 rounded-2xl shadow-inner text-sm md:text-lg border border-emerald-500/10 leading-relaxed overflow-x-auto">
+                                        <pre className="whitespace-pre-wrap">{q.code}</pre>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                    {q.options.map((opt, idx) => (
+                                        <button key={idx} disabled={isChecked} onClick={() => setSelectedOption(idx)}
+                                            className={`w-full p-5 rounded-xl border transition-all flex items-center justify-between group
+                                                ${selectedOption === idx ? 'border-indigo-500 bg-indigo-500/10 text-white ring-1 ring-indigo-500/50' : 'border-slate-700 bg-slate-800/40 text-slate-400 hover:border-slate-500'}
+                                                ${isChecked && idx === q.answer ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : ''}
+                                                ${isChecked && selectedOption === idx && idx !== q.answer ? 'border-rose-500 bg-rose-500/10 text-rose-400' : ''}`}
+                                        >
+                                            <span className="ltr-content code-font">{opt}</span>
+                                            <div className={`w-5 h-5 rounded flex items-center justify-center border transition-colors
+                                                ${selectedOption === idx ? 'bg-indigo-500 border-indigo-500' : 'border-slate-600'}
+                                                ${isChecked && idx === q.answer ? 'bg-emerald-500 border-emerald-500' : ''}
+                                                ${isChecked && selectedOption === idx && idx !== q.answer ? 'bg-rose-500 border-rose-500' : ''}`}>
+                                                {isChecked && idx === q.answer && <span className="text-white text-[10px]">✓</span>}
+                                                {isChecked && selectedOption === idx && idx !== q.answer && <span className="text-white text-[10px]">✗</span>}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                                {isChecked && (
+                                    <div className={`p-6 rounded-xl mb-8 border-r-4 animate-pulse ${selectedOption === q.answer ? 'bg-emerald-500/5 border-emerald-500' : 'bg-rose-500/5 border-rose-500'}`}>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className={`cyber-font text-xs ${selectedOption === q.answer ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                                {selectedOption === q.answer ? '[ACCESS_GRANTED]' : '[ERROR_DETECTED]'}
+                                            </span>
+                                        </div>
+                                        <p className="text-slate-400 text-sm leading-relaxed text-right italic">{q.explanation}</p>
+                                    </div>
+                                )}
+                                {!isChecked ? (
+                                    <button disabled={selectedOption === null} onClick={handleCheck} className={`w-full py-5 rounded-xl cyber-font font-bold transition-all ${selectedOption !== null ? 'bg-white text-black hover:bg-slate-200 shadow-lg' : 'bg-slate-800 text-slate-600 cursor-not-allowed'}`}>DECRYPT ANSWER</button>
+                                ) : (
+                                    <button onClick={handleNext} className="w-full py-5 bg-indigo-600 text-white rounded-xl cyber-font font-bold hover:bg-indigo-700 transition-all shadow-[0_0_15px_rgba(79,70,229,0.3)] flex items-center justify-center gap-3">
+                                        {currentQuestion < questions.length - 1 ? 'NEXT LAYER' : 'EXTRACT RESULTS'}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (step === 'summary') {
+                return (
+                    <div className="min-h-screen py-10 px-4">
+                        <div className="max-w-4xl mx-auto space-y-8">
+                            <div ref={summaryRef} className="cyber-card rounded-3xl p-8 md:p-12 border border-indigo-500/20">
+                                <div className="text-center mb-12">
+                                    <div className="cyber-font text-indigo-400 text-xs mb-2 tracking-[0.5em]">MISSION_COMPLETE</div>
+                                    <h2 className="text-4xl font-black text-white mb-3 cyber-font">EXTRACTION REPORT</h2>
+                                    <div className="h-1 w-24 bg-indigo-600 mx-auto rounded-full"></div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                                    <div className="bg-slate-900/50 p-8 rounded-2xl border border-indigo-500/10 space-y-6">
+                                        <h3 className="text-lg font-bold text-indigo-400 flex items-center gap-2 cyber-font underline">AGENT_INFO</h3>
+                                        <div className="space-y-4">
+                                            <div className="no-print space-y-2 text-right">
+                                                <label className="block text-xs font-mono text-slate-500">שם פרטי</label>
+                                                <input type="text" className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none transition-all text-right" value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} />
+                                            </div>
+                                            <div className="no-print space-y-2 text-right">
+                                                <label className="block text-xs font-mono text-slate-500">שם משפחה</label>
+                                                <input type="text" className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-white focus:border-indigo-500 outline-none transition-all text-right" value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} />
+                                            </div>
+                                            <div className="hidden print:block text-lg font-mono">ID: {formData.firstName} {formData.lastName}</div>
+                                            <div className="space-y-2 text-right">
+                                                <label className="block text-xs font-mono text-slate-500">מורה מפקח</label>
+                                                <select className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-white no-print outline-none text-right" value={formData.teacher} onChange={(e) => setFormData({...formData, teacher: e.target.value})}>
+                                                    <option value="אביבה">אביבה</option>
+                                                    <option value="אנה">אנה</option>
+                                                </select>
+                                                <div className="hidden print:block text-lg font-mono">SUPERVISOR: {formData.teacher}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-center justify-center bg-indigo-900/30 border border-indigo-500/30 rounded-2xl text-white p-10 relative">
+                                        <span className="cyber-font text-xs text-indigo-400 mb-2">FINAL_CLEARANCE_SCORE</span>
+                                        <div className="text-8xl font-black cyber-font mb-4 tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{finalScore}</div>
+                                        <div className={`px-6 py-2 rounded-full font-bold cyber-font text-xs ${finalScore >= 90 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                                            {finalScore >= 90 ? 'ELITE_HACKER' : finalScore >= 70 ? 'SYSTEM_ADMIN' : 'RETRY_REQIURED'}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-6">
+                                    <h3 className="cyber-font text-sm text-slate-500 px-2 underline decoration-indigo-500 text-right">יומן פעילות</h3>
+                                    {userAnswers.map((answer, idx) => (
+                                        <div key={idx} className={`p-4 rounded-xl border flex items-center justify-between ${answer.correct ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-rose-500/5 border-rose-500/20'}`}>
+                                            <div className="flex items-center gap-4">
+                                                <span className={`w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold ${answer.correct ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>{answer.questionId}</span>
+                                                <span className="text-xs text-slate-400 font-mono truncate max-w-[200px] md:max-w-md text-right">{answer.questionText}</span>
+                                            </div>
+                                            <span className={`cyber-font text-[10px] ${answer.correct ? 'text-emerald-500' : 'text-rose-500'}`}>{answer.correct ? 'PASSED' : 'FAILED'}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 no-print">
+                                <button onClick={sendToSheets} disabled={!formData.firstName || !formData.lastName || isSending || sendSuccess === true}
+                                    className={`flex items-center justify-center gap-2 py-4 rounded-xl cyber-font text-sm font-bold transition-all
+                                        ${isSending ? 'bg-slate-700 text-slate-500' : (sendSuccess === true ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/50' : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-lg')}
+                                        ${(!formData.firstName || !formData.lastName) && 'opacity-30 cursor-not-allowed'}`}>
+                                    {isSending ? 'מעלה נתונים...' : (sendSuccess === true ? 'DATA_SYNC_COMPLETE' : 'UPLOAD_TO_MAINFRAME')}
+                                </button>
+                                <button onClick={handleStart} disabled={sendSuccess !== true}
+                                    className={`flex items-center justify-center gap-2 py-4 border rounded-xl cyber-font text-sm font-bold transition-all
+                                        ${sendSuccess === true ? 'bg-indigo-600 text-white border-indigo-500 hover:bg-indigo-500 shadow-lg' : 'bg-slate-800 text-slate-600 border-slate-700 cursor-not-allowed'}`}>
+                                    REBOOT_SIMULATION
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+            return null;
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

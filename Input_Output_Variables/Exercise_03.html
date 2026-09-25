@@ -1,0 +1,1156 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת דפי עבודה אינטראקטיביים</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Heebo -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Heebo', sans-serif;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="bg-indigo-600 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="bg-white/20 p-2 rounded-xl backdrop-blur-md">
+                    <i class="fa-solid fa-graduation-cap text-2xl text-yellow-300"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold leading-tight">דף עבודה אינטראקטיבי</h1>
+                    <p class="text-xs text-indigo-200">למידה, תרגול ובדיקה עצמית</p>
+                </div>
+            </div>
+
+            <!-- Student Info Display (Header) -->
+            <div id="header-student-info" class="hidden sm:flex items-center gap-3 bg-indigo-700/60 px-4 py-1.5 rounded-full border border-indigo-500/30 text-sm">
+                <i class="fa-solid fa-user-circle text-indigo-200"></i>
+                <span id="display-student-name" class="font-medium"></span>
+                <span class="text-indigo-300">|</span>
+                <span id="display-student-class" class="text-indigo-200"></span>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="openPromptModal()" class="bg-indigo-500 hover:bg-indigo-400 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-code"></i>
+                    <span>הצג פרומפט</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- STEP 1: Student Login Card -->
+        <section id="login-step" class="max-w-md mx-auto my-8 bg-white p-6 sm:p-8 rounded-2xl shadow-xl border border-slate-100">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
+                    <i class="fa-solid fa-user-pen"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">ברוכים הבאים!</h2>
+                <p class="text-slate-500 text-sm mt-1">נא למלא את הפרטים לפני תחילת המענה</p>
+            </div>
+
+            <form id="student-form" onsubmit="startWorksheet(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">שם מלא <span class="text-red-500">*</span></label>
+                    <input type="text" id="input-name" required placeholder="למשל: ישראל ישראלי" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">כיתה / קבוצה <span class="text-red-500">*</span></label>
+                    <input type="text" id="input-class" required placeholder="למשל: כיתה ח'1" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">אימייל / טלפון של המורה (לשליחה קלה)</label>
+                    <input type="text" id="input-teacher" placeholder="למשל: teacher@school.edu / 0501234567" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-200 transition duration-200 flex items-center justify-center gap-2 mt-2">
+                    <span>התחל בשאלון</span>
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- STEP 2: Worksheet Main Interface -->
+        <div id="worksheet-step" class="hidden space-y-6">
+
+            <!-- Level Selector Tabs -->
+            <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap gap-2 justify-between items-center">
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                    <button onclick="switchLevel('easy')" id="btn-level-easy" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-seedling"></i>
+                        <span>רמה קלה (15)</span>
+                        <span id="badge-easy" class="text-xs px-2 py-0.5 rounded-full bg-slate-100 hidden">0/15</span>
+                    </button>
+                    <button onclick="switchLevel('medium')" id="btn-level-medium" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-fire text-amber-500"></i>
+                        <span>רמה בינונית (15)</span>
+                        <span id="badge-medium" class="text-xs px-2 py-0.5 rounded-full bg-slate-100 hidden">0/15</span>
+                    </button>
+                    <button onclick="switchLevel('hard')" id="btn-level-hard" class="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-bolt text-rose-500"></i>
+                        <span>רמה קשה (15)</span>
+                        <span id="badge-hard" class="text-xs px-2 py-0.5 rounded-full bg-slate-100 hidden">0/15</span>
+                    </button>
+                </div>
+
+                <div class="w-full sm:w-auto flex justify-end">
+                    <button onclick="openFinalSummaryModal()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>סיום ושליחת סיכום למורה</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Level Stats Bar -->
+            <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h3 id="current-level-title" class="text-lg font-bold text-indigo-900">רמה קלה</h3>
+                    <p class="text-xs text-indigo-600">ענה על השאלות שלפניך. בסיום כל שאלון תוכל לראות את הניקוד וההסברים.</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-center">
+                        <span class="block text-xs text-slate-500">התקדמות ברמה</span>
+                        <span id="level-progress-text" class="font-bold text-indigo-700 text-sm">0 / 15</span>
+                    </div>
+                    <div class="w-32 bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                        <div id="level-progress-bar" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questions Container -->
+            <div id="questions-list" class="space-y-6">
+                <!-- Dynamically populated questions -->
+            </div>
+
+            <!-- Submit Level Answers Button & Summary Area -->
+            <div id="level-actions" class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 text-center space-y-4">
+                <button id="btn-check-level" onclick="submitCurrentLevel()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition text-base flex items-center justify-center gap-2 mx-auto">
+                    <i class="fa-solid fa-square-check"></i>
+                    <span>בדוק את הרמה הנוכחית</span>
+                </button>
+
+                <!-- Level Results Summary Table (Hidden until level checked) -->
+                <div id="level-summary-card" class="hidden text-right space-y-6 border-t pt-6 mt-4">
+                    <div class="flex flex-wrap justify-between items-center gap-4 bg-slate-100 p-4 rounded-xl">
+                        <div>
+                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">תוצאות הרמה</span>
+                            <h4 id="level-score-display" class="text-2xl font-extrabold text-slate-800">ציון: 0 / 100</h4>
+                        </div>
+                        <div id="level-score-badge" class="px-4 py-2 rounded-xl text-sm font-bold"></div>
+                    </div>
+
+                    <h4 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-indigo-600"></i>
+                        <span>טבלת סיכום פתרונות והסברים</span>
+                    </h4>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-right text-sm">
+                            <thead class="bg-slate-100 text-slate-700 font-bold border-b">
+                                <tr>
+                                    <th class="p-3">#</th>
+                                    <th class="p-3">השאלה</th>
+                                    <th class="p-3">תשובתך</th>
+                                    <th class="p-3">תשובה נכונה</th>
+                                    <th class="p-3">סטטוס</th>
+                                    <th class="p-3">הסבר והנמקה</th>
+                                </tr>
+                            </thead>
+                            <tbody id="level-summary-table-body" class="divide-y divide-slate-100">
+                                <!-- Dynamically generated rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL 1: Final Summary & Teacher Submission -->
+    <div id="final-summary-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <!-- Modal Header -->
+            <div class="bg-indigo-600 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                    <span>סיכום דף עבודה מקיף לשליחה</span>
+                </h3>
+                <button onclick="closeFinalSummaryModal()" class="text-indigo-200 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-6 overflow-y-auto space-y-6 custom-scrollbar">
+
+                <!-- Student Header info -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-slate-500 block text-xs">שם התלמיד/ה:</span>
+                        <strong id="modal-student-name" class="text-slate-800 text-base"></strong>
+                    </div>
+                    <div>
+                        <span class="text-slate-500 block text-xs">כיתה:</span>
+                        <strong id="modal-student-class" class="text-slate-800 text-base"></strong>
+                    </div>
+                </div>
+
+                <!-- Scores Breakdown -->
+                <div>
+                    <h4 class="font-bold text-slate-800 mb-3 text-sm">סיכום ציונים לפי רמות:</h4>
+                    <div class="grid grid-cols-3 gap-3 text-center">
+                        <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-xl">
+                            <span class="text-xs text-emerald-700 font-medium block">רמה קלה</span>
+                            <span id="score-easy" class="text-xl font-black text-emerald-800">-</span>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl">
+                            <span class="text-xs text-amber-700 font-medium block">רמה בינונית</span>
+                            <span id="score-medium" class="text-xl font-black text-amber-800">-</span>
+                        </div>
+                        <div class="bg-rose-50 border border-rose-200 p-3 rounded-xl">
+                            <span class="text-xs text-rose-700 font-medium block">רמה קשה</span>
+                            <span id="score-hard" class="text-xl font-black text-rose-800">-</span>
+                        </div>
+                    </div>
+                    <div class="mt-3 bg-indigo-50 border border-indigo-200 p-4 rounded-xl text-center">
+                        <span class="text-xs text-indigo-700 uppercase font-bold tracking-wider block">ציון כולל משוקלל</span>
+                        <span id="score-total" class="text-3xl font-black text-indigo-900">0%</span>
+                    </div>
+                </div>
+
+                <!-- Generated Summary Text for Sending -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">מפרט דוח מילולי לצירוף:</label>
+                    <textarea id="summary-text-box" readonly class="w-full h-32 p-3 text-xs bg-slate-50 border border-slate-300 rounded-xl font-mono text-slate-700 outline-none leading-relaxed"></textarea>
+                </div>
+
+                <!-- Action Send Buttons -->
+                <div class="space-y-2">
+                    <span class="block text-xs font-bold text-slate-700">בחר אופן שליחה למורה:</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button onclick="sendViaWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition">
+                            <i class="fa-brands fa-whatsapp text-lg"></i>
+                            <span>שליחה בוואטסאפ</span>
+                        </button>
+                        <button onclick="sendViaEmail()" class="bg-sky-600 hover:bg-sky-700 text-white py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition">
+                            <i class="fa-solid fa-envelope text-lg"></i>
+                            <span>שליחה במייל</span>
+                        </button>
+                        <button onclick="copySummaryText()" class="bg-slate-800 hover:bg-slate-900 text-white py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition">
+                            <i class="fa-solid fa-copy text-lg"></i>
+                            <span>העתק דוח ללוח</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="bg-slate-100 px-6 py-3 border-t text-left">
+                <button onclick="closeFinalSummaryModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-bold text-xs transition">סגור</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: View Prompt Specification -->
+    <div id="prompt-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-terminal text-yellow-400"></i>
+                    <span>הפרומפט המלא ליצירת אפליקציה זו</span>
+                </h3>
+                <button onclick="closePromptModal()" class="text-slate-400 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-4">
+                <p class="text-sm text-slate-600">
+                    תוכל להעתיק את הפרומפט הבא ולהשתמש בו בכל כלי בינה מלאכותית ליצירת אפליקציות או דפי עבודה דומים:
+                </p>
+                <div class="relative">
+                    <textarea id="prompt-text-area" readonly class="w-full h-80 p-4 text-xs bg-slate-900 text-emerald-400 rounded-xl font-mono leading-relaxed outline-none"></textarea>
+                    <button onclick="copyPromptText()" class="absolute top-3 left-3 bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>העתק פרומפט</span>
+                    </button>
+                </div>
+            </div>
+            <div class="bg-slate-100 px-6 py-3 border-t text-left">
+                <button onclick="closePromptModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-bold text-xs transition">סגור</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Box -->
+    <div id="toast" class="fixed bottom-5 left-5 bg-slate-800 text-white px-4 py-3 rounded-xl shadow-2xl z-50 transition transform translate-y-20 opacity-0 flex items-center gap-2 text-sm">
+        <i id="toast-icon" class="fa-solid fa-circle-info"></i>
+        <span id="toast-message">הודעה</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-200 border-t border-slate-300 py-4 text-center text-xs text-slate-600">
+        <p>מערכת אינטראקטיבית לבדיקת שאלונים ודפי עבודה &copy; 2026</p>
+    </footer>
+
+    <script>
+        // --- DATA STRUCTURE: 15 EASY, 15 MEDIUM, 15 HARD QUESTIONS ---
+        const questionsData1 = {
+            easy: [
+                { id: 1, text: "מהו בירת ישראל?", options: ["תל אביב", "חיפה", "ירושלים", "באר שבע"], correct: 2, explanation: "ירושלים היא בירת ישראל הרשמית והיסטורית." },
+                { id: 2, text: "כמה ימים יש בשבוע?", options: ["5", "6", "7", "8"], correct: 2, explanation: "בשבוע ישנם 7 ימים (מראשון עד שבת)." },
+                { id: 3, text: "איזו חיה נחשבת ל'מלך החיות'?", options: ["פיל", "אריה", "נמר", "דוב"], correct: 1, explanation: "האריה מכונה באופן מסורתי כ'מלך החיות'." },
+                { id: 4, text: "מהי תוצאת התרגיל: 5 + 7?", options: ["10", "11", "12", "13"], correct: 2, explanation: "חיבור פשוט של 5 ו-7 נותן 12." },
+                { id: 5, text: "איזה גז נחוץ לבני אדם לנשימה?", options: ["חמצן", "פחמן דו-חמצני", "מימן", "חנקן"], correct: 0, explanation: "גוף האדם זקוק לחמצן לצורך הפקת אנרגיה בתאים." },
+                { id: 6, text: "מהו צבע השמיים ביום בהיר?", options: ["ירוק", "כחול", "אדום", "צהוב"], correct: 1, explanation: "השמיים נראים כחולים בגלל פיזור אור השמש באטמוספירה." },
+                { id: 7, text: "איזה איבר בגוף אחראי על שאיבת דם?", options: ["ריאות", "קיבה", "לב", "מוח"], correct: 2, explanation: "הלב פועל כמשאבה המזרימה דם לכל חלקי הגוף." },
+                { id: 8, text: "כמה חודשים יש בשנה קלנדרית?", options: ["10", "12", "14", "24"], correct: 1, explanation: "בשנה קלנדרית רגילה ישנם 12 חודשים." },
+                { id: 9, text: "מה התשובה ל-10 כפול 10?", options: ["20", "50", "100", "1000"], correct: 2, explanation: "10 * 10 = 100." },
+                { id: 10, text: "איזה פרי נחשב לבעל סיבים ירוקים/אדומים וגדל על עץ?", options: ["תפוח", "בננה", "ענב", "תות"], correct: 0, explanation: "תפוח גדל על עצי פרי בעלי זנים אדומים וירוקים." },
+                { id: 11, text: "מהי הפעולה ההפוכה מחיבור?", options: ["כפל", "חילוק", "חיסור", "חזקה"], correct: 2, explanation: "פעולת החיסור היא הפעולה ההפוכה לחיבור." },
+                { id: 12, text: "באיזו יבשת נמצאת מדינת מצרים?", options: ["אירופה", "אסיה", "אפריקה", "אמריקה"], correct: 2, explanation: "מצרים ממוקמת בצפון-מזרח יבשת אפריקה." },
+                { id: 13, text: "כמה צלעות יש למשולש?", options: ["2", "3", "4", "5"], correct: 1, explanation: "משולש מוגדר כמצולע בעל 3 צלעות." },
+                { id: 14, text: "מה נופל מהשמיים בזמן גשם?", options: ["שלג", "מים", "ברד", "רוח"], correct: 1, explanation: "גשם הוא משקע של טיפות מים נוזליות." },
+                { id: 15, text: "מהו המספר הזוגי הקטן ביותר החיובי?", options: ["0", "1", "2", "4"], correct: 2, explanation: "המספר 2 הוא המספר הזוגי החיובי הקטן ביותר." }
+            ],
+            medium: [
+                { id: 1, text: "מהו כוכב הלכת הקרוב ביותר לשמש?", options: ["נוגה", "מאדים", "חמה (מרקורי)", "צדק"], correct: 2, explanation: "כוכב חמה (מרקורי) הוא הקרוב ביותר במסלולו אל השמש." },
+                { id: 2, text: "מהו הנוזל הכימי שנוסחתו H2O?", options: ["חמצן", "מים", "חומצה", "אלכוהול"], correct: 1, explanation: "H2O מייצג מולקולת מים המורכבת מ-2 אטומי מימן ואטום חמצן אחד." },
+                { id: 3, text: "מה היקף המעגל אם הרדיוס שלו הוא 5 ס\"מ? (לפי 3.14 = π)", options: ["15.7 ס\"מ", "31.4 ס\"מ", "25 ס\"מ", "78.5 ס\"מ"], correct: 1, explanation: "נוסחת היקף מעגל היא 2 * π * r. כלומר 2 * 3.14 * 5 = 31.4 ס\"מ." },
+                { id: 4, text: "איזה יסוד כימי מיוצג על ידי האות Fe?", options: ["זהב", "כסף", "ברזל", "נחושת"], correct: 2, explanation: "Fe מגיע מהמילה הבלטינית Ferrum שפירושה ברזל." },
+                { id: 5, text: "מהו השטח של מלבן שאורכו 8 ס\"מ ורוחבו 6 ס\"מ?", options: ["14 ס\"מ מרובע", "28 ס\"מ מרובע", "48 ס\"מ מרובע", "56 ס\"מ מרובע"], correct: 2, explanation: "שטח מלבן שווה לאורך כפול רוחב: 8 * 6 = 48 ס\"מ מרובע." },
+                { id: 6, text: "באיזו שנה נפתחה מלחמת יום הכיפורים?", options: ["1948", "1967", "1973", "1982"], correct: 2, explanation: "מלחמת יום הכיפורים פרצה באוקטובר 1973." },
+                { id: 7, text: "איזה איבר בגוף אחראי על סינון רעלים וייצור מרה?", options: ["כבד", "כליות", "לבלב", "מעי דק"], correct: 0, explanation: "הכבד הוא האיבר המרכזי לניקוי רעלים וייצור מיץ המרה." },
+                { id: 8, text: "מהו שווי הביטוי: 3 + 5 * 2?", options: ["16", "13", "10", "26"], correct: 1, explanation: "לפי סדר פעולות חשבון כופלים קודם: 5 * 2 = 10, ואז מוסיפים 3 = 13." },
+                { id: 9, text: "מי כתב את המחזה 'רומיאו ויוליה'?", options: ["צ'ארלס דיקנס", "וויליאם שייקספיר", "מארק טוויין", "אוסקר ויילד"], correct: 1, explanation: "וויליאם שייקספיר הוא המחזאי שכתב את 'רומיאו ויוליה'." },
+                { id: 10, text: "מהי מהירות האור בקירוב (בפחז):", options: ["300,000 ק\"מ בשנייה", "1,000 ק\"מ בשנייה", "30,000 ק\"מ בשעה", "150,000 ק\"מ בשנייה"], correct: 0, explanation: "מהירות האור בריק היא כ-300,000 קילומטר בשנייה." },
+                { id: 11, text: "איזה אוקיינוס הוא הגדול ביותר בכדור הארץ?", options: ["האטלנטי", "ההודי", "השקט", "הארקטי"], correct: 2, explanation: "האוקיינוס השקט הוא האוקיינוס הגדול והעמוק ביותר בעולם." },
+                { id: 12, text: "כמה מעלות יש בזווית ישרה?", options: ["45", "90", "180", "360"], correct: 1, explanation: "זווית ישרה מוגדרת בדיוק כזווית בת 90 מעלות." },
+                { id: 13, text: "מהו השורש הריבועי של 144?", options: ["10", "11", "12", "14"], correct: 2, explanation: "12 * 12 = 144, ולכן השורש של 144 הוא 12." },
+                { id: 14, text: "איזה גז מהווה את האחוז הגדול ביותר באטמוספירה של כדור הארץ?", options: ["חמצן", "פחמן דו-חמצני", "חנקן", "ארגון"], correct: 2, explanation: "החנקן מהווה כ-78% מנפח האטמוספירה." },
+                { id: 15, text: "איזה הוגה דעות ניסח את חוקי התנועה והגרביטציה?", options: ["אלברט איינשטיין", "אייזק ניוטון", "גלילאו גליליי", "ניקולא טסלה"], correct: 1, explanation: "סר אייזק ניוטון ניסח את שלושת חוקי התנועה וחוק הכבידה האוניברסלי." }
+            ],
+            hard: [
+                { id: 1, text: "מהו החלקיק התת-אטומי בעל מטען חשמלי שלילי?", options: ["פרוטון", "ניוตรון", "אלקטרון", "פוטון"], correct: 2, explanation: "האלקטרון נושא מטען שלילי, בעוד פרוטון חיובי וניוตรון ניטרלי." },
+                { id: 2, text: "איזה הורמון מופרש מהלבלב ומאזן את רמת הסוכר בדם?", options: ["אדרנלין", "אינסולין", "תירוקסין", "קורטיזול"], correct: 1, explanation: "אינסולין מיוצר בתאי בטא בלבלב ומאפשר ספיגת גלוקוז בתאים." },
+                { id: 3, text: "מהו פתרון המשוואה הריבועית x² - 5x + 6 = 0?", options: ["x = 1, 6", "x = 2, 3", "x = -2, -3", "x = 0, 5"], correct: 1, explanation: "פירוק לגורמים: (x-2)(x-3) = 0, לכן התשובות הן x=2 ו-x=3." },
+                { id: 4, text: "איזו מדינה היא בעלת השטח הגיאוגרפי הגדול ביותר בעולם?", options: ["קנדה", "ארצות הברית", "סין", "רוסיה"], correct: 3, explanation: "רוסיה היא המדינה הגדולה בעולם בשטחה (כ-17 מיליון קמ\"ר)." },
+                { id: 5, text: "איזה תהליך בביולוגיה ממיר אור שמש לאנרגיה כימית בצמחים?", options: ["נשימה תאית", "פוטוסינתזה", "תסיסה", "מיטוזה"], correct: 1, explanation: "פוטוסינתזה (הטמעה אורית) היא התהליך שבו צמחים מייצרים סוכר מאור, מים ופחמן דו-חמצני." },
+                { id: 6, text: "מהו האבר שבו מתרחש רוב פירוק וספיגת המזון בגוף?", options: ["קיבה", "מעי גס", "מעי דק", "ושט"], correct: 2, explanation: "המעי הדק הוא האתר המרכזי לספיגת אבות המזון והוויטמינים במערכת העיכול." },
+                { id: 7, text: "מהו שמו של הסכום הכולל של כל הזוויות הפנימיות במצולע בעל 5 צלעות (מחומש)?", options: ["360 מעלות", "540 מעלות", "720 מעלות", "180 מעלות"], correct: 1, explanation: "נוסחת סכום זויות במצולע היא 180 * (n-2). עבור n=5: 180 * 3 = 540 מעלות." },
+                { id: 8, text: "מה פירוש המונח 'אנתרופולוגיה'?", options: ["חקר כוכבים", "חקר המאובנים", "חקר האדם ותקופות התפתחותו", "חקר תרבות הצמחים"], correct: 2, explanation: "אנתרופולוגיה היא מדע העוסק בחקר האדם, תרבותו והתפתחות התנהגותו." },
+                { id: 9, text: "איזו יחידת מידה משמשת למדידת עוצמת זרם חשמלי?", options: ["וולט", "אוהם", "אמפר", "ואט"], correct: 2, explanation: "אמפר (A) היא יחידת המידה הבינלאומית לזרם חשמלי." },
+                { id: 10, text: "מה שווי הנגזרת של הפונקציה f(x) = 3x² + 4x - 5?", options: ["f'(x) = 6x + 4", "f'(x) = 3x + 4", "f'(x) = 6x²", "f'(x) = 12x"], correct: 0, explanation: "לפי כללי גזירה: גזירת 3x² נותנת 6x, גזירת 4x נותנת 4, וקבוע נעלם." },
+                { id: 11, text: "באיזו עיר נחתמה האמנה שהקימה את האיחוד האירופי ב-1992?", options: ["בריסל", "מאסטריכט", "פריז", "ז'נבה"], correct: 1, explanation: "אמנת מאסטריכט שנחתמה בהולנד הקימה רשמית את האיחוד האירופי." },
+                { id: 12, text: "מהו הידוע כ'קבוע אבוגדרו' בכימיה?", options: ["כמות החום בתגובה", "מספר החלקיקים במול אחד של חומר", "מהירות התפשטות גז", "לחץ אטמוספרי תקני"], correct: 1, explanation: "קבוע אבוגדרו (כ-6.022x10²³) מייצג את מספר האטומים/מולקולות במול אחד." },
+                { id: 13, text: "מהי העיר המאוכלסת ביותר בעולם (במטרופולין)?", options: ["ניו יורק", "בייג'ינג", "טוקיו", "מומבאי"], correct: 2, explanation: "טוקיו, יפן, היא אגד הערים (מטרופולין) המאוכלס ביותר בעולם." },
+                { id: 14, text: "איזה משפט מתמטי קובע כי c² = a² + b² במשולש ישר זווית?", options: ["משפט תאלס", "משפט פיתגורס", "משפט הסינוסים", "משפט אוילר"], correct: 1, explanation: "משפט פיתגורס מקשר בין אורכי הצלעות במשולש ישר זווית." },
+                { id: 15, text: "מה מודד סולם ריכטר?", options: ["עוצמת רוח", "עוצמת רעידת אדמה", "גובה גלים", "עומק משקעים"], correct: 1, explanation: "סולם ריכטר משמש למדידת כמות האנרגיה ששתשתחררה ברעידת אדמה." }
+            ]
+        };
+
+        const questionsData = {
+            easy: [
+                {
+                    id: 1,
+                    text: "מהי הפקודה המשמשת להדפסת טקסט למסך עם ירידת שורה בסופה ב-C#?",
+                    options: ["Console.Write()", "Console.WriteLine()", "Console.Print()", "System.Output()"],
+                    correct: 1,
+                    explanation: "הפקודה Console.WriteLine() מדפיסה את הטקסט המבוקש ומוסיפה ירידת שורה בסוף."
+                },
+                {
+                    id: 2,
+                    text: "באיזה טיפוס משתנה נשתמש כדי לאחסן טקסט/מחרוזת ב-C#?",
+                    options: ["int", "char", "string", "bool"],
+                    correct: 2,
+                    explanation: "הטיפוס string משמש לאחסון סדרת תווים (טקסט)."
+                },
+                {
+                    id: 3,
+                    text: "באיזה טיפוס משתנה נשתמש כדי לאחסן מספר שלם?",
+                    options: ["double", "int", "string", "float"],
+                    correct: 1,
+                    explanation: "הטיפוס int (מקוצר מ-Integer) מיועד למספרים שלמים בלבד."
+                },
+                {
+                    id: 4,
+                    text: "מה תעשה הפקודה Console.Write(\"Hello\"); ?",
+                    options: [
+                        "תדפיס Hello ותרד שורה",
+                        "תדפיס Hello ותישאר באותה שורה",
+                        "תקלוט טקסט מהמשתמש",
+                        "תנקה את המסך"
+                    ],
+                    correct: 1,
+                    explanation: "בשונה מ-WriteLine, הפקודה Console.Write מדפיסה את הטקסט ללא ירידת שורה בסוף."
+                },
+                {
+                    id: 5,
+                    text: "איזו פקודה משמשת לקליטת קלט (מחרוזת) מהמשתמש דרך המקלדת?",
+                    options: ["Console.ReadInput()", "Console.ReadLine()", "Console.Get()", "Console.Input()"],
+                    correct: 1,
+                    explanation: "הפעולה Console.ReadLine() קוראת שורת תווים שהמשתמש הקליד עד ללחיצה על Enter."
+                },
+                {
+                    id: 6,
+                    text: "איזה טיפוס נכון לשמירת ערך אמת/שקר (true/false)?",
+                    options: ["bool", "binary", "bit", "condition"],
+                    correct: 0,
+                    explanation: "הטיפוס bool (בוליאני) יכול לקבל רק אחד משני ערכים: true או false."
+                },
+                {
+                    id: 7,
+                    text: "איך מגדירים משתנה מטיפוס תוו יחיד (character) ב-C#?",
+                    options: ["char letter = 'A';", "char letter = \"A\";", "string letter = 'A';", "Character letter = 'A';"],
+                    correct: 0,
+                    explanation: "תו יחיד ב-C# מוגדר עם הטיפוס char ומוקף בגרשיים בודדים (' ')."
+                },
+                {
+                    id: 8,
+                    text: "מה תהיה תוצאת הקוד הבא? int x = 5; Console.WriteLine(x + 2);",
+                    options: ["52", "7", "x + 2", "שגיאת קומפילציה"],
+                    correct: 1,
+                    explanation: "הביטוי x + 2 מחשב 5 + 2 שזה 7, והתוצאה מודפסת למסך."
+                },
+                {
+                    id: 9,
+                    text: "מה מיועד לאחסן משתנה מטיפוס double?",
+                    options: ["מספרים שלמים בלבד", "מספרים עשרוניים (שברים)", "תווים בלבד", "ערכי אמת/שקר"],
+                    correct: 1,
+                    explanation: "הטיפוס double משמש לאחסון מספרים בעלי נקודה עשרונית בדיוק כפול."
+                },
+                {
+                    id: 10,
+                    text: "מה יודפס למסך? string name = \"דני\"; Console.WriteLine(\"שלום \" + name);",
+                    options: ["שלום name", "שלום דני", "name דני", "שגיאה"],
+                    correct: 1,
+                    explanation: "האופרטור + מחבר בין המחרוזת הקבועה \"שלום \" לערך המשתנה name."
+                },
+                {
+                    id: 11,
+                    text: "איזו מילה שמורה משמשת להגדרת משתנה שערכו קבוע ולא ניתן לשינוי?",
+                    options: ["static", "fixed", "const", "readonly_var"],
+                    correct: 2,
+                    explanation: "התיאור const (מקוצר מ-constant) מגדיר קבוע שלא ניתן לשנות את ערכו לאחר ההצהרה."
+                },
+                {
+                    id: 12,
+                    text: "מה מחזירה הפונקציה Console.ReadLine() באופן דיפולטיבי?",
+                    options: ["int", "double", "string", "object"],
+                    correct: 2,
+                    explanation: "Console.ReadLine() תמיד מחזירה את הקלט כמחרוזת (string)."
+                },
+                {
+                    id: 13,
+                    text: "מהו שם המשתנה החוקי ב-C# מבין האפשרויות הבאות?",
+                    options: ["1userAge", "user-age", "userAge", "user Age"],
+                    correct: 2,
+                    explanation: "שם משתנה לא יכול להתחיל במספר, להכיל מקף או רווח. userAge בשיטת camelCase הוא חוקי."
+                },
+                {
+                    id: 14,
+                    text: "מהי התוצאה של הקוד: int a = 10; int b = a; Console.WriteLine(b);",
+                    options: ["a", "10", "b", "0"],
+                    correct: 1,
+                    explanation: "המשתנה b מקבל את הערך של a (שהוא 10), ולכן מודפס 10."
+                },
+                {
+                    id: 15,
+                    text: "כיצד רושמים הערה של שורה אחת ב-C#?",
+                    options: ["<!-- הערה -->", "/* הערה */", "// הערה", "# הערה"],
+                    correct: 2,
+                    explanation: "לוכסן כפול // משמש להערה של שורה אחת ב-C#."
+                }
+            ],
+            medium: [
+                {
+                    id: 1,
+                    text: "איזו פעולה משמשת להמרת מחרוזת שנקלטה מהמשתמש למספר שלם (int)?",
+                    options: ["(int)Console.ReadLine()", "int.Parse(Console.ReadLine())", "Console.ReadLine().ToInt()", "Convert.StringToInt()"],
+                    correct: 1,
+                    explanation: "המתודה int.Parse() מקבלת string וממירה אותו למספר שלם מטיפוס int."
+                },
+                {
+                    id: 2,
+                    text: "מה תהיה תוצאת הקוד הבא? string a = \"5\"; string b = \"3\"; Console.WriteLine(a + b);",
+                    options: ["8", "53", "15", "שגיאת קומפילציה"],
+                    correct: 1,
+                    explanation: "כאשר מחברים שתי מחרוזות באמצעות +, מתבצעת שרשור (Concatenation) ולא חיבור מתמטי."
+                },
+                {
+                    id: 3,
+                    text: "מה תהיה התפוקה של הקוד: Console.WriteLine(\"Hello\\nWorld\"); ?",
+                    options: ["Hello\\nWorld", "HelloWorld", "Hello בשורה אחת ו-World בשורה מתחתיה", "שגיאת קומפילציה"],
+                    correct: 2,
+                    explanation: "התו מילוט (Escape Character) \\n מייצג ירידת שורה (New Line)."
+                },
+                {
+                    id: 4,
+                    text: "איך נקראת הטכניקה לכתיבת מחרוזת המשולבת עם משתנים בפורמט: $\"Hello {name}\"?",
+                    options: ["String Interpolation", "String Concatenation", "String Parsing", "String Casting"],
+                    correct: 0,
+                    explanation: "שימוש בסימן $ לפני המירכאות מאפשר שרשור אלגנטי הנקרא String Interpolation."
+                },
+                {
+                    id: 5,
+                    text: "מה יקרה בזמן הרצה אם המשתמש יקליד \"abc\" עבור הקוד: int x = int.Parse(Console.ReadLine());?",
+                    options: ["המשתנה x יקבל 0", "התוכנית תמשיך כרגיל", "תיזרק חריגה (FormatException)", "התוכנית תמיר לערך ה-ASCII"],
+                    correct: 2,
+                    explanation: "המתודה int.Parse תיכשל בהמרת טקסט חופשי למספר ותזרוק FormatException."
+                },
+                {
+                    id: 6,
+                    text: "מה תהיה התוצאה של חלוקת השלמים הבאה: int a = 7; int b = 2; Console.WriteLine(a / b);?",
+                    options: ["3.5", "3", "4", "3.0"],
+                    correct: 1,
+                    explanation: "חלוקה בין שני מספרים שלמים (int) ב-C# מחזירה תוצאה שלמה בלבד וקוטעת את החלק העשרוני."
+                },
+                {
+                    id: 7,
+                    text: "כיצד ניתן להבטיח שחלוקת 7 ב-2 תחזיר תוצאה עשרונית מדויקת (3.5)?",
+                    options: ["(double)(7 / 2)", "7 / 2.0", "double.Parse(7 / 2)", "Convert.ToDouble(7 / 2)"],
+                    correct: 1,
+                    explanation: "כאשר אחד האופרנדים הוא עשרוני (2.0 מטיפוס double), תהליך החישוב כולו מתבצע בנקודה עשרונית."
+                },
+                {
+                    id: 8,
+                    text: "מה עושה המילה השמורה var בהצהרת משתנים (למשל: var x = 10;)?",
+                    options: ["הופכת את המשתנה לדינמי שאינו מוגדר טיפוס", "קובעת את טיפוס המשתנה אוטומטית לפי הערך המוקצה בזמן קומפילציה", "מאפשרת לשנות את טיפוס המשתנה בהמשך הקוד", "מגדירה משתנה גלובלי"],
+                    correct: 1,
+                    explanation: "המילה var משמשת לטיפוס מרומז (Implicitly typed local variable) הנקבע ע\"י המהדר בזמן קומפילציה."
+                },
+                {
+                    id: 9,
+                    text: "מה יקרה אם ננסה להריץ את הקוד: const int x = 10; x = 20;",
+                    options: ["הערך של x ישתנה ל-20", "x יקבל את הערך 30", "תיגרם שגיאת קומפילציה", "תיזרק שגיאה בזמן הרצה"],
+                    correct: 2,
+                    explanation: "ערך של קבוע (const) נקבע בזמן הצהרה ולא ניתן לשנותו. המהדר יכשיל את הקומפילציה."
+                },
+                {
+                    id: 10,
+                    text: "מה מייצג התו מילוט \\t בתוך מחרוזת?",
+                    options: ["ירידת שורה", "רווח של Tab (טאב)", "תו מירכאות כפולות", "ביטול התו הבא"],
+                    correct: 1,
+                    explanation: "\\t מייצג תו טאב אופקי (Horizontal Tab) ליצירת מרווח מובנה."
+                },
+                {
+                    id: 11,
+                    text: "מה תדפיס השורה הבאה? int x = 5; Console.WriteLine($\"x is {x + 1}\");",
+                    options: ["x is 51", "x is 6", "x is x + 1", "x is {x + 1}"],
+                    correct: 1,
+                    explanation: "בתוך סוגריים מסולסלים ב-String Interpolation מתבצע החישוב המתמטי x + 1 המחזיר 6."
+                },
+                {
+                    id: 12,
+                    text: "איזה מהבאים **אינו** טיפוס נתונים בסיסי ב-C#?",
+                    options: ["float", "decimal", "integer", "short"],
+                    correct: 2,
+                    explanation: "הטיפוס לשלמים ב-C# נקרא int ולא integer (בשונה משפות אחרות)."
+                },
+                {
+                    id: 13,
+                    text: "מה יקרה בעת ביצוע הקוד: double d = 9.8; int i = (int)d;",
+                    options: ["i יקבל 10 (עיגול למעלה)", "i יקבל 9 (קיטוץ החלק העשרוני)", "תיזרק שגיאה בזמן הרצה", "הקוד לא יתקמפל"],
+                    correct: 1,
+                    explanation: "המרה מפורשת (Casting) מ-double ל-int קוטעת את החלק העשרוני מבלי לעגל."
+                },
+                {
+                    id: 14,
+                    text: "איזה אופרטור מציג את שארית החילוק בין שני מספרים?",
+                    options: ["/", "%", "#", "&"],
+                    correct: 1,
+                    explanation: "אופרטור המודולו % מחזיר את שארית החילוק (למשל 10 % 3 מחזיר 1)."
+                },
+                {
+                    id: 15,
+                    text: "מה הדרך הנכונה להמיר מספר int למחרוזת string?",
+                    options: ["string s = (string)num;", "string s = num.ToString();", "string s = Convert.String(num);", "string s = num.parseString();"],
+                    correct: 1,
+                    explanation: "לכל אובייקט ב-C# יש מתודה ToString() הממירה אותו למייצג מחרוזתי."
+                }
+            ],
+            hard: [
+                {
+                    id: 1,
+                    text: "מה היתרון המרכזי של int.TryParse() על פני int.Parse()?",
+                    options: [
+                        "היא מהירה יותר בחישובים מתמטיים",
+                        "אינה זורקת Exception במקרה של קלט שגוי אלא מחזירה bool",
+                        "מאפשרת המרה למספרים עשרוניים בלבד",
+                        "היא פועלת רק על טיפוסי char"
+                    ],
+                    correct: 1,
+                    explanation: "int.TryParse אינה זורקת חריגה בקלט לא תקין, אלא מחזירה false ומונעת קריסה של התוכנית."
+                },
+                {
+                    id: 2,
+                    text: "מה תהיה התפוקה של הקוד הבא? Console.WriteLine(@\"C:\\News\\Today\");",
+                    options: [
+                        "C:\\News\\Today",
+                        "C:\\News\\Today מפוצל ל-3 שורות",
+                        "שגיאת קומפילציה",
+                        "C:NewsToday"
+                    ],
+                    correct: 0,
+                    explanation: "הסימן @ לפני מחרוזת (Verbatim String) מבטל את הפירוש של תווי מילוט (Escape Sequences) ומתייחס ללוכסנים כטקסט רגיל."
+                },
+                {
+                    id: 3,
+                    text: "מה מחזירה הפונקציה Console.Read()?",
+                    options: [
+                        "את המחרוזת כולה שנקלטה",
+                        "את ערך ה-ASCII/Unicode של התו הבא כמשתנה int",
+                        "משתנה מטיפוס char",
+                        "ערך bool המציין אם יש קלט"
+                    ],
+                    correct: 1,
+                    explanation: "בשונה מ-ReadLine, הפעולה Console.Read קוראת תו יחיד ומחזירה את ייצוג המספר השלם שלו (ASCII/Unicode)."
+                },
+                {
+                    id: 4,
+                    text: "מה יקרה בניסיון לקמפל את הקוד הבא: int x; Console.WriteLine(x);?",
+                    options: [
+                        "יודפס 0",
+                        "יודפס null",
+                        "שגיאת קומפילציה: Use of unassigned local variable",
+                        "שגיאת בזמן הרצה (NullReferenceException)"
+                    ],
+                    correct: 2,
+                    explanation: "ב-C#, משתנים מקומיים (Local Variables) חייבים לעבור אתחול (Initialization) לפני השימוש בהם."
+                },
+                {
+                    id: 5,
+                    text: "מה תהיה התוצאה של הקוד הבא? char c = 'A'; Console.WriteLine(c + 1);",
+                    options: ["B", "A1", "66", "שגיאת קומפילציה"],
+                    correct: 2,
+                    explanation: "ביצוע פעולה חשבונית (+) על char גורם להמרה מרומזת (Implicit cast) ל-int. ערך ה-ASCII של 'A' הוא 65, בתוספת 1 התוצאה היא 66."
+                },
+                {
+                    id: 6,
+                    text: "איזה סינטקס נכון לשימוש ב-int.TryParse ב-C# המודרנית?",
+                    options: [
+                        "int.TryParse(input, int result)",
+                        "bool success = int.TryParse(input, out int result);",
+                        "int result = int.TryParse(input);",
+                        "int.TryParse(out input, result);"
+                    ],
+                    correct: 1,
+                    explanation: "המילה השמורה out משמשת להעברת פרמטר שיקבל את התוצאה המומרת במידה והפעולה הצליחה."
+                },
+                {
+                    id: 7,
+                    text: "מה תדפיס השורה הבאה? Console.WriteLine(Convert.ToInt32(null));",
+                    options: ["0", "תיזרק ArgumentNullException", "שגיאת קומפילציה", "-1"],
+                    correct: 0,
+                    explanation: "Convert.ToInt32(null) מחזירה 0 בבטחה, בעוד int.Parse(null) תזרוק ArgumentNullException."
+                },
+                {
+                    id: 8,
+                    text: "מה יקרה בעת הרצת הקוד: int x = int.MaxValue; x++; Console.WriteLine(x); (בהקשר unchecked ברירת מחדל)?",
+                    options: [
+                        "תיזרק OverflowException",
+                        "x יישאר int.MaxValue",
+                        "הערך יעלה על גדותיו ויעבור ל-int.MinValue (מספר שלילי)",
+                        "x יתאפס ל-0"
+                    ],
+                    correct: 2,
+                    explanation: "בהקשר בלתי נשלט (unchecked), גלישת זיכרון (Integer Overflow) גורמת למספר לעבור לערך המינימלי השלילי ביותר."
+                },
+                {
+                    id: 9,
+                    text: "מהי התפוקה של הקוד הבא: int a = 5; Console.WriteLine(a++); ?",
+                    options: ["5", "6", "0", "שגיאת קומפילציה"],
+                    correct: 0,
+                    explanation: "אופרטור ++ לאחר השם (Post-increment) מחזיר קודם כל את הערך הנוכחי (5) להדפסה, ורק לאחר מכן מקדם את המשתנה ל-6."
+                },
+                {
+                    id: 10,
+                    text: "מה מטרת הצירוף $@ במחרוזת ב-C# (לדוגמה: $@\"Hello {name}\\n\"); ?",
+                    options: [
+                        "הגדרת מחרוזת מוצפנת",
+                        "שילוב של String Interpolation ($) יחד עם Verbatim String (@)",
+                        "שגיאת סינטקס, אסור לשלב אותם",
+                        "הגדרת מחרוזת שתיקרא מקובץ חיצוני"
+                    ],
+                    correct: 1,
+                    explanation: "הצירוף $@ מאפשר גם להשתמש במשתנים בתוך סוגריים מסולסלים וגם להתעלם מתווי מילוט (כמו לוכסנים)."
+                },
+                {
+                    id: 11,
+                    text: "מה יקרה בקוד הבא? string s = null; Console.WriteLine(s?.Length);",
+                    options: [
+                        "תיזרק NullReferenceException",
+                        "יודפס 0",
+                        "לא מדפיס כלום / מדפיס מחרוזת ריקה (null)",
+                        "שגיאת קומפילציה"
+                    ],
+                    correct: 2,
+                    explanation: "האופרטור ?. (Null-conditional operator) בודק אם האובייקט הוא null. אם כן, הוא מונע קריסה ומחזיר null."
+                },
+                {
+                    id: 12,
+                    text: "מה תהיה תוצאת הקוד הבא? Console.WriteLine(5 + 5 + \"10\");",
+                    options: ["5510", "1010", "20", "שגיאת קומפילציה"],
+                    correct: 1,
+                    explanation: "החישוב מתבצע משמאל לימין: 5 + 5 מחשב 10 (חיבור נומרי), ואז 10 + \"10\" משבץ שרשור מחרוזות ומניב \"1010\"."
+                },
+                {
+                    id: 13,
+                    text: "מה תהיה תוצאת הקוד הבא? Console.WriteLine(\"10\" + 5 + 5);",
+                    options: ["1010", "1055", "20", "שגיאת קומפילציה"],
+                    correct: 1,
+                    explanation: "משמאל לימין: \"10\" + 5 הופך למחרוזת \"105\", ואז \"105\" + 5 הופך למחרוזת \"1055\"."
+                },
+                {
+                    id: 14,
+                    text: "מהו ערך ברירת המחדל (default) של משתנה מטיפוס bool המוגדר כ-Field בתוך מחלקה?",
+                    options: ["true", "false", "null", "1"],
+                    correct: 1,
+                    explanation: "ערך ברירת המחדל של משתנה בוליאני ב-C# הוא false."
+                },
+                {
+                    id: 15,
+                    text: "איזה טיפוס נתונים מעניק הדיוק הגבוה ביותר למספרים עשרוניים ומומלץ לחישובים פיננסיים?",
+                    options: ["float", "double", "decimal", "long"],
+                    correct: 2,
+                    explanation: "הטיפוס decimal הוא בעל 128 ביט ומציע דיוק גבוה ללא שגיאות עיגול בינאריות, מה שמתאים במיוחד למערכות כספיות."
+                }
+            ]
+        };
+        // --- STREAMING_CHUNK:Application logic variables and initial state... ---
+        // STATE MANAGEMENT
+        let currentLevel = 'easy';
+        let studentDetails = { name: '', classGroup: '', teacherContact: '' };
+
+        // User answers stored as: { easy: { 1: 2, 2: 0, ... }, medium: {}, hard: {} }
+        let userAnswers = { easy: {}, medium: {}, hard: {} };
+
+        // Level completion status & score tracking
+        let levelStatus = {
+            easy: { checked: false, score: 0, correctCount: 0 },
+            medium: { checked: false, score: 0, correctCount: 0 },
+            hard: { checked: false, score: 0, correctCount: 0 }
+        };
+
+        // --- CORE EVENT HANDLERS & FUNCTIONS ---
+
+        function startWorksheet(e) {
+            e.preventDefault();
+            studentDetails.name = document.getElementById('input-name').value.trim();
+            studentDetails.classGroup = document.getElementById('input-class').value.trim();
+            studentDetails.teacherContact = document.getElementById('input-teacher').value.trim();
+
+            if (!studentDetails.name || !studentDetails.classGroup) {
+                showToast("נא למלא את הפרטים הנדרשים", "error");
+                return;
+            }
+
+            // Update UI elements
+            document.getElementById('display-student-name').textContent = studentDetails.name;
+            document.getElementById('display-student-class').textContent = studentDetails.classGroup;
+            document.getElementById('header-student-info').classList.remove('hidden');
+
+            document.getElementById('login-step').classList.add('hidden');
+            document.getElementById('worksheet-step').classList.remove('hidden');
+
+            switchLevel('easy');
+            showToast(`שלום ${studentDetails.name}, בהצלחה בשאלון!`, "success");
+        }
+
+        // Switch Difficulty Level
+        function switchLevel(level) {
+            currentLevel = level;
+
+            // Update Tab Styles
+            ['easy', 'medium', 'hard'].forEach(lvl => {
+                const btn = document.getElementById(`btn-level-${lvl}`);
+                if (lvl === level) {
+                    btn.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition bg-indigo-600 text-white shadow-md";
+                } else {
+                    btn.className = "flex-1 sm:flex-initial px-5 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition bg-slate-100 text-slate-600 hover:bg-slate-200";
+                }
+            });
+
+            // Update Level Title Display
+            const titles = { easy: "רמה קלה 🟢", medium: "רמה בינונית 🟡", hard: "רמה קשה 🔴" };
+            document.getElementById('current-level-title').textContent = titles[level];
+
+            renderQuestions();
+            updateLevelProgress();
+            renderLevelSummaryCard();
+        }
+
+        // Render Questions for Current Level
+        function renderQuestions() {
+            const container = document.getElementById('questions-list');
+            container.innerHTML = '';
+
+            const list = questionsData[currentLevel];
+            const isChecked = levelStatus[currentLevel].checked;
+
+            list.forEach((q, index) => {
+                const questionCard = document.createElement('div');
+                questionCard.className = "bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 transition hover:shadow-md";
+
+                const selectedOption = userAnswers[currentLevel][q.id];
+
+                let optionsHtml = '';
+                q.options.forEach((opt, optIndex) => {
+                    let optionStyle = "border-slate-200 hover:bg-indigo-50/50 hover:border-indigo-300";
+                    let badgeIcon = "";
+
+                    if (selectedOption === optIndex) {
+                        optionStyle = "border-indigo-600 bg-indigo-50 font-semibold text-indigo-900 shadow-sm";
+                    }
+
+                    // If level was checked, color code options
+                    if (isChecked) {
+                        if (optIndex === q.correct) {
+                            optionStyle = "border-emerald-500 bg-emerald-50 text-emerald-900 font-bold";
+                            badgeIcon = '<i class="fa-solid fa-circle-check text-emerald-600 ml-2"></i>';
+                        } else if (selectedOption === optIndex && selectedOption !== q.correct) {
+                            optionStyle = "border-rose-500 bg-rose-50 text-rose-900 line-through";
+                            badgeIcon = '<i class="fa-solid fa-circle-xmark text-rose-600 ml-2"></i>';
+                        } else {
+                            optionStyle = "border-slate-100 opacity-60";
+                        }
+                    }
+
+                    const disabledAttr = isChecked ? 'disabled' : '';
+
+                    optionsHtml += `
+                        <button type="button" ${disabledAttr} onclick="selectAnswer(${q.id}, ${optIndex})"
+                            class="w-full text-right p-3.5 rounded-xl border-2 text-sm flex items-center justify-between transition ${optionStyle}">
+                            <span class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 text-xs flex items-center justify-center font-bold">${['א','ב','ג','ד'][optIndex]}</span>
+                                <span>${opt}</span>
+                            </span>
+                            ${badgeIcon}
+                        </button>
+                    `;
+                });
+
+                // Check feedback banner if checked
+                let feedbackBanner = '';
+                if (isChecked) {
+                    const isCorrect = selectedOption === q.correct;
+                    feedbackBanner = `
+                        <div class="mt-4 p-3.5 rounded-xl text-xs ${isCorrect ? 'bg-emerald-100/70 border border-emerald-200 text-emerald-900' : 'bg-rose-100/70 border border-rose-200 text-rose-900'}">
+                            <div class="font-bold flex items-center gap-1.5 mb-1">
+                                <i class="fa-solid ${isCorrect ? 'fa-check text-emerald-600' : 'fa-xmark text-rose-600'}"></i>
+                                <span>${isCorrect ? 'תשובה נכונה!' : 'תשובה שגויה'}</span>
+                            </div>
+                            <p class="leading-relaxed"><strong>הסבר:</strong> ${q.explanation}</p>
+                        </div>
+                    `;
+                }
+
+                questionCard.innerHTML = `
+                    <div class="flex items-start justify-between gap-3 mb-4">
+                        <span class="font-bold text-slate-800 text-base">
+                            <span class="text-indigo-600 font-extrabold ml-1">שאלה ${index + 1}.</span>
+                            ${q.text}
+                        </span>
+                        ${selectedOption !== undefined ? '<span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md font-semibold whitespace-nowrap">נענתה</span>' : ''}
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        ${optionsHtml}
+                    </div>
+                    ${feedbackBanner}
+                `;
+
+                container.appendChild(questionCard);
+            });
+        }
+
+        // Select option for question
+        function selectAnswer(questionId, optionIndex) {
+            if (levelStatus[currentLevel].checked) return; // Locked if already submitted
+
+            userAnswers[currentLevel][questionId] = optionIndex;
+            renderQuestions();
+            updateLevelProgress();
+        }
+
+        // Update Level Progress Indicator Bar & Badges
+        function updateLevelProgress() {
+            const answeredCount = Object.keys(userAnswers[currentLevel]).length;
+            const total = questionsData[currentLevel].length;
+            const percent = Math.round((answeredCount / total) * 100);
+
+            document.getElementById('level-progress-text').textContent = `${answeredCount} / ${total}`;
+            document.getElementById('level-progress-bar').style.width = `${percent}%`;
+
+            // Update badge on level button
+            ['easy', 'medium', 'hard'].forEach(lvl => {
+                const badge = document.getElementById(`badge-${lvl}`);
+                const count = Object.keys(userAnswers[lvl]).length;
+                badge.textContent = `${count}/15`;
+                badge.classList.remove('hidden');
+            });
+        }
+
+        // Submit and Score Current Level
+        function submitCurrentLevel() {
+            const list = questionsData[currentLevel];
+            const answeredCount = Object.keys(userAnswers[currentLevel]).length;
+
+            if (answeredCount < list.length) {
+                if (!confirm(`ענית על ${answeredCount} מתוך ${list.length} שאלות ברמה זו. האם לבדוק את הרמה כעת?`)) {
+                    return;
+                }
+            }
+
+            let correctCount = 0;
+            list.forEach(q => {
+                if (userAnswers[currentLevel][q.id] === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            const score = Math.round((correctCount / list.length) * 100);
+
+            levelStatus[currentLevel] = {
+                checked: true,
+                score: score,
+                correctCount: correctCount
+            };
+
+            showToast(`רמה נבדקה בהצלחה! הציון שלך: ${score}`, "success");
+
+            renderQuestions();
+            renderLevelSummaryCard();
+
+            // Scroll down to summary
+            document.getElementById('level-summary-card').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Render Summary Table below level questions
+        function renderLevelSummaryCard() {
+            const summaryCard = document.getElementById('level-summary-card');
+            const btnCheck = document.getElementById('btn-check-level');
+
+            if (!levelStatus[currentLevel].checked) {
+                summaryCard.classList.add('hidden');
+                btnCheck.classList.remove('hidden');
+                return;
+            }
+
+            summaryCard.classList.remove('hidden');
+            btnCheck.classList.add('hidden');
+
+            const status = levelStatus[currentLevel];
+            document.getElementById('level-score-display').textContent = `ציון: ${status.score} / 100`;
+
+            const badge = document.getElementById('level-score-badge');
+            if (status.score >= 80) {
+                badge.className = "px-4 py-2 rounded-xl text-sm font-bold bg-emerald-100 text-emerald-800 border border-emerald-300";
+                badge.textContent = "מצוין! 🎉";
+            } else if (status.score >= 60) {
+                badge.className = "px-4 py-2 rounded-xl text-sm font-bold bg-amber-100 text-amber-800 border border-amber-300";
+                badge.textContent = "כמעט שם! 👍";
+            } else {
+                badge.className = "px-4 py-2 rounded-xl text-sm font-bold bg-rose-100 text-rose-800 border border-rose-300";
+                badge.textContent = "נדרש תרגול נוסף 📚";
+            }
+
+            // Populate Summary Table
+            const tbody = document.getElementById('level-summary-table-body');
+            tbody.innerHTML = '';
+
+            questionsData[currentLevel].forEach((q, idx) => {
+                const userChoice = userAnswers[currentLevel][q.id];
+                const isCorrect = userChoice === q.correct;
+
+                const userChoiceText = userChoice !== undefined ? q.options[userChoice] : "לא נענה";
+                const correctChoiceText = q.options[q.correct];
+
+                const row = document.createElement('tr');
+                row.className = isCorrect ? "bg-emerald-50/30" : "bg-rose-50/30";
+
+                row.innerHTML = `
+                    <td class="p-3 font-bold text-slate-500">${idx + 1}</td>
+                    <td class="p-3 font-medium text-slate-800">${q.text}</td>
+                    <td class="p-3 ${isCorrect ? 'text-emerald-700 font-semibold' : 'text-rose-700 font-semibold'}">${userChoiceText}</td>
+                    <td class="p-3 text-emerald-800 font-bold">${correctChoiceText}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-1 rounded-md text-xs font-bold ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                            ${isCorrect ? 'נכון' : 'שגוי'}
+                        </span>
+                    </td>
+                    <td class="p-3 text-xs text-slate-600 max-w-xs leading-normal">${q.explanation}</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        // Open Final Modal with Overview & Teacher Report Generator
+        function openFinalSummaryModal() {
+            // Check if student completed any levels
+            const easyScore = levelStatus.easy.checked ? `${levelStatus.easy.score}% (${levelStatus.easy.correctCount}/15)` : "טרם נבדק";
+            const mediumScore = levelStatus.medium.checked ? `${levelStatus.medium.score}% (${levelStatus.medium.correctCount}/15)` : "טרם נבדק";
+            const hardScore = levelStatus.hard.checked ? `${levelStatus.hard.score}% (${levelStatus.hard.correctCount}/15)` : "טרם נבדק";
+
+            document.getElementById('modal-student-name').textContent = studentDetails.name;
+            document.getElementById('modal-student-class').textContent = studentDetails.classGroup;
+
+            document.getElementById('score-easy').textContent = easyScore;
+            document.getElementById('score-medium').textContent = mediumScore;
+            document.getElementById('score-hard').textContent = hardScore;
+
+            // Calculate total weighted score
+            let checkedLevels = 0;
+            let sumScore = 0;
+            if (levelStatus.easy.checked) { checkedLevels++; sumScore += levelStatus.easy.score; }
+            if (levelStatus.medium.checked) { checkedLevels++; sumScore += levelStatus.medium.score; }
+            if (levelStatus.hard.checked) { checkedLevels++; sumScore += levelStatus.hard.score; }
+
+            const totalScore = checkedLevels > 0 ? Math.round(sumScore / checkedLevels) : 0;
+            document.getElementById('score-total').textContent = `${totalScore}%`;
+
+            // Build detailed formatted report string
+            let reportText = `📋 **דוח סיכום דף עבודה אינטראקטיבי**\n`;
+            reportText += `👤 שם התלמיד/ה: ${studentDetails.name}\n`;
+            reportText += `🏫 כיתה: ${studentDetails.classGroup}\n`;
+            reportText += `📅 תאריך: ${new Date().toLocaleDateString('he-IL')}\n`;
+            reportText += `-----------------------------------\n`;
+            reportText += `📊 **סיכום ציונים:**\n`;
+            reportText += `- רמה קלה: ${easyScore}\n`;
+            reportText += `- רמה בינונית: ${mediumScore}\n`;
+            reportText += `- רמה קשה: ${hardScore}\n`;
+            reportText += `🏆 **ציון כולל משוקלל: ${totalScore}%**\n`;
+            reportText += `-----------------------------------\n`;
+            reportText += `📝 **פירוט תשובות שגויות להסבר:**\n`;
+
+            ['easy', 'medium', 'hard'].forEach(lvl => {
+                if (levelStatus[lvl].checked) {
+                    const mistakes = questionsData[lvl].filter(q => userAnswers[lvl][q.id] !== q.correct);
+                    if (mistakes.length > 0) {
+                        const levelNames = { easy: 'קלה', medium: 'בינונית', hard: 'קשה' };
+                        reportText += `\n*שגיאות ברמה ${levelNames[lvl]}:*\n`;
+                        mistakes.forEach(m => {
+                            const userAns = userAnswers[lvl][m.id] !== undefined ? m.options[userAnswers[lvl][m.id]] : "לא נענה";
+                            reportText += `• ${m.text}\n  - תשובת התלמיד: ${userAns}\n  - תשובה נכונה: ${m.options[m.correct]}\n`;
+                        });
+                    }
+                }
+            });
+
+            document.getElementById('summary-text-box').value = reportText;
+            document.getElementById('final-summary-modal').classList.remove('hidden');
+        }
+
+        function closeFinalSummaryModal() {
+            document.getElementById('final-summary-modal').classList.add('hidden');
+        }
+
+        // Sharing Methods
+        function sendViaWhatsApp() {
+            const text = encodeURIComponent(document.getElementById('summary-text-box').value);
+            let phone = studentDetails.teacherContact.replace(/[^0-9]/g, '');
+            let url = `https://wa.me/${phone}?text=${text}`;
+            if (!phone) {
+                url = `https://wa.me/?text=${text}`;
+            }
+            window.open(url, '_blank');
+        }
+
+        function sendViaEmail() {
+            const text = encodeURIComponent(document.getElementById('summary-text-box').value);
+            const subject = encodeURIComponent(`דוח סיכום דף עבודה - ${studentDetails.name} (${studentDetails.classGroup})`);
+            const mailtoUrl = `mailto:${studentDetails.teacherContact}?subject=${subject}&body=${text}`;
+            window.location.href = mailtoUrl;
+        }
+
+        function copySummaryText() {
+            const textarea = document.getElementById('summary-text-box');
+            textarea.select();
+            document.execCommand('copy');
+            showToast("הסיכום הועתק ללוח בהצלחה!", "success");
+        }
+
+        // Prompt View Modal Management
+        function openPromptModal() {
+            const promptContent = `אני צריכה פרומפט עבור יצירת אפליקציה אינטראקטיבית של דפי עבודה המורכבים משאלות אמריקאיות - לכל שאלה 4 אפשרויות פתרון.
+יהיו 15 שאלות קלות, 15 שאלות בינוניות ו- 15 שאלות קשות.
+לכל רמה יהיה טבלת סיכום לציון והסבר לכל פתרון - אם טעו אז לסמן שהיה שגוי ולהציג את הנכון עם הסבר.
+אני רוצה גם שתיהיה אפשרות לשלוח לי סיכום + ציון עם מפרט שמי של כל מי שענה על השאלון.
+
+--- הנחיות מפורטות ליישום (Prompt Specifications) ---
+1. טופס הזדהות תלמיד בכניסה (שם מלא, כיתה/קבוצה, פרטי מורה).
+2. חלוקה ברורה ל-3 רמות קושי באמצעות כרטיסיות (Tabs): קל (15 שאלות), בינוני (15 שאלות), קשה (15 שאלות).
+3. לכל שאלה 4 אפשרויות בחירה (תשובות אמריקאיות).
+4. מנגנון בדיקה לכל רמה שמציג:
+   - ציון אחוזוני ומספרי.
+   - טבלת סיכום שקופה המפרטת: השאלה, תשובת התלמיד, התשובה הנכונה, סטטוס (נכון/שגוי) והסבר מפורט.
+5. כפתור 'סיום ושליחה למורה' שמפיק דוח מילולי ומאפשר שליחה מהירה בוואטסאפ, במייל או העתקה.
+6. עיצוב מודרני, רספונסיבי לחלוטין ותומך עברית מלאה (RTL) עם Tailwind CSS.`;
+
+            document.getElementById('prompt-text-area').value = promptContent;
+            document.getElementById('prompt-modal').classList.remove('hidden');
+        }
+
+        function closePromptModal() {
+            document.getElementById('prompt-modal').classList.add('hidden');
+        }
+
+        function copyPromptText() {
+            const textarea = document.getElementById('prompt-text-area');
+            textarea.select();
+            document.execCommand('copy');
+            showToast("הפרומפט הועתק ללוח!", "success");
+        }
+
+        // Helper Toast Notification
+        function showToast(msg, type = "info") {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            document.getElementById('toast-message').textContent = msg;
+
+            if (type === "success") {
+                toast.className = "fixed bottom-5 left-5 bg-emerald-700 text-white px-5 py-3 rounded-xl shadow-2xl z-50 transition transform opacity-100 flex items-center gap-2 text-sm";
+                icon.className = "fa-solid fa-circle-check";
+            } else {
+                toast.className = "fixed bottom-5 left-5 bg-slate-800 text-white px-5 py-3 rounded-xl shadow-2xl z-50 transition transform opacity-100 flex items-center gap-2 text-sm";
+                icon.className = "fa-solid fa-circle-info text-indigo-400";
+            }
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-20');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
