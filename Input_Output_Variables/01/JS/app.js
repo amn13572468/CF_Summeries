@@ -1,26 +1,39 @@
-﻿/**
- * App.js - Controller Component
- * Filters questions by selected level, shuffles options/questions, and manages application state.
- */
+﻿// User when running as builders (like Vite, Create React App, Webpack, Node.js)
+/*import React, { useState, useEffect } from 'react';
+import WelcomeScreen from './welcome-screen';
+import QuizScreen from './quiz-screen';
+import SummaryScreen from './summarys-screen';
+import { shuffleArray } from './utils';
+import { allIOVQuestions, CONFIG } from './questions';*/
 
-// LOCATION 1: At the very top of the file - Import React and useState
-const { useState } = React; // או: import React, { useState } from 'react';
-import WelcomeScreen from './WelcomeScreen';
+// בראש הקובץ app.js - ללא שורות import!
+// בראש הקובץ app.js - ללא שורות import!
+const { useState, useEffect } = React;
+
+// פונקציית ערבוב בטוחה (Safe Shuffle Fallback)
+const safeShuffleArray = (arr) => {
+    if (typeof window.shuffleArray === 'function') return window.shuffleArray(arr);
+    if (typeof shuffleArray === 'function') return shuffleArray(arr);
+    const array = [...(arr || [])];
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+};
 
 const App = () => {
-    // LOCATION 2: Inside the App function, BEFORE the 'return' block
-    const [step, setStep] = useState('welcome'); // 'welcome' | 'quiz' | 'summary'
-    //const [studentInfo, setStudentInfo] = useState({
-    //    name: '',
-    //    classGroup: '',
-    //    teacher: 'מורה',
-    //    level: 'all'
-    //});
+    // שליפה דינמית מ-window בכל רינדור למניעת בעיות סדר טעינת קבצים
+    const WelcomeComp = window.WelcomeScreen || (typeof WelcomeScreen !== 'undefined' ? WelcomeScreen : null);
+    const QuizComp = window.QuizScreen || (typeof QuizScreen !== 'undefined' ? QuizScreen : null);
+    const SummaryComp = window.SummaryScreen || (typeof SummaryScreen !== 'undefined' ? SummaryScreen : null);
+
+    const [step, setStep] = useState('welcome');
     const [studentInfo, setStudentInfo] = useState({
-        name: 'ישראל ישראלי',   // <--- ערך זמני לשם
-        classGroup: 'י1',       // <--- ערך זמני לכיתה
-        teacher: 'אביבה',       // <--- שם המורה לסטנדרט
-        level: 'easy' // CRITICAL: Set to 'easy' instead of 'all'
+        name: 'ישראל ישראלי',
+        classGroup: 'י1',
+        teacher: 'אביבה',
+        level: 'easy'
     });
     const [activeQuestions, setActiveQuestions] = useState([]);
     const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -31,117 +44,197 @@ const App = () => {
     const [isSending, setIsSending] = useState(false);
     const [sendSuccess, setSendSuccess] = useState(false);
 
-    // Inside the App component, For example: [], or ['easy'], or ['easy', 'medium', 'hard']
-    /* Addition for level tracking */
-    // State to track completed levels throughout the session
     const [completedLevels, setCompletedLevels] = useState([]);
 
-    // Topic string passed to the WelcomeScreen
+    /* 
+        localStorage is available in the browser environment and can be used to persist data across sessions.
+        This effect runs once on component mount to load any previously completed levels.
+        LocalStorage is a synchronous API, so we can safely read from it without worrying about async behavior.
+        LocalStorage saves data as strings, so we need to parse it back into an array when loading.
+        And saves the data as a JSON string when updating the completedLevels state.
+        Key difference: 
+        localStorage retains data indefinitely(even after closing the browser). 
+        sessionStorage is automatically deleted as soon as the student closes the tab or the browser!
+        Load completed levels from localStorage on initial render
+     */
+    /*useEffect(() => {
+        // reload completed levels from localStorage/sessionStorage
+        // to ensure full synchronization
+        try {
+    
+            //const saved = localStorage.getItem('completedLevels');
+            const saved = sessionStorage.getItem('completedLevels');
+            console.log("נתונים שנטענו מ-LocalStorage:", saved);
+            if (saved) setCompletedLevels(JSON.parse(saved));
+        } catch (e) {
+            console.error(e);
+        }
+    }, []);*/
+    useEffect(() => {
+        // No Reload of completed levels from localStorage/sessionStorage
+        // to ensure full synchronization
+        setCompletedLevels([]);
+    }, []);
     const quizTopic = "משתנים, קלט ופלט (C#)";
 
-    // Handler when student clicks "Start Practice"
-    const handleStart = () => {
-        console.log("Starting quiz with info:", studentInfo);
-    };
-    // Handler called when a student successfully finishes a quiz level
     const handleQuizFinish = (finishedLevelId) => {
         if (finishedLevelId && finishedLevelId !== 'all') {
-            // Add the completed level ID to the array without duplicates
             setCompletedLevels(prev => {
                 if (!prev.includes(finishedLevelId)) {
-                    return [...prev, finishedLevelId];
+                    const updated = [...prev, finishedLevelId];
+                    //localStorage.setItem('completedLevels', JSON.stringify(updated));
+                    //sessionStorage.setItem('completedLevels', JSON.stringify(updated));
+                    return updated;
                 }
                 return prev;
             });
         }
     };
 
-    /**
-     * Filters questions based on selected difficulty, shuffles questions and options.
-     */
-    const handleStartQuiz = () => {
-        // 1. Filter questions according to selected level ('all', 'easy', 'medium', 'hard')
-        let filtered = allIOVQuestions;
-        if (studentInfo.level && studentInfo.level !== 'all') {
-            filtered = allIOVQuestions.filter(q => q.level === studentInfo.level);
-        }
-
-        // 2. Deep copy & Shuffle questions and options (using Fisher-Yates logic from utils.js)
-        const preparedQuestions = shuffleArray(filtered).map(q => {
-            const optionsWithIndex = q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === q.answer }));
-            const shuffledOptions = shuffleArray(optionsWithIndex);
-
-            return {
-                ...q,
-                options: shuffledOptions.map(o => o.text),
-                answer: shuffledOptions.findIndex(o => o.isCorrect)
-            };
-        });
-
-        // 3. Update state
-        setActiveQuestions(preparedQuestions);
+    const handleReset = () => {
+        //Fix bug: Reset completed levels in localStorage
+        // Reload completed levels from localStorage to ensure 
+        // full synchronization
+        /*try {
+            // const saved = localStorage.getItem('completedLevels');
+            const saved = sessionStorage.getItem('completedLevels');
+            if (saved) setCompletedLevels(JSON.parse(saved));
+        } catch (e) {
+            console.error(e);
+        }*/
         setCurrentQuestion(0);
         setUserAnswers([]);
         setSelectedOption(null);
         setIsChecked(false);
-        setStep('quiz');
+        setFinalScore(0);
+        setIsSending(false);
+        setSendSuccess(false);
+        setStep('welcome');
     };
 
-    /**
-     * Handles progression to next question or final summary calculation.
-     */
-    const handleNext = () => {
-        const q = activeQuestions[currentQuestion];
-        const isCorrect = selectedOption === q.answer;
+    const handleStartQuiz = (targetLevel) => {
+        try {
+            const levelToUse = targetLevel || studentInfo.level || 'easy';
 
-        const updatedAnswers = [...userAnswers, {
-            ...q,
-            isCorrect,
-            selectedOption
-        }];
-        setUserAnswers(updatedAnswers);
+            setStudentInfo(prev => ({ ...prev, level: levelToUse }));
 
-        if (currentQuestion < activeQuestions.length - 1) {
-            setCurrentQuestion(currentQuestion + 1);
+            let rawQuestions = window.allIOVQuestions || (typeof allIOVQuestions !== 'undefined' ? allIOVQuestions : []);
+            if (!rawQuestions || rawQuestions.length === 0) {
+                alert('שגיאה: לא נטענו שאלות למערכת (allIOVQuestions חסר)');
+                return;
+            }
+
+            let filtered = rawQuestions;
+            if (levelToUse && levelToUse !== 'all') {
+                filtered = rawQuestions.filter(q => q.level === levelToUse);
+            }
+
+            if (!filtered || filtered.length === 0) {
+                alert(`לא נמצאו שאלות עבור הרמה שנבחרה: ${levelToUse}`);
+                return;
+            }
+
+            const preparedQuestions = safeShuffleArray(filtered).map(q => {
+                const optionsWithIndex = (q.options || []).map((opt, idx) => ({ text: opt, isCorrect: idx === q.answer }));
+                const shuffledOptions = safeShuffleArray(optionsWithIndex);
+
+                return {
+                    ...q,
+                    options: shuffledOptions.map(o => o.text),
+                    answer: shuffledOptions.findIndex(o => o.isCorrect)
+                };
+            });
+
+            setActiveQuestions(preparedQuestions);
+            setCurrentQuestion(0);
+            setUserAnswers([]);
             setSelectedOption(null);
             setIsChecked(false);
-        } else {
-            const score = Math.round((updatedAnswers.filter(a => a.isCorrect).length / activeQuestions.length) * 100);
-            setFinalScore(score);
-            setStep('summary');
-            sendToSheets(score, updatedAnswers);
+            setFinalScore(0);
+            setIsSending(false);
+            setSendSuccess(false);
+            setStep('quiz');
+        } catch (err) {
+            alert('שגיאה בהתחלת השאלון: ' + err.message);
+            console.error(err);
         }
     };
 
-    /**
-     * Submits results to Google Sheets web app.
-     */
-    const sendToSheets = async (score, answers) => {
+    const handleNext = () => {
+        try {
+            const q = activeQuestions[currentQuestion];
+            if (!q) {
+                alert('שגיאה: השאלה הנוכחית אינה קיימת');
+                return;
+            }
+
+            const isCorrect = selectedOption === q.answer;
+            const updatedAnswer = {
+                ...q,
+                isCorrect,
+                selectedOption
+            };
+
+            const updatedAnswers = [...userAnswers, updatedAnswer];
+            setUserAnswers(updatedAnswers);
+
+            if (currentQuestion < activeQuestions.length - 1) {
+                setCurrentQuestion(prev => prev + 1);
+                setSelectedOption(null);
+                setIsChecked(false);
+            } else {
+                // הגעה לשאלה האחרונה
+                const score = Math.round((updatedAnswers.filter(a => a.isCorrect).length / activeQuestions.length) * 100);
+                setFinalScore(score);
+
+                const currentLevelId = studentInfo.level || 'easy';
+                handleQuizFinish(currentLevelId);
+
+                // מעבר למסך סיכום
+                setStep('summary');
+                sendToSheets(score, updatedAnswers, currentLevelId);
+            }
+        } catch (err) {
+            alert('תרחשה שגיאה בעת מעבר שאלה: ' + err.message);
+            console.error(err);
+        }
+    };
+
+    const sendToSheets = async (score, answers, levelUsed) => {
         setIsSending(true);
         setSendSuccess(false);
 
-        const payload = {
-            sheetName: CONFIG.SHEET_NAME,
-            firstName: studentInfo.name.split(' ')[0] || studentInfo.name,
-            lastName: studentInfo.name.split(' ').slice(1).join(' ') || '',
-            classGroup: studentInfo.classGroup || '', // <--- השורה החדשה להוספה
-            teacher: studentInfo.teacher,
-            level: studentInfo.level === 'all' ? 'מרתון (הכל)' : studentInfo.level,
-            score: score,
-            detailedErrReport: answers.filter(a => !a.isCorrect).map(a => `[ש${a.id || ''}] ${a.question}`).join(' | ') || 'ללא שגיאות',
-            detailedSuccReport: answers.filter(a => a.isCorrect).map(a => `[ש${a.id || ''}] ${a.question}`).join(' | ') || 'ללא הצלחות'
-        };
-        console.log("Sending JSON payload to URL:", CONFIG.SCRIPT_URL);
-        console.log("Payload data:", payload);
         try {
-            await fetch(CONFIG.SCRIPT_URL, {
+            const configObj = typeof CONFIG !== 'undefined' ? CONFIG : (window.CONFIG || {});
+            const scriptUrl = configObj.SCRIPT_URL;
+
+            if (!scriptUrl) {
+                console.warn('CONFIG.SCRIPT_URL אינו מוגדר. תוצאות לא יישלחו לגוגל שיטס.');
+                setIsSending(false);
+                return;
+            }
+
+            const activeLevel = levelUsed || studentInfo?.level || 'easy';
+
+            const payload = {
+                sheetName: configObj.SHEET_NAME || 'DefaultSheet',
+                firstName: (studentInfo?.name || 'תלמיד').split(' ')[0] || 'תלמיד',
+                lastName: (studentInfo?.name || '').split(' ').slice(1).join(' ') || '',
+                classGroup: studentInfo?.classGroup || '',
+                teacher: studentInfo?.teacher || 'מורה',
+                level: activeLevel === 'all' ? 'מרתון (הכל)' : activeLevel,
+                score: score,
+                detailedErrReport: answers.filter(a => !a.isCorrect).map(a => `[ש${a.id || ''}] ${a.question || ''}`).join(' | ') || 'ללא שגיאות',
+                detailedSuccReport: answers.filter(a => a.isCorrect).map(a => `[ש${a.id || ''}] ${a.question || ''}`).join(' | ') || 'ללא הצלחות'
+            };
+
+            await fetch(scriptUrl, {
                 method: 'POST',
                 mode: 'no-cors',
-                //headers: { 'Content-Type': 'application/json' },
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify(payload)
             });
-            console.log("Data sent successfully!");
+
             setSendSuccess(true);
         } catch (err) {
             console.error('Error submitting results:', err);
@@ -150,45 +243,69 @@ const App = () => {
         }
     };
 
+    const getNextLevel = (currentLevel) => {
+        if (currentLevel === 'easy') return 'medium';
+        if (currentLevel === 'medium') return 'hard';
+        if (currentLevel === 'hard') return 'all';
+        return null;
+    };
+
+    const nextLevel = getNextLevel(studentInfo.level);
+
+    const handleNextLevel = () => {
+        if (nextLevel) {
+            handleStartQuiz(nextLevel);
+        }
+    };
+
     return (
         <div>
             {step === 'welcome' && (
-                <WelcomeScreen 
-                    studentInfo={studentInfo}
-                    setStudentInfo={setStudentInfo}
-                    quizTopic={quizTopic}
-                    onStart={handleStart}
-                    completedLevels={completedLevels} // Pass array of completed level IDs, e.g. ['easy', 'medium', 'hard'] - CRITICAL
-                />
+                WelcomeComp ? (
+                    <WelcomeComp
+                        studentInfo={studentInfo}
+                        setStudentInfo={setStudentInfo}
+                        quizTopic={quizTopic}
+                        onStart={handleStartQuiz}
+                        completedLevels={completedLevels}
+                    />
+                ) : <div className="p-5 text-center text-rose-600 font-bold">טוען מסך פתיחה... (שגיאה: WelcomeScreen חסר)</div>
             )}
 
             {step === 'quiz' && activeQuestions.length > 0 && (
-                <QuizScreen
-                    studentInfo={studentInfo}
-                    quizTopic="משתנים, קלט ופלט (C#)"
-                    question={activeQuestions[currentQuestion]}
-                    currentIndex={currentQuestion}
-                    totalQuestions={activeQuestions.length}
-                    selectedOption={selectedOption}
-                    setSelectedOption={setSelectedOption}
-                    isChecked={isChecked}
-                    onCheck={() => setIsChecked(true)}
-                    onNext={handleNext}
-                />
+                QuizComp ? (
+                    <QuizComp
+                        studentInfo={studentInfo}
+                        quizTopic={quizTopic}
+                        question={activeQuestions[currentQuestion]}
+                        currentIndex={currentQuestion}
+                        totalQuestions={activeQuestions.length}
+                        selectedOption={selectedOption}
+                        setSelectedOption={setSelectedOption}
+                        isChecked={isChecked}
+                        onCheck={() => setIsChecked(true)}
+                        onNext={handleNext}
+                    />
+                ) : <div className="p-5 text-center text-rose-600 font-bold">שגיאה: QuizScreen חסר</div>
             )}
 
             {step === 'summary' && (
-                <SummaryScreen
-                    studentInfo={studentInfo}
-                    finalScore={finalScore}
-                    userAnswers={userAnswers}
-                    isSending={isSending}
-                    sendSuccess={sendSuccess}
-                    onReset={() => setStep('welcome')}
-                />
+                SummaryComp ? (
+                    <SummaryComp
+                        studentInfo={studentInfo}
+                        finalScore={finalScore}
+                        userAnswers={userAnswers}
+                        isSending={isSending}
+                        sendSuccess={sendSuccess}
+                        onReset={handleReset}
+                        onNextLevel={handleNextLevel}
+                        nextLevel={nextLevel}
+                    />
+                ) : <div className="p-5 text-center text-rose-600 font-bold">שגיאה: SummaryScreen חסר</div>
             )}
         </div>
     );
 };
 
-export default App;
+window.App = App;
+//export default App;
