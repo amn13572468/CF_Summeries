@@ -17,27 +17,22 @@ const safeShuffleArray = (arr) => {
 };
 
 const App = () => {
-    // Dynamic retrieval from window object on each render to prevent script loading order issues
+    // Dynamic retrieval from window object on each render
     const WelcomeComp = window.Welcome || (typeof Welcome !== 'undefined' ? Welcome : null);
     const TopicsComp = window.Topics || (typeof Topics !== 'undefined' ? Topics : null);
     const TeacherPanelComp = window.TeacherPanel || (typeof TeacherPanel !== 'undefined' ? TeacherPanel : null);
     const QuizComp = window.Quiz || (typeof Quiz !== 'undefined' ? Quiz : null);
     const SummaryComp = window.Summary || (typeof Summary !== 'undefined' ? Summary : null);
 
+    // ניווט התחלתי: כניסה למסך בחירת הנושאים (topics)
     const [step, setStep] = useState('welcome');
+    const [selectedTopic, setSelectedTopic] = useState(null);
     const [studentInfo, setStudentInfo] = useState({
         name: 'ישראל ישראלי',
         classGroup: 'י1',
         teacher: 'אביבה',
         level: 'easy'
     });
-
-    const [selectedTopic, setSelectedTopic] = useState({
-        id: "Input_Output_Variables",
-        title: "משתנים, קלט ופלט (C#)",
-        sheetName: "Variables_Input_Output"
-    });
-
     const [activeQuestions, setActiveQuestions] = useState([]);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [selectedOption, setSelectedOption] = useState(null);
@@ -46,16 +41,16 @@ const App = () => {
     const [finalScore, setFinalScore] = useState(0);
     const [isSending, setIsSending] = useState(false);
     const [sendSuccess, setSendSuccess] = useState(false);
+
     const [completedLevels, setCompletedLevels] = useState([]);
 
     useEffect(() => {
         setCompletedLevels([]);
     }, []);
 
-    // הגדרה דינמית של נושא השאלון
     const quizTopic = selectedTopic?.title || "משתנים, קלט ופלט (C#)";
 
-    // מעבר ממסך הרשמה לבחירת נושא
+    // מעבר ממסך הפתיחה/הרשמה למסך בחירת הנושאים
     const handleWelcomeSubmit = () => {
         setStep('topics');
     };
@@ -64,13 +59,14 @@ const App = () => {
     const handleSelectTopic = (topic) => {
         setSelectedTopic(topic);
         handleStartQuiz(studentInfo.level, topic);
-    };   
+    };
 
     const handleQuizFinish = (finishedLevelId) => {
         if (finishedLevelId && finishedLevelId !== 'all') {
             setCompletedLevels(prev => {
                 if (!prev.includes(finishedLevelId)) {
-                    return [...prev, finishedLevelId];
+                    const updated = [...prev, finishedLevelId];
+                    return updated;
                 }
                 return prev;
             });
@@ -85,23 +81,17 @@ const App = () => {
         setFinalScore(0);
         setIsSending(false);
         setSendSuccess(false);
-        setStep('topics');
+        setStep('topics'); // חזרה לבחירת נושא
     };
 
-    const handleStartQuiz = (targetLevel, topicParam) => {
+    const handleStartQuiz = (targetLevel, topicToUse) => {
         try {
             const levelToUse = targetLevel || studentInfo.level || 'easy';
-            const topicToUse = topicParam || selectedTopic;
             setStudentInfo(prev => ({ ...prev, level: levelToUse }));
 
-            // טעינת השאלות לפי הנושא שנבחר
             let rawQuestions = window.allIOVQuestions || (typeof allIOVQuestions !== 'undefined' ? allIOVQuestions : []);
-            if (topicToUse?.questionsKey && window[topicToUse.questionsKey]) {
-                rawQuestions = window[topicToUse.questionsKey];
-            }
-
             if (!rawQuestions || rawQuestions.length === 0) {
-                alert('שגיאה: לא נטענו שאלות למערכת עבור נושא זה');
+                alert('שגיאה: לא נטענו שאלות למערכת (allIOVQuestions חסר)');
                 return;
             }
 
@@ -194,12 +184,9 @@ const App = () => {
             }
 
             const activeLevel = levelUsed || studentInfo?.level || 'easy';
-            
-            // שם הגיליון מתוך הנושא שנבחר, או ברירת מחדל
-            const targetSheetName = selectedTopic?.sheetName || configObj.SHEET_NAME || 'Variables_Input_Output';
 
             const payload = {
-                sheetName: targetSheetName,
+                sheetName: configObj.SHEET_NAME || 'DefaultSheet',
                 firstName: (studentInfo?.name || 'תלמיד').split(' ')[0] || 'תלמיד',
                 lastName: (studentInfo?.name || '').split(' ').slice(1).join(' ') || '',
                 classGroup: studentInfo?.classGroup || '',
@@ -236,12 +223,13 @@ const App = () => {
 
     const handleNextLevel = () => {
         if (nextLevel) {
-            handleStartQuiz(nextLevel);
+            handleStartQuiz(nextLevel, selectedTopic);
         }
     };
 
     return (
         <div>
+            {/* 1. מסך הרשמה / פתיחה */}
             {step === 'welcome' && (
                 WelcomeComp ? (
                     <WelcomeComp
@@ -253,38 +241,30 @@ const App = () => {
                         onOpenTeacherPanel={() => setStep('teacher')}
                         completedLevels={completedLevels}
                     />
-                ) : <div className="p-5 text-center text-rose-600 font-bold">טוען מסך פתיחה... (שגיאה: Welcome חסר)</div>
+                ) : <div className="p-5 text-center text-rose-600 font-bold">טוען מסך פתיחה...</div>
             )}
 
+            {/* 2. מסך בחירת נושאים */}
             {step === 'topics' && (
                 TopicsComp ? (
                     <TopicsComp
                         studentInfo={studentInfo}
                         onSelectTopic={handleSelectTopic}
                         onBack={() => setStep('welcome')}
-                        onOpenTeacherPanel={() => setStep('teacher')}
                     />
-                ) : (
-                    <div className="p-6 text-center">
-                        <h2 className="text-xl font-bold mb-4">בחירת נושא לתרגול</h2>
-                        <button 
-                            onClick={() => handleSelectTopic({ id: 'Input_Output_Variables', title: 'קלט / פלט ומשתנים', sheetName: 'Variables_Input_Output' })}
-                            className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700"
-                        >
-                            התחל תרגול קלט / פלט ומשתנים
-                        </button>
-                    </div>
-                )
+                ) : <div className="p-5 text-center text-rose-600 font-bold">שגיאה: Topics.js חסר</div>
             )}
 
+            {/* 3. לוח בקרת מורה */}
             {step === 'teacher' && (
                 TeacherPanelComp ? (
                     <TeacherPanelComp
-                        onClose={() => setStep('welcome')}
+                        onBack={() => setStep('welcome')}
                     />
-                ) : <div className="p-5 text-center text-rose-600 font-bold">שגיאה: TeacherPanel חסר</div>
+                ) : <div className="p-5 text-center text-rose-600 font-bold">שגיאה: TeacherPanel.js חסר</div>
             )}
 
+            {/* 4. מסך השאלון */}
             {step === 'quiz' && activeQuestions.length > 0 && (
                 QuizComp ? (
                     <QuizComp
@@ -302,6 +282,7 @@ const App = () => {
                 ) : <div className="p-5 text-center text-rose-600 font-bold">שגיאה: Quiz חסר</div>
             )}
 
+            {/* 5. מסך סיכום */}
             {step === 'summary' && (
                 SummaryComp ? (
                     <SummaryComp

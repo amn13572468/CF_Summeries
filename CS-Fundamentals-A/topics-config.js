@@ -19,7 +19,7 @@ const CSHARP_SYLLABUS = {
             { id: "Operators",
                  title: "אופרטורים בסיסיים", 
                  desc: "Arithmetic operations, division, and modulo", 
-                 isOpen: true,
+                 isOpen: false,
                 sheetName: "Basic_Operators" },
             { id: "Special_Operators", 
                 title: "אופרטורים מיוחדים", 

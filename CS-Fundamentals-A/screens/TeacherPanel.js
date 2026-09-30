@@ -3,6 +3,11 @@
  * Admin dashboard allowing the teacher to unlock/lock specific syllabus topics for students.
  */
 const { useState, useEffect } = React;
+const newSheetName = 'I/O&&Variables';
+const saveSheetName = (newSheetName) => {
+    localStorage.setItem('teacher_sheet_name', newSheetName);
+    alert('שם הגיליון עודכן בהצלחה!');
+};
 
 const TeacherPanel = ({ onBackToWelcome }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);

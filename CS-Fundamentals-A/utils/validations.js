@@ -1,0 +1,1 @@
+// function to validate email format and email address using regex
