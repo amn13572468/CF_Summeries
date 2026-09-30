@@ -29,36 +29,29 @@
             direction: ltr;
             text-align: left;
         }
-
-        .soft-card {
-            background: #ffffff;
-            border-radius: 1.5rem;
-            border: 1px solid #e2e8f0;
-        }
     </style>
-    <link href="../CSS/security.css" rel="stylesheet" />
+    <link href="CSS/security.css" rel="stylesheet" />
 </head>
 <body>
     <div id="root"></div>
-    <!-- 1. Security & Protection Script (Loaded First) -->
-<!--    <script src="../../JS/security.js"></script>-->
 
-    <!-- Load configurations, utilities, and questions database first -->
-    <script src="JS/config.js"></script>
-    <script src="JS/utils.js"></script>
-    <script src="JS/questions.js"></script>
+    <!-- 1. Security & Protection Script -->
+    <script src="utils/security.js"></script>
 
-    <!-- Load React component modules mooved to app.js -->
-    <script type="text/babel" src="JS/components/welcome-screen.js"></script>
-    <script type="text/babel" src="JS/components/quiz-screen.js"></script>
-    <script type="text/babel" src="JS/components/summary-screen.js"></script>
+    <!-- Load configurations, syllabus details and questions database -->
+    <script src="config.js"></script>
+    <script src="topics-config.js"></script>
+    <script src="utils/utils.js"></script>
+    <script src="content/Input_Output_Variables/questions.js"></script>
+
+    <!-- Load React component modules -->
+    <script type="text/babel" src="screens/Welcome.js"></script>
+    <script type="text/babel" src="screens/Topics.js"></script>
+    <script type="text/babel" src="screens/TeacherPanel.js"></script>
+    <script type="text/babel" src="screens/Quiz.js"></script>
+    <script type="text/babel" src="screens/Summary.js"></script>
 
     <!-- Load main application module -->
-    <script type="text/babel" src="JS/app.js"></script>
-    <!-- Mount React Application -->
-    <script type="text/babel">
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+    <script type="text/babel" src="App.js"></script>
 </body>
 </html>

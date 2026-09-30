@@ -119,6 +119,18 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
+    <Content Include="CS-Fundamentals-A\app.js" />
+    <Content Include="CS-Fundamentals-A\components\Quiz.js" />
+    <Content Include="CS-Fundamentals-A\components\Summary.js" />
+    <Content Include="CS-Fundamentals-A\components\Welcome.js" />
+    <Content Include="CS-Fundamentals-A\config.js" />
+    <Content Include="CS-Fundamentals-A\content\Arrays\questions.js" />
+    <Content Include="CS-Fundamentals-A\content\Conditions_If\questions.js" />
+    <Content Include="CS-Fundamentals-A\content\Input_Output_Variables\expert-questions.js" />
+    <Content Include="CS-Fundamentals-A\content\Input_Output_Variables\questions.js" />
+    <Content Include="CS-Fundamentals-A\index.html" />
+    <Content Include="CS-Fundamentals-A\topics-config.js" />
+    <Content Include="CS-Fundamentals-A\utils.js" />
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Game\AstroAvoid.html" />
@@ -265,7 +277,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="NewFolder1\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
