@@ -80,6 +80,10 @@ const Topics = ({ studentInfo, onSelectTopic, onBack, onOpenTeacherPanel }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {category.topics && category.topics.map(topic => {
                             const isOpen = topic.isOpen;
+                            // Saved teacher data may lack newer metadata, so restore it from the bundled config.
+                            const configuredTopic = window.CSHARP_SYLLABUS?.basicsA?.topics?.find(
+                                configuredTopic => configuredTopic.id === topic.id
+                            );
 
                             return (
                                 <div 
@@ -89,8 +93,8 @@ const Topics = ({ studentInfo, onSelectTopic, onBack, onOpenTeacherPanel }) => {
                                             onSelectTopic({
                                                 id: topic.id,
                                                 title: topic.title,
-                                                sheetName: topic.sheetName || topic.id,
-                                                questionsKey: 'allIOVQuestions' // Default question-bank key
+                                                sheetName: topic.sheetName || configuredTopic?.sheetName || topic.id,
+                                                questionsKey: topic.questionsKey || configuredTopic?.questionsKey || 'allIOVQuestions'
                                             });
                                         }
                                     }}

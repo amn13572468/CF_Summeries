@@ -23,7 +23,9 @@ const CSHARP_SYLLABUS = {
                 title: "אופרטורים בסיסיים",
                 desc: "Arithmetic operations, division, and modulo",
                 isOpen: false,
-                sheetName: "Basic_Operators"
+                sheetName: "Basic_Operators",
+                // Names the question-bank array registered by the Operators script.
+                questionsKey: "allOperatorsQuestions"
             },
             {
                 id: "Special_Operators",

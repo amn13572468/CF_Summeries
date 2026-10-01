@@ -90,10 +90,16 @@ const App = () => {
             const levelToUse = targetLevel || studentInfo.level || 'easy';
             setStudentInfo(prev => ({ ...prev, level: levelToUse }));
 
-            // Load the question bank, filter it by level, then shuffle questions and options.
-            let rawQuestions = window.allIOVQuestions || (typeof allIOVQuestions !== 'undefined' ? allIOVQuestions : []);
+            // Load the selected topic's question bank, then filter and shuffle its questions.
+            const questionsKey = topicToUse?.questionsKey || 'allIOVQuestions';
+            // Question scripts register named banks on window; retain the legacy fallback for the default bank.
+            const rawQuestions = window[questionsKey] || (
+                questionsKey === 'allIOVQuestions' && typeof allIOVQuestions !== 'undefined'
+                    ? allIOVQuestions
+                    : []
+            );
             if (!rawQuestions || rawQuestions.length === 0) {
-                alert('שגיאה: לא נטענו שאלות למערכת (allIOVQuestions חסר)');
+                alert(`שגיאה: מאגר השאלות לנושא ${topicToUse?.title || ''} לא נטען (${questionsKey})`);
                 return;
             }
 
