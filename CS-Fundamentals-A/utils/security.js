@@ -1,19 +1,19 @@
-// Blocking right-click on the entire page (or on a specific element)
+// Prevent the browser context menu from opening on the page.
 document.addEventListener('contextmenu', event => event.preventDefault());
 /*document.addEventListener('contextmenu', function (e) {
     e.preventDefault();
 });
 */
-// Blocking the copy operation
+// Prevent copying page content through the standard copy event.
 document.addEventListener('copy', (e) => {
     e.preventDefault();
-    //alert('העתקת תוכן מאתר זה אינה מורשית.');
+    // An optional alert can be shown here when copying is blocked.
     alert('Copying content from this site is not permitted.');
 });
 
-// חסימת מקשי קיצור לפתיחת כלי פיתוח וצפייה בקוד
+// Block selected keyboard shortcuts commonly used to open developer tools or view source.
 document.addEventListener('keydown', function (e) {
-    // F12 - פתיחת כלי פיתוח
+    // F12 opens developer tools.
     if (e.keyCode === 123) {
         e.preventDefault();
         return false;
@@ -25,33 +25,33 @@ document.addEventListener('keydown', function (e) {
         return false;
     }
 
-    // Ctrl+U (View Source - הצגת קוד מקור)
+    // Ctrl+U opens the page source.
     if (e.ctrlKey && e.keyCode === 85) {
         e.preventDefault();
         return false;
     }
 
-    // Ctrl+S (שמירת הדף למחשב)
+    // Ctrl+S opens the browser's save-page action.
     if (e.ctrlKey && e.keyCode === 83) {
         e.preventDefault();
         return false;
     }
 });
 
-// זיהוי והקפאת כלי פיתוח פתוחים
+// Replace the page if a debugger pause indicates that developer tools are open.
 setInterval(function () {
     const startTime = performance.now();
-    debugger; // ייקפץ וייעצר ברגע ש-DevTools פתוח
+    debugger; // Execution pauses here when developer tools are attached.
     const endTime = performance.now();
 
-    // אם לקח יותר מ-100 מילי-שניות, כלי הפיתוח פתוחים!
+    // A long pause is treated as an indication that the debugger stopped execution.
     if (endTime - startTime > 100) {
         document.body.innerHTML = '<div style="text-align:center; padding:50px; font-family:sans-serif;"><h2>⚠️ חל איסור לפתוח את כלי הפיתוח במהלך המבחן.</h2><p>יש לסגור את כלי הפיתוח ולרענן את הדף.</p></div>';
     }
 }, 200);
 
 
-// Disable context menu and specific devtools keybindings
+// Repeat the context-menu and shortcut restrictions with modern key names.
 document.addEventListener('contextmenu', event => event.preventDefault());
 document.addEventListener('keydown', event => {
     if (event.keyCode === 123 ||
@@ -61,7 +61,4 @@ document.addEventListener('keydown', event => {
     }
 });
 
-/* C:\Users\Administrator\Documents\School\Network-Services\JS_Security.docx -->-->
-TBD
-
-*/
+/* Further security notes were originally planned for a separate document. */

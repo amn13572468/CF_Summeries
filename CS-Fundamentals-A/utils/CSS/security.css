@@ -1,9 +1,10 @@
 body {
 }
 .no-select {
-    -webkit-user-select: none; /* ספארי וכרום */
-    -moz-user-select: none; /* פיירפוקס */
-    -ms-user-select: none; /* אינטרנט אקספלורר/אדג' */
-    user-select: none; /* סטנדרט עדכני */
+    /* Disable text selection across supported browser engines. */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 

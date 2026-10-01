@@ -3,6 +3,7 @@
  * Interactive quiz component for C# questions with code snippet display, option selection, and RTL support.
  */
 const getLevelBadge = (level) => {
+    // Map stored difficulty IDs to the label, icon, and classes shown in the quiz.
     switch (level?.toLowerCase()) {
         case 'easy':
             return { label: 'רמה קלה', icon: '🌱', style: 'bg-emerald-100 text-emerald-800 border-emerald-200' };
@@ -28,7 +29,7 @@ const Quiz = ({
     onCheck,
     onNext
 }) => {
-    // הגנה למקרה שהשאלה חסרה במאגר
+    // Show a recoverable fallback if the question bank has no current question.
     if (!question) {
         return (
             <div className="min-h-screen py-10 px-4 flex flex-col items-center justify-center bg-slate-100" dir="rtl">
@@ -52,7 +53,7 @@ const Quiz = ({
         <div className="min-h-screen py-4 px-2 flex flex-col items-center justify-start md:pt-4 bg-slate-100 overflow-y-auto" dir="rtl">
             <div className="max-w-3xl w-full bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col mb-6">
 
-                {/* סרגל נתונים ראשון */}
+                {/* Student identity and selected topic */}
                 <div className="bg-slate-800 text-slate-200 px-4 py-2 flex flex-wrap justify-between items-center text-xs gap-2 border-b border-slate-700">
                     <div className="flex items-center space-x-1.5 space-x-reverse font-medium">
                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -67,15 +68,15 @@ const Quiz = ({
                     </div>
                 </div>
 
-                {/* סרגל התקדמות */}
+                {/* Progress reflects the current question within the quiz */}
                 <div className="w-full bg-slate-100 h-1.5 shrink-0">
                     <div className="bg-indigo-500 h-full transition-all duration-300" style={{ width: `${progress}%` }}></div>
                 </div>
 
-                {/* התוכן המרכזי */}
+                {/* Main question content */}
                 <div className="p-4 md:p-5 space-y-4 text-right">
 
-                    {/* כותרת רמה ומספר שאלה */}
+                    {/* Difficulty badge and question number */}
                     <div className="flex justify-between items-center">
                         <span className="text-xs font-bold text-slate-400">שאלה {currentIndex + 1} מתוך {totalQuestions}</span>
 
@@ -85,14 +86,14 @@ const Quiz = ({
                         </span>
                     </div>
 
-                    {/* טקסט השאלה */}
+                    {/* Question prompt */}
                     <div className="min-h-[40px] flex items-center w-full" dir="rtl">
                         <h2 className="text-lg md:text-xl font-bold text-slate-800 text-right leading-snug w-full">
                             {question.question || 'שאלה ללא נושא'}
                         </h2>
                     </div>
 
-                    {/* תיבת קוד C# */}
+                    {/* Optional C# code sample */}
                     {question.code && (
                         <div className="rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shadow-inner no-select" dir="ltr">
                             <div className="bg-slate-800/80 px-3 py-1 flex items-center justify-between text-[11px] text-slate-400 font-mono border-b border-slate-700/50">
@@ -104,7 +105,7 @@ const Quiz = ({
                         </div>
                     )}
 
-                    {/* גריד תשובות */}
+                    {/* Disable choices after checking and highlight the correct answer */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {options.map((opt, idx) => (
                             <button key={idx} disabled={isChecked} onClick={() => setSelectedOption(idx)}
@@ -119,7 +120,7 @@ const Quiz = ({
                         ))}
                     </div>
 
-                    {/* כפתור אישור / מעבר */}
+                    {/* Check the selected answer or continue after feedback */}
                     <div>
                         {!isChecked ? (
                             <button disabled={selectedOption === null} onClick={onCheck}
@@ -133,7 +134,7 @@ const Quiz = ({
                         )}
                     </div>
 
-                    {/* משוב והסבר */}
+                    {/* Show correctness feedback and the explanation after checking */}
                     <div dir="rtl" className={`min-h-[70px] p-3 rounded-xl border-r-4 text-xs md:text-sm transition-all duration-300 ease-in-out ${isChecked
                         ? 'opacity-100 translate-y-0 ' + (selectedOption === question.answer ? 'bg-emerald-50 border-emerald-500 text-emerald-900' : 'bg-amber-50 border-amber-500 text-amber-900')
                         : 'opacity-0 -translate-y-2 pointer-events-none border-transparent bg-transparent hidden'
@@ -154,5 +155,5 @@ const Quiz = ({
     );
 };
 
-// שיוך הרכיב לאובייקט window הגלובלי לצורך זיהוי ע"י App.js והדפדפן
+// Expose the component globally so App.js can render it from the browser.
 window.Quiz = Quiz;

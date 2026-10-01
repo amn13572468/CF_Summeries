@@ -4,7 +4,7 @@
  */
 const { useState, useEffect } = React;
 
-// Safe array shuffling utility fallback
+// Shuffle a copy of an array, preferring the shared utility when available.
 const safeShuffleArray = (arr) => {
     if (typeof window.shuffleArray === 'function') return window.shuffleArray(arr);
     if (typeof shuffleArray === 'function') return shuffleArray(arr);
@@ -17,14 +17,14 @@ const safeShuffleArray = (arr) => {
 };
 
 const App = () => {
-    // Dynamic retrieval from window object on each render
+    // Resolve browser-global components so scripts loaded through Babel can be used.
     const WelcomeComp = window.Welcome || (typeof Welcome !== 'undefined' ? Welcome : null);
     const TopicsComp = window.Topics || (typeof Topics !== 'undefined' ? Topics : null);
     const TeacherPanelComp = window.TeacherPanel || (typeof TeacherPanel !== 'undefined' ? TeacherPanel : null);
     const QuizComp = window.Quiz || (typeof Quiz !== 'undefined' ? Quiz : null);
     const SummaryComp = window.Summary || (typeof Summary !== 'undefined' ? Summary : null);
 
-    // ניווט התחלתי: כניסה למסך בחירת הנושאים (topics)
+    // Track the active screen and the student, question, answer, and submission state.
     const [step, setStep] = useState('welcome');
     const [selectedTopic, setSelectedTopic] = useState(null);
     const [studentInfo, setStudentInfo] = useState({
@@ -50,18 +50,19 @@ const App = () => {
 
     const quizTopic = selectedTopic?.title || "משתנים, קלט ופלט (C#)";
 
-    // מעבר ממסך הפתיחה/הרשמה למסך בחירת הנושאים
+    // Move from student setup to the list of available topics.
     const handleWelcomeSubmit = () => {
         setStep('topics');
     };
 
-    // בחירת נושא והתחלת השאלון
+    // Save the selected topic and start its quiz at the student's current level.
     const handleSelectTopic = (topic) => {
         setSelectedTopic(topic);
         handleStartQuiz(studentInfo.level, topic);
     };
 
     const handleQuizFinish = (finishedLevelId) => {
+        // Completed levels control when marathon mode becomes available.
         if (finishedLevelId && finishedLevelId !== 'all') {
             setCompletedLevels(prev => {
                 if (!prev.includes(finishedLevelId)) {
@@ -81,7 +82,7 @@ const App = () => {
         setFinalScore(0);
         setIsSending(false);
         setSendSuccess(false);
-        setStep('topics'); // חזרה לבחירת נושא
+        setStep('welcome');
     };
 
     const handleStartQuiz = (targetLevel, topicToUse) => {
@@ -89,6 +90,7 @@ const App = () => {
             const levelToUse = targetLevel || studentInfo.level || 'easy';
             setStudentInfo(prev => ({ ...prev, level: levelToUse }));
 
+            // Load the question bank, filter it by level, then shuffle questions and options.
             let rawQuestions = window.allIOVQuestions || (typeof allIOVQuestions !== 'undefined' ? allIOVQuestions : []);
             if (!rawQuestions || rawQuestions.length === 0) {
                 alert('שגיאה: לא נטענו שאלות למערכת (allIOVQuestions חסר)');
@@ -139,6 +141,7 @@ const App = () => {
                 return;
             }
 
+            // Store the selected answer with the question for the final summary.
             const isCorrect = selectedOption === q.answer;
             const updatedAnswer = {
                 ...q,
@@ -174,6 +177,7 @@ const App = () => {
         setSendSuccess(false);
 
         try {
+            // Build a compact student result report for the configured Google Apps Script.
             const configObj = typeof CONFIG !== 'undefined' ? CONFIG : (window.CONFIG || {});
             const scriptUrl = configObj.SCRIPT_URL;
 
@@ -185,8 +189,10 @@ const App = () => {
 
             const activeLevel = levelUsed || studentInfo?.level || 'easy';
 
+            // Prepare the payload with student info, score, and detailed answer reports.
+            // Use the topic's sheetName if available, otherwise fall back to the configured default or a generic name.
             const payload = {
-                sheetName: configObj.SHEET_NAME || 'DefaultSheet',
+                sheetName: selectedTopic?.sheetName || configObj.SHEET_NAME || 'DefaultSheet',
                 firstName: (studentInfo?.name || 'תלמיד').split(' ')[0] || 'תלמיד',
                 lastName: (studentInfo?.name || '').split(' ').slice(1).join(' ') || '',
                 classGroup: studentInfo?.classGroup || '',
@@ -229,7 +235,7 @@ const App = () => {
 
     return (
         <div>
-            {/* 1. מסך הרשמה / פתיחה */}
+            {/* 1. Student setup and difficulty selection */}
             {step === 'welcome' && (
                 WelcomeComp ? (
                     <WelcomeComp
@@ -244,27 +250,28 @@ const App = () => {
                 ) : <div className="p-5 text-center text-rose-600 font-bold">טוען מסך פתיחה...</div>
             )}
 
-            {/* 2. מסך בחירת נושאים */}
+            {/* 2. Available syllabus topics */}
             {step === 'topics' && (
                 TopicsComp ? (
                     <TopicsComp
                         studentInfo={studentInfo}
                         onSelectTopic={handleSelectTopic}
                         onBack={() => setStep('welcome')}
+                        onOpenTeacherPanel={() => setStep('teacher')}
                     />
                 ) : <div className="p-5 text-center text-rose-600 font-bold">שגיאה: Topics.js חסר</div>
             )}
 
-            {/* 3. לוח בקרת מורה */}
+            {/* 3. Teacher controls for topic access */}
             {step === 'teacher' && (
                 TeacherPanelComp ? (
                     <TeacherPanelComp
-                        onBack={() => setStep('welcome')}
+                        onBack={() => setStep('topics')}
                     />
                 ) : <div className="p-5 text-center text-rose-600 font-bold">שגיאה: TeacherPanel.js חסר</div>
             )}
 
-            {/* 4. מסך השאלון */}
+            {/* 4. Active quiz question */}
             {step === 'quiz' && activeQuestions.length > 0 && (
                 QuizComp ? (
                     <QuizComp
@@ -282,7 +289,7 @@ const App = () => {
                 ) : <div className="p-5 text-center text-rose-600 font-bold">שגיאה: Quiz חסר</div>
             )}
 
-            {/* 5. מסך סיכום */}
+            {/* 5. Final score and answer review */}
             {step === 'summary' && (
                 SummaryComp ? (
                     <SummaryComp
@@ -301,7 +308,7 @@ const App = () => {
     );
 };
 
-// Mount the main App component into the root element in index.html
+// Mount the application into the root element declared in index.html.
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(<App />);

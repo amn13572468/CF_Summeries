@@ -18,7 +18,7 @@ const Welcome = ({
         { id: 'all', label: 'הכל (מרתון)', icon: '🎯', style: 'border-indigo-500 bg-indigo-50 text-indigo-900 font-bold' }
     ];
 
-    // Check if the student has completed all three main levels
+    // Require all three standard levels before enabling marathon mode.
     const hasCompletedAllThree = ['easy', 'medium', 'hard'].every(requiredLvl =>
         (completedLevels || []).some(userLvl => String(userLvl).trim().toLowerCase() === requiredLvl)
     );
@@ -29,11 +29,13 @@ const Welcome = ({
         return true;
     });
 
+    // Update the matching student field while preserving the rest of the profile.
     const handleChange = (e) => {
         const { name, value } = e.target;
         setStudentInfo(prev => ({ ...prev, [name]: value }));
     };
 
+    // Keep the selected difficulty in the shared student profile.
     const handleLevelSelect = (levelId) => {
         setStudentInfo(prev => ({ ...prev, level: levelId }));
     };
@@ -57,13 +59,13 @@ const Welcome = ({
     };*/
 
     const handleSubmit = (e) => {
-    e.preventDefault();
-    if (studentInfo.name?.trim()) {
-        //const selectedLevel = studentInfo.level || 'easy';
+        e.preventDefault();
+        if (studentInfo.name?.trim()) {
+            //const selectedLevel = studentInfo.level || 'easy';
             const selectedLevel = (studentInfo.level === 'all' && !hasCompletedAllThree)
                 ? 'easy'
                 : (studentInfo.level || 'easy');
-        
+
 
             setStudentInfo(prev => ({
                 ...prev,
@@ -71,14 +73,14 @@ const Welcome = ({
                 level: selectedLevel
             }));
 
-        // Use whichever prop was passed from App.js
-        if (typeof onStart === 'function') {
-            onStart(selectedLevel);
-        } else if (typeof onStartQuiz === 'function') {
-            onStartQuiz(selectedLevel);
+            // Support either start callback name used by the application controller.
+            if (typeof onStart === 'function') {
+                onStart(selectedLevel);
+            } else if (typeof onStartQuiz === 'function') {
+                onStartQuiz(selectedLevel);
+            }
         }
-    }
-};
+    };
 
     const currentLevel = (studentInfo.level === 'all' && !hasCompletedAllThree)
         ? 'easy'
@@ -86,7 +88,21 @@ const Welcome = ({
 
     return (
         <div className="min-h-screen py-8 px-4 flex flex-col items-center justify-center bg-slate-100" dir="rtl">
-            <div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-6">
+            {/* Main content */}
+            {/*<div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-6">*/}
+
+            <div className="relative max-w-2xl w-full bg-white rounded-3xl border border-slate-200 shadow-xl p-6 md:p-8 space-y-6">
+
+                {/* Teacher-panel access button in the upper-left corner */}
+                <button
+                    onClick={onOpenTeacherPanel}
+                    className="absolute top-4 left-4 p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all border border-slate-200 text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer z-10"
+                    title="כניסה לפאנל מורה"
+                >
+                    <span>⚙️</span>
+                    <span className="hidden sm:inline">ניהול מורה</span>
+                </button>
+
 
                 {/* Header section */}
                 <div className="text-center">
@@ -135,11 +151,10 @@ const Welcome = ({
                                         key={lvl.id}
                                         type="button"
                                         onClick={() => handleLevelSelect(lvl.id)}
-                                        className={`p-3 rounded-xl border-2 text-xs transition-all flex items-center justify-center space-x-1.5 space-x-reverse cursor-pointer ${
-                                            isSelected
+                                        className={`p-3 rounded-xl border-2 text-xs transition-all flex items-center justify-center space-x-1.5 space-x-reverse cursor-pointer ${isSelected
                                                 ? `${lvl.style} shadow-sm ring-2 ring-indigo-400/20`
                                                 : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
-                                        }`}
+                                            }`}
                                     >
                                         <span>{lvl.icon}</span>
                                         <span>{lvl.label}</span>
@@ -158,7 +173,7 @@ const Welcome = ({
                 </form>
 
                 {/* Teacher panel discrete access link */}
-                <div className="pt-4 border-t border-slate-100 text-center">
+                {/* <div className="pt-4 border-t border-slate-100 text-center">
                     <button
                         type="button"
                         onClick={onOpenTeacherPanel}
@@ -166,7 +181,7 @@ const Welcome = ({
                     >
                         כניסת מורה / ניהול סילבוס ⚙️
                     </button>
-                </div>
+                </div>*/}
 
             </div>
         </div>

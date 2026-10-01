@@ -1,0 +1,4 @@
+/* Tailwind expands these directives into the generated stylesheet. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -1,0 +1,10 @@
+{
+  "name": "cs-fundamentals-a",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i ./utils/CSS/tailwind.input.css -o ./utils/CSS/tailwind.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

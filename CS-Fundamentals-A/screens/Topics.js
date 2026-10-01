@@ -9,8 +9,9 @@ const Topics = ({ studentInfo, onSelectTopic, onBack, onOpenTeacherPanel }) => {
     const [syllabus, setSyllabus] = useState({});
 
     useEffect(() => {
-        // טעינת מצב הסילבוס מ-localStorage או מ-window.CSHARP_SYLLABUS
+        // Prefer saved teacher settings, then migrate legacy topic data, then use defaults.
         const savedSyllabus = localStorage.getItem('CSHARP_SYLLABUS_STATE');
+        const savedTopics = localStorage.getItem('teacher_syllabus');
         if (savedSyllabus) {
             try {
                 setSyllabus(JSON.parse(savedSyllabus));
@@ -18,12 +19,25 @@ const Topics = ({ studentInfo, onSelectTopic, onBack, onOpenTeacherPanel }) => {
                 console.error("Error parsing syllabus state", e);
                 setSyllabus(window.CSHARP_SYLLABUS || {});
             }
+        } else if (savedTopics) {
+            try {
+                setSyllabus({
+                    ...(window.CSHARP_SYLLABUS || {}),
+                    basicsA: {
+                        ...window.CSHARP_SYLLABUS?.basicsA,
+                        topics: JSON.parse(savedTopics)
+                    }
+                });
+            } catch (e) {
+                console.error("Error parsing saved topics", e);
+                setSyllabus(window.CSHARP_SYLLABUS || {});
+            }
         } else {
             setSyllabus(window.CSHARP_SYLLABUS || {});
         }
     }, []);
 
-    // שליפת הקטגוריה הראשית (יסודות א' ב-#C)
+    // Select the main syllabus category, falling back to the bundled configuration.
     const category = syllabus.basicsA || window.CSHARP_SYLLABUS?.basicsA || {
         title: "יסודות א' ב-#C",
         topics: []
@@ -33,7 +47,7 @@ const Topics = ({ studentInfo, onSelectTopic, onBack, onOpenTeacherPanel }) => {
         <div className="min-h-screen py-8 px-4 bg-slate-100 flex justify-center" dir="rtl">
             <div className="max-w-3xl w-full bg-white rounded-2xl border border-slate-200 p-6 space-y-6 shadow-sm text-right">
                 
-                {/* סרגל עליון */}
+                {/* Header, student greeting, and navigation controls */}
                 <div className="flex justify-between items-center border-b pb-4">
                     <div>
                         <h2 className="text-2xl font-bold text-slate-800">📚 בחירת נושא לתרגול</h2>
@@ -57,7 +71,7 @@ const Topics = ({ studentInfo, onSelectTopic, onBack, onOpenTeacherPanel }) => {
                     </div>
                 </div>
 
-                {/* רשימת הנושאים */}
+                {/* Render each topic as open for practice or locked by the teacher */}
                 <div className="space-y-4">
                     <h3 className="font-bold text-slate-700 text-base flex items-center">
                         <span className="ml-2">{category.icon || '🌱'}</span> {category.title}
@@ -75,8 +89,8 @@ const Topics = ({ studentInfo, onSelectTopic, onBack, onOpenTeacherPanel }) => {
                                             onSelectTopic({
                                                 id: topic.id,
                                                 title: topic.title,
-                                                sheetName: topic.id,
-                                                questionsKey: 'allIOVQuestions' // מפתח ברירת המחדל לשאלות
+                                                sheetName: topic.sheetName || topic.id,
+                                                questionsKey: 'allIOVQuestions' // Default question-bank key
                                             });
                                         }
                                     }}
@@ -117,5 +131,5 @@ const Topics = ({ studentInfo, onSelectTopic, onBack, onOpenTeacherPanel }) => {
     );
 };
 
-// רישום הרכיב על האובייקט הגלובלי window עבור טעינה בדפדפן
+// Expose the component globally for the browser-loaded application controller.
 window.Topics = Topics;

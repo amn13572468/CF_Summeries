@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>אתגר הקוד ב-#C</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & ReactDOM CDN -->
+    <link href="utils/CSS/tailwind.css" rel="stylesheet" />
+    <!-- Load React and ReactDOM before the JSX components that depend on them. -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel standalone for JSX processing in browser -->
+    <!-- Transpile the browser-loaded JSX scripts without a separate build step. -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Fira+Code&display=swap');
@@ -30,7 +29,8 @@
             text-align: left;
         }
     </style>
-    <link href="CSS/security.css" rel="stylesheet" />
+    <!-- <link href="CSS/security.css" rel="stylesheet" />-->
+    <link href="utils/CSS/security.css" rel="stylesheet" />
 </head>
 <body>
     <div id="root"></div>
@@ -38,22 +38,23 @@
     <!-- 1. Security & Protection Script -->
     <!--<script src="utils/security.js"></script>-->
 
-    <!-- Load configurations, syllabus details and questions database -->
+    <!-- Load shared configuration and utilities before components use them. -->
     <script src="config.js"></script>
     <script src="topics-config.js"></script>
     <script src="utils/utils.js"></script>
+    <script src="utils/auth.js"></script>
 
-    <!-- Load questions database -->
+    <!-- Register the question bank before mounting the application. -->
     <script src="content/Input_Output_Variables/questions.js"></script>
 
-    <!-- Load React component modules -->
+    <!-- Define each screen component before loading the application controller. -->
     <script type="text/babel" src="screens/Welcome.js"></script>
     <script type="text/babel" src="screens/Topics.js"></script>
     <script type="text/babel" src="screens/TeacherPanel.js"></script>
     <script type="text/babel" src="screens/Quiz.js"></script>
     <script type="text/babel" src="screens/Summary.js"></script>
 
-    <!-- Load main application module/controller -->
+    <!-- Load the controller last so all globally registered components are available. -->
     <script type="text/babel" src="App.js"></script>
 </body>
 </html>

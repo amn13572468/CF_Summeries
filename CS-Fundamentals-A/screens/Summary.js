@@ -19,7 +19,7 @@ const Summary = ({
         <div className="min-h-screen py-10 px-4 bg-slate-100 flex justify-center items-start" dir="rtl">
             <div className="max-w-3xl w-full bg-white rounded-2xl border border-slate-200 p-6 md:p-8 space-y-6 shadow-sm">
 
-                {/* באנר הודעת הצלחה */}
+                {/* Show whether results are being saved, were sent, or the quiz simply ended */}
                 <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl font-bold text-center">
                     {isSending
                         ? 'שמירת תוצאות...'
@@ -32,7 +32,7 @@ const Summary = ({
                     <h2 className="text-3xl font-extrabold text-slate-800">סיכום האתגר</h2>
                 </div>
 
-                {/* פרטי תלמיד וציון */}
+                {/* Student details and final percentage score */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 text-right space-y-2">
                         <h3 className="font-bold text-slate-700 text-sm border-b pb-2">פרטי התלמיד/ה</h3>
@@ -46,7 +46,7 @@ const Summary = ({
                     </div>
                 </div>
 
-                {/* פירוט תשובות והסברים */}
+                {/* Review each answer, showing the selected and correct choices when needed */}
                 <div className="space-y-4 pt-4 border-t border-slate-200">
                     <h3 className="text-lg font-bold text-slate-800 text-right">פירוט התשובות והסברים:</h3>
 
@@ -103,7 +103,7 @@ const Summary = ({
                     </div>
                 </div>
 
-                {/* כפתורי פעולה בתחתית */}
+                {/* Return to the main screen or continue to the next difficulty level */}
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                     <button
                         onClick={onReset}
@@ -129,7 +129,5 @@ const Summary = ({
     );
 };
 
-// Global assignment to window
-// To ensure `app.js` recognizes the components for the various screens, 
-// Explicit assign them to the `window` object at the bottom of the file
+// Expose the component globally so the application controller can render it.
 window.Summary = Summary;

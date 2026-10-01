@@ -1,4 +1,6 @@
-﻿const allIOVQuestions = [
+﻿// Question bank for input, output, variables, and basic operators.
+// Each entry includes a difficulty, prompt, optional code, answer choices, correct-choice index, and explanation.
+const allIOVQuestions = [
     // ==================== EASY (1-15) ====================
     // 1
     {
