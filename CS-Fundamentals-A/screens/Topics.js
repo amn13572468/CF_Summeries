@@ -5,7 +5,9 @@
  */
 const { useState, useEffect } = React;
 
-const Topics = ({ studentInfo, onSelectTopic, onBack, onOpenTeacherPanel }) => {
+// The Topics component receives student info and callbacks for topic selection and navigation.
+// Add onBack and onOpenTeacherPanel props for navigation and teacher panel access.
+const Topics = ({ studentInfo, onSelectTopic, onSelectPreparation, onBack, onOpenTeacherPanel }) => {
     const [syllabus, setSyllabus] = useState({});
 
     useEffect(() => {
@@ -84,6 +86,11 @@ const Topics = ({ studentInfo, onSelectTopic, onBack, onOpenTeacherPanel }) => {
                             const configuredTopic = window.CSHARP_SYLLABUS?.basicsA?.topics?.find(
                                 configuredTopic => configuredTopic.id === topic.id
                             );
+                            // Use the bundled key when older saved teacher settings do not contain it.
+                            const preparationQuestionsKey = topic.preparationQuestionsKey || configuredTopic?.preparationQuestionsKey;
+                            // Only enable preparation when its separately loaded bank contains questions.
+                            const hasPreparationQuestions = Array.isArray(window[preparationQuestionsKey])
+                                && window[preparationQuestionsKey].length > 0;
 
                             return (
                                 <div 
@@ -124,6 +131,41 @@ const Topics = ({ studentInfo, onSelectTopic, onBack, onOpenTeacherPanel }) => {
                                             {isOpen ? 'התחל תרגול ←' : 'ממתין לפתיחה ע"י המורה'}
                                         </span>
                                     </div>
+                                    {/* Teacher visibility and bank availability jointly control this activity. */}
+                                    {topic.isTestPrepOpen && (
+                                        <div className="border-t border-slate-100 pt-2 space-y-1">
+                                            {hasPreparationQuestions ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={event => {
+                                                        // Keep this action from bubbling to the card's homework click handler.
+                                                        event.stopPropagation();
+                                                        onSelectPreparation({
+                                                            id: topic.id,
+                                                            title: topic.title,
+                                                            sheetName: topic.sheetName || configuredTopic?.sheetName || topic.id,
+                                                            preparationQuestionsKey
+                                                        });
+                                                    }}
+                                                    className="w-full rounded-lg bg-amber-100 px-3 py-2 text-xs font-bold text-amber-900 hover:bg-amber-200"
+                                                >
+                                                    הכנה למבחן
+                                                </button>
+                                            ) : (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        disabled
+                                                        title="מאגר שאלות ההכנה למבחן עדיין לא הוגדר"
+                                                        className="w-full rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-400 cursor-not-allowed"
+                                                    >
+                                                        הכנה למבחן
+                                                    </button>
+                                                    <p className="text-[11px] text-slate-400">מאגר שאלות ההכנה עדיין לא נוסף.</p>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}

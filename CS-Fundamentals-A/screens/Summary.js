@@ -13,7 +13,8 @@ const Summary = ({
     sendSuccess,
     onReset,
     onNextLevel,
-    nextLevel
+    nextLevel,
+    quizMode
 }) => {
     return (
         <div className="min-h-screen py-10 px-4 bg-slate-100 flex justify-center items-start" dir="rtl">
@@ -29,7 +30,10 @@ const Summary = ({
                 </div>
 
                 <div className="text-center">
-                    <h2 className="text-3xl font-extrabold text-slate-800">סיכום האתגר</h2>
+                    {/* Name the activity clearly so preparation results are not mistaken for homework. */}
+                    <h2 className="text-3xl font-extrabold text-slate-800">
+                        {quizMode === 'preparation' ? 'סיכום הכנה למבחן' : 'סיכום האתגר'}
+                    </h2>
                 </div>
 
                 {/* Student details and final percentage score */}

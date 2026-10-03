@@ -27,6 +27,10 @@ const App = () => {
     // Track the active screen and the student, question, answer, and submission state.
     const [step, setStep] = useState('welcome');
     const [selectedTopic, setSelectedTopic] = useState(null);
+    // Preparation is a separate activity, not a homework difficulty level.
+    // The quizMode state distinguishes between normal homework practice and test-preparation mode.
+    
+    const [quizMode, setQuizMode] = useState('practice');
     const [studentInfo, setStudentInfo] = useState({
         name: 'ישראל ישראלי',
         classGroup: 'י1',
@@ -61,6 +65,12 @@ const App = () => {
         handleStartQuiz(studentInfo.level, topic);
     };
 
+    // Start the selected topic's preparation bank without changing homework progress.
+    const handleSelectPreparation = (topic) => {
+        setSelectedTopic(topic);
+        handleStartQuiz('all', topic, 'preparation');
+    };
+
     const handleQuizFinish = (finishedLevelId) => {
         // Completed levels control when marathon mode becomes available.
         if (finishedLevelId && finishedLevelId !== 'all') {
@@ -85,13 +95,16 @@ const App = () => {
         setStep('welcome');
     };
 
-    const handleStartQuiz = (targetLevel, topicToUse) => {
+    const handleStartQuiz = (targetLevel, topicToUse, mode = 'practice') => {
         try {
             const levelToUse = targetLevel || studentInfo.level || 'easy';
-            setStudentInfo(prev => ({ ...prev, level: levelToUse }));
+            // Keep the student's saved homework level unchanged during preparation.
+            if (mode === 'practice') setStudentInfo(prev => ({ ...prev, level: levelToUse }));
 
-            // Load the selected topic's question bank, then filter and shuffle its questions.
-            const questionsKey = topicToUse?.questionsKey || 'allIOVQuestions';
+            // Preparation uses its own bank key; normal practice keeps the topic's homework bank.
+            const questionsKey = mode === 'preparation'
+                ? topicToUse?.preparationQuestionsKey
+                : topicToUse?.questionsKey || 'allIOVQuestions';
             // Question scripts register named banks on window; retain the legacy fallback for the default bank.
             const rawQuestions = window[questionsKey] || (
                 questionsKey === 'allIOVQuestions' && typeof allIOVQuestions !== 'undefined'
@@ -103,8 +116,11 @@ const App = () => {
                 return;
             }
 
-            let filtered = rawQuestions;
-            if (levelToUse && levelToUse !== 'all') {
+            // Preparation includes the medium and hard questions, never the homework levels.
+            let filtered = mode === 'preparation'
+                ? rawQuestions.filter(q => q.level === 'medium' || q.level === 'hard')
+                : rawQuestions;
+            if (mode !== 'preparation' && levelToUse && levelToUse !== 'all') {
                 filtered = rawQuestions.filter(q => q.level === levelToUse);
             }
 
@@ -132,6 +148,7 @@ const App = () => {
             setFinalScore(0);
             setIsSending(false);
             setSendSuccess(false);
+            setQuizMode(mode);
             setStep('quiz');
         } catch (err) {
             alert('שגיאה בהתחלת השאלון: ' + err.message);
@@ -166,11 +183,12 @@ const App = () => {
                 const score = Math.round((updatedAnswers.filter(a => a.isCorrect).length / activeQuestions.length) * 100);
                 setFinalScore(score);
 
-                const currentLevelId = studentInfo.level || 'easy';
-                handleQuizFinish(currentLevelId);
+                const currentLevelId = quizMode === 'preparation' ? 'preparation' : studentInfo.level || 'easy';
+                // Completing preparation must not unlock or mark a homework level complete.
+                if (quizMode !== 'preparation') handleQuizFinish(currentLevelId);
 
                 setStep('summary');
-                sendToSheets(score, updatedAnswers, currentLevelId);
+                sendToSheets(score, updatedAnswers, currentLevelId, quizMode);
             }
         } catch (err) {
             alert('התרחשה שגיאה בעת מעבר שאלה: ' + err.message);
@@ -178,7 +196,7 @@ const App = () => {
         }
     };
 
-    const sendToSheets = async (score, answers, levelUsed) => {
+    const sendToSheets = async (score, answers, levelUsed, mode = 'practice') => {
         setIsSending(true);
         setSendSuccess(false);
 
@@ -203,7 +221,8 @@ const App = () => {
                 lastName: (studentInfo?.name || '').split(' ').slice(1).join(' ') || '',
                 classGroup: studentInfo?.classGroup || '',
                 teacher: studentInfo?.teacher || 'מורה',
-                level: activeLevel === 'all' ? 'מרתון (הכל)' : activeLevel,
+                // Keep test-preparation results distinct from homework levels and Marathon.
+                level: mode === 'preparation' ? 'הכנה למבחן' : activeLevel === 'all' ? 'מרתון (הכל)' : activeLevel,
                 score: score,
                 detailedErrReport: answers.filter(a => !a.isCorrect).map(a => `[ש${a.id || ''}] ${a.question || ''}`).join(' | ') || 'ללא שגיאות',
                 detailedSuccReport: answers.filter(a => a.isCorrect).map(a => `[ש${a.id || ''}] ${a.question || ''}`).join(' | ') || 'ללא הצלחות'
@@ -231,7 +250,8 @@ const App = () => {
         return null;
     };
 
-    const nextLevel = getNextLevel(studentInfo.level);
+    // Preparation has no next homework level to unlock.
+    const nextLevel = quizMode === 'preparation' ? null : getNextLevel(studentInfo.level);
 
     const handleNextLevel = () => {
         if (nextLevel) {
@@ -262,6 +282,7 @@ const App = () => {
                     <TopicsComp
                         studentInfo={studentInfo}
                         onSelectTopic={handleSelectTopic}
+                        onSelectPreparation={handleSelectPreparation}
                         onBack={() => setStep('welcome')}
                         onOpenTeacherPanel={() => setStep('teacher')}
                     />
@@ -283,6 +304,7 @@ const App = () => {
                     <QuizComp
                         studentInfo={studentInfo}
                         quizTopic={quizTopic}
+                        quizMode={quizMode}
                         question={activeQuestions[currentQuestion]}
                         currentIndex={currentQuestion}
                         totalQuestions={activeQuestions.length}
@@ -307,6 +329,7 @@ const App = () => {
                         onReset={handleReset}
                         onNextLevel={handleNextLevel}
                         nextLevel={nextLevel}
+                        quizMode={quizMode}
                     />
                 ) : <div className="p-5 text-center text-rose-600 font-bold">שגיאה: Summary חסר</div>
             )}

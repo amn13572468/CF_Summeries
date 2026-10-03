@@ -45,8 +45,15 @@
     <script src="utils/auth.js"></script>
 
     <!-- Register the question bank before mounting the application. -->
-    <script src="content/Input_Output_Variables/questions.js"></script>
-    <script src="content/Operators/questions.js"></script>
+    <script src="content/Input_Output_Variables/basic-qs.js"></script>
+    <!-- Load the separate preparation bank before Topis.js and App.js use its global key. -->
+    <script src="content/Input_Output_Variables/prep-qs.js"></script>
+    <!-- Load only the Operators question banks whose filenames end in -qs.js. -->
+    <script src="content/Operators/basic-qs.js"></script>
+    <script src="content/Operators/special-qs.js"></script>
+    <!-- Load the separate Operators preparation banks before Topics.js and App.js. -->
+    <script src="content/Operators/basic-prep-qs.js"></script>
+    <script src="content/Operators/special-prep-qs.js"></script>
 
     <!-- Define each screen component before loading the application controller. -->
     <script type="text/babel" src="screens/Welcome.js"></script>

@@ -17,9 +17,13 @@ const getLevelBadge = (level) => {
     }
 };
 
+// Detect Hebrew text so natural-language content can use RTL typography without changing code.
+const containsHebrewText = (text) => /[\u0590-\u05FF]/.test(text || '');
+
 const Quiz = ({
     studentInfo,
     quizTopic,
+    quizMode,
     question,
     currentIndex,
     totalQuestions,
@@ -48,10 +52,12 @@ const Quiz = ({
     const options = Array.isArray(question.options) ? question.options : [];
     const progress = ((currentIndex + 1) / totalQuestions) * 100;
     const levelBadge = getLevelBadge(question.level);
+    const isHebrewQuestion = containsHebrewText(question.question);
+    const isHebrewExplanation = containsHebrewText(question.explanation);
 
     return (
-        <div className="min-h-screen py-4 px-2 flex flex-col items-center justify-start md:pt-4 bg-slate-100 overflow-y-auto" dir="rtl">
-            <div className="max-w-3xl w-full bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col mb-6">
+        <div className="min-h-screen py-2 md:py-4 px-2 flex flex-col items-center justify-start bg-slate-100 overflow-y-auto" dir="rtl">
+            <div className="max-w-3xl w-full min-h-0 md:min-h-[calc(100vh-2rem)] bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
 
                 {/* Student identity and selected topic */}
                 <div className="bg-slate-800 text-slate-200 px-4 py-2 flex flex-wrap justify-between items-center text-xs gap-2 border-b border-slate-700">
@@ -66,6 +72,10 @@ const Quiz = ({
                         <span className="ml-1">📚</span>
                         <span>{quizTopic || 'תרגול C#'}</span>
                     </div>
+                    {/* Show the activity mode separately from each question's difficulty badge. */}
+                    {quizMode === 'preparation' && (
+                        <span className="rounded bg-amber-100 px-2 py-0.5 font-bold text-amber-900">הכנה למבחן</span>
+                    )}
                 </div>
 
                 {/* Progress reflects the current question within the quiz */}
@@ -74,7 +84,7 @@ const Quiz = ({
                 </div>
 
                 {/* Main question content */}
-                <div className="p-4 md:p-5 space-y-4 text-right">
+                <div className="p-4 md:p-5 space-y-4 text-right flex-1 flex flex-col">
 
                     {/* Difficulty badge and question number */}
                     <div className="flex justify-between items-center">
@@ -87,13 +97,13 @@ const Quiz = ({
                     </div>
 
                     {/* Question prompt */}
-                    <div className="min-h-[40px] flex items-center w-full" dir="rtl">
-                        <h2 className="text-lg md:text-xl font-bold text-slate-800 text-right leading-snug w-full">
+                    <div className="min-h-[40px] shrink-0 overflow-y-auto flex items-center w-full" dir={isHebrewQuestion ? 'rtl' : 'ltr'}>
+                        <h2 className={`font-bold text-slate-800 leading-snug w-full ${isHebrewQuestion ? 'text-lg md:text-xl text-right' : 'text-base md:text-lg text-left'}`}>
                             {question.question || 'שאלה ללא נושא'}
                         </h2>
                     </div>
 
-                    {/* Optional C# code sample */}
+                    {/* Show a code panel only when the question has a snippet, avoiding an empty block. */}
                     {question.code && (
                         <div className="rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shadow-inner no-select" dir="ltr">
                             <div className="bg-slate-800/80 px-3 py-1 flex items-center justify-between text-[11px] text-slate-400 font-mono border-b border-slate-700/50">
@@ -106,45 +116,56 @@ const Quiz = ({
                     )}
 
                     {/* Disable choices after checking and highlight the correct answer */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {options.map((opt, idx) => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 shrink-0">
+                        {options.map((opt, idx) => {
+                            const isHebrewOption = containsHebrewText(opt);
+
+                            return (
                             <button key={idx} disabled={isChecked} onClick={() => setSelectedOption(idx)}
-                                className={`w-full p-3 rounded-xl border-2 text-right transition-all flex items-center justify-between min-h-[52px]
+                                className={`w-full h-14 md:h-16 p-3 rounded-xl border-2 text-right transition-all flex items-center justify-between overflow-hidden
                                     ${selectedOption === idx ? 'border-indigo-500 bg-indigo-50/60 font-semibold' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'}
                                     ${isChecked && idx === question.answer ? 'border-emerald-500 bg-emerald-50 text-emerald-800 font-bold' : ''}
                                     ${isChecked && selectedOption === idx && idx !== question.answer ? 'border-rose-400 bg-rose-50 text-rose-800' : ''}`}
                             >
-                                <span className="ltr-content code-font text-xs md:text-sm break-words text-left flex-1 pl-2">{opt}</span>
+                                <span
+                                    dir={isHebrewOption ? 'rtl' : 'ltr'}
+                                    className={`break-words flex-1 pl-2 max-h-full overflow-y-auto ${isHebrewOption ? 'text-xs md:text-sm text-right' : 'ltr-content code-font text-xs md:text-sm text-left'}`}
+                                >
+                                    {opt}
+                                </span>
                                 <span className="text-xs font-bold shrink-0 mr-2 bg-slate-100 text-slate-600 px-2 py-1 rounded-full">{idx + 1}</span>
                             </button>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     {/* Check the selected answer or continue after feedback */}
-                    <div>
+                    <div className="h-10 md:h-12 shrink-0">
                         {!isChecked ? (
                             <button disabled={selectedOption === null} onClick={onCheck}
-                                className={`w-full py-3 rounded-xl font-bold text-sm transition-all shadow-sm ${selectedOption !== null ? 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}>
+                                className={`w-full h-full rounded-xl font-bold text-sm transition-all shadow-sm ${selectedOption !== null ? 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}>
                                 בדיקת תשובה
                             </button>
                         ) : (
-                            <button onClick={onNext} className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm transition-all shadow-md cursor-pointer">
+                            <button onClick={onNext} className="w-full h-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm transition-all shadow-md cursor-pointer">
                                 {currentIndex < totalQuestions - 1 ? 'לשאלה הבאה ←' : 'סיום וצפייה בתוצאות 🎯'}
                             </button>
                         )}
                     </div>
 
                     {/* Show correctness feedback and the explanation after checking */}
-                    <div dir="rtl" className={`min-h-[70px] p-3 rounded-xl border-r-4 text-xs md:text-sm transition-all duration-300 ease-in-out ${isChecked
-                        ? 'opacity-100 translate-y-0 ' + (selectedOption === question.answer ? 'bg-emerald-50 border-emerald-500 text-emerald-900' : 'bg-amber-50 border-amber-500 text-amber-900')
-                        : 'opacity-0 -translate-y-2 pointer-events-none border-transparent bg-transparent hidden'
+                    <div dir={isHebrewExplanation ? 'rtl' : 'ltr'} aria-live="polite" className={`h-16 md:h-20 shrink-0 overflow-y-auto p-1 rounded-xl border-r-4 transition-opacity duration-200 ${isChecked
+                        ? 'opacity-100 ' + (selectedOption === question.answer ? 'bg-emerald-50 border-emerald-500 text-emerald-900' : 'bg-amber-50 border-amber-500 text-amber-900')
+                        : 'opacity-0 pointer-events-none border-transparent bg-transparent'
                         }`}>
                         {isChecked && (
                             <>
-                                <div className="font-bold mb-1">
+                                <div className={`font-bold ${isHebrewExplanation ? 'text-xs md:text-sm' : 'text-sm md:text-base'}`}>
                                     {selectedOption === question.answer ? '✨ נכון מאוד!' : '💡 הסבר:'}
                                 </div>
-                                <p className="text-right leading-relaxed">{question.explanation}</p>
+                                <p className={`leading-snug ${isHebrewExplanation ? 'text-xs md:text-sm text-right' : 'text-sm md:text-base text-left'}`}>
+                                    {question.explanation}
+                                </p>
                             </>
                         )}
                     </div>

@@ -16,29 +16,42 @@ const CSHARP_SYLLABUS = {
                 title: "קלט / פלט ומשתנים",
                 desc: "Console.Write, Console.WriteLine, int, double, string",
                 isOpen: true,
-                sheetName: "Variables_I/O"
+                // This teacher toggle controls preparation visibility independently of homework access.
+                isTestPrepOpen: false,
+                sheetName: "Variables_I/O",
+                // Connect this topic to its separate preparation-question bank.
+                preparationQuestionsKey: "allIOVPreparationQuestions"
             },
             {
-                id: "Operators",
-                title: "אופרטורים בסיסיים",
+                id: "Assignment And Operators",
+                title: "השמה ואופרטורים בסיסיים",
                 desc: "Arithmetic operations, division, and modulo",
-                isOpen: false,
+                isOpen: true,
+                isTestPrepOpen: false,
                 sheetName: "Basic_Operators",
                 // Names the question-bank array registered by the Operators script.
-                questionsKey: "allOperatorsQuestions"
+                questionsKey: "allAssignmentAndOperatorsQuestions",
+                // Keep test-prep questions separate from the topic's homework bank.
+                preparationQuestionsKey: "allAssignmentAndOperatorsPreparationQuestions"
             },
             {
                 id: "Special_Operators",
                 title: "אופרטורים מיוחדים",
                 desc: "Shortcuts, ++, --, +=, -=",
                 isOpen: false,
-                sheetName: "Special_Operators"
+                isTestPrepOpen: false,
+                sheetName: "Special_Operators",
+                // Map this topic to its dedicated -qs question bank.
+                questionsKey: "allSpecialOperatorsQuestions",
+                // This key selects only the special-operators preparation bank.
+                preparationQuestionsKey: "allSpecialOperatorsPreparationQuestions"
             },
             {
                 id: "Conditions_If",
                 title: "הוראות תנאי",
                 desc: "if, else, and nested conditions",
                 isOpen: false,
+                isTestPrepOpen: false,
                 sheetName: "Conditions_If"
             },
             {
@@ -46,6 +59,7 @@ const CSHARP_SYLLABUS = {
                 title: "הוראות בחירה",
                 desc: "Switch-case statements",
                 isOpen: false,
+                isTestPrepOpen: false,
                 sheetName: "Selection"
             },
             {
@@ -53,6 +67,7 @@ const CSHARP_SYLLABUS = {
                 title: "פונקציות ספריית Math",
                 desc: "Math.Pow, Math.Sqrt, Math.Abs",
                 isOpen: false,
+                isTestPrepOpen: false,
                 sheetName: "Math_Library"
             },
             {
@@ -60,6 +75,7 @@ const CSHARP_SYLLABUS = {
                 title: "לולאת מונה (For)",
                 desc: "Counter-controlled iteration",
                 isOpen: false,
+                isTestPrepOpen: false,
                 sheetName: "Counter_Loop"
             },
             {
@@ -67,6 +83,7 @@ const CSHARP_SYLLABUS = {
                 title: "לולאת תנאי (While)",
                 desc: "Condition-controlled iteration",
                 isOpen: false,
+                isTestPrepOpen: false,
                 sheetName: "Conditional_Loop"
             },
             {
@@ -74,6 +91,7 @@ const CSHARP_SYLLABUS = {
                 title: "לולאות מקוננות",
                 desc: "Loops inside loops",
                 isOpen: false,
+                isTestPrepOpen: false,
                 sheetName: "Nested_Loops"
             },
             {
@@ -81,6 +99,7 @@ const CSHARP_SYLLABUS = {
                 title: "מערכים",
                 desc: "Introduction to arrays and storage",
                 isOpen: false,
+                isTestPrepOpen: false,
                 sheetName: "Arrays"
             }
         ]
@@ -89,3 +108,8 @@ const CSHARP_SYLLABUS = {
 
 // Make the syllabus available to browser-loaded screens and scripts.
 window.CSHARP_SYLLABUS = CSHARP_SYLLABUS;
+
+/* Run in Console when needed to reset the state:
+localStorage.removeItem('CSHARP_SYLLABUS_STATE');
+localStorage.removeItem('teacher_syllabus');
+location.reload(); */

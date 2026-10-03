@@ -55,11 +55,7 @@ const TeacherPanel = ({ onBack }) => {
             setErrorMsg('סיסמה שגויה, נסה שוב.');
         }
     };
-    const toggleTopicLock = (topicId) => {
-        // Toggle one topic and persist the full syllabus object for the student screen.
-        const updatedTopics = topics.map(t =>
-            t.id === topicId ? { ...t, isOpen: !t.isOpen } : t
-        );
+    const saveTopics = (updatedTopics) => {
         setTopics(updatedTopics);
         const syllabus = JSON.parse(localStorage.getItem('CSHARP_SYLLABUS_STATE')) || window.CSHARP_SYLLABUS || {};
         localStorage.setItem('CSHARP_SYLLABUS_STATE', JSON.stringify({
@@ -69,6 +65,20 @@ const TeacherPanel = ({ onBack }) => {
                 topics: updatedTopics
             }
         }));
+    };
+    const toggleTopicLock = (topicId) => {
+        const updatedTopics = topics.map(topic =>
+            topic.id === topicId ? { ...topic, isOpen: !topic.isOpen } : topic
+        );
+        saveTopics(updatedTopics);
+    };
+    const toggleTestPrepAccess = (topicId) => {
+        const updatedTopics = topics.map(topic =>
+            topic.id === topicId
+                ? { ...topic, isTestPrepOpen: !topic.isTestPrepOpen }
+                : topic
+        );
+        saveTopics(updatedTopics);
     };
 
     if (!isAuthenticated) {
@@ -132,7 +142,7 @@ const TeacherPanel = ({ onBack }) => {
                     {topics.map((topic) => (
                         <div
                             key={topic.id}
-                            className={`p-4 rounded-xl border flex items-center justify-between transition-all ${topic.isOpen ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-200'
+                            className={`p-4 rounded-xl border flex items-center justify-between gap-4 transition-all ${topic.isOpen ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-200'
                                 }`}
                         >
                             <div className="space-y-1">
@@ -140,15 +150,27 @@ const TeacherPanel = ({ onBack }) => {
                                 <div className="text-xs text-slate-500">{topic.desc}</div>
                             </div>
 
-                            <button
-                                onClick={() => toggleTopicLock(topic.id)}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all ${topic.isOpen
-                                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                                    : 'bg-rose-100 text-rose-700 hover:bg-rose-200 border border-rose-300'
-                                    }`}
-                            >
-                                {topic.isOpen ? '🔓 פתוח לתלמיד' : '🔒 נעול לתרגול'}
-                            </button>
+                            <div className="flex shrink-0 flex-col items-end gap-2">
+                                <button
+                                    onClick={() => toggleTopicLock(topic.id)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all ${topic.isOpen
+                                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                                        : 'bg-rose-100 text-rose-700 hover:bg-rose-200 border border-rose-300'
+                                        }`}
+                                >
+                                    {topic.isOpen ? '🔓 פתוח לתלמיד' : '🔒 נעול לתרגול'}
+                                </button>
+                                <label className="flex items-center gap-2 text-xs text-slate-600">
+                                    <input
+                                        type="checkbox"
+                                        checked={Boolean(topic.isTestPrepOpen)}
+                                        onChange={() => toggleTestPrepAccess(topic.id)}
+                                        aria-label={`הצגת הכנה למבחן בנושא ${topic.title}`}
+                                        className="h-4 w-4 accent-indigo-600"
+                                    />
+                                    הצג הכנה למבחן
+                                </label>
+                            </div>
                         </div>
                     ))}
                 </div>
