@@ -1,6 +1,7 @@
 # Change Log — Version 1.0.3
 
 **Updated:** 2026-10-03
+**Version v1.1.0-test-preparation**
 
 This document records the application changes in version 1.0.2 as before-and-after comparisons.
 
