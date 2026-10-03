@@ -1,6 +1,6 @@
 # CS-Fundamentals-A
 
-**Version 1.0.2** · Updated 2026-10-03
+**Version 1.0.3** · Updated 2026-10-03
 
 ## Overview
 A browser-based React quiz application for practicing C# fundamentals. React and ReactDOM are loaded from a CDN, JSX is transpiled in the browser with Babel, and Tailwind CSS provides the interface styles.

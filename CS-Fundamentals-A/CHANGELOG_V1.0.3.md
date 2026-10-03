@@ -1,4 +1,4 @@
-# Change Log — Version 1.0.2
+# Change Log — Version 1.0.3
 
 **Updated:** 2026-10-03
 
