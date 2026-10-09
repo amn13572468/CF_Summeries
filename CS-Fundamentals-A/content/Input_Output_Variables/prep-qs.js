@@ -3,15 +3,17 @@
 // "SyntaxError: Identifier 'allIOVPreparationQuestions' has already been declared" 
 // if the script is reloaded, so we use window.allIOVPreparationQuestions to make it 
 // global and avoid redeclaration errors.
+//
+//
 window.allIOVPreparationQuestions = [
     // ==================== MEDIUM (1-15) ====================
     // 1
     {
         id: 1, level: "medium",
         question: "מה יהיה הפלט של קטע הקוד הבא?",
-        code: "int x = 20;\nint y = 3;\nConsole.WriteLine(x % (y + 1));",
-        options: ["2", "0", "6", "שגיאת בזמן הרצה"],
-        answer: 1, explanation: "תחילה מחושב הביטוי בסוגריים (y + 1 = 4). לאחר מכן מחושבת שארית החלוקה 20 % 4, שהיא 0 כיוון ש-20 מתחלק ב-4 ללא שארית."
+        code: "int x = 20;\nint y = 3;\nConsole.WriteLine(x / (y + 1));",
+        options: ["5", "6", "6.66", "שגיאת קומפילציה"],
+        answer: 0, explanation: "תחילה מחושב הביטוי בסוגריים (y + 1 = 4). לאחר מכן מבוצעת חלוקה שלמה 20 / 4, שהתוצאה שלה היא 5."
     },
     // 2
     {
@@ -33,9 +35,9 @@ window.allIOVPreparationQuestions = [
     {
         id: 4, level: "medium",
         question: "מה יהיה הפלט של קטע הקוד הבא?",
-        code: "int x = 5;\nint y = x++;\nConsole.WriteLine(x + \" \" + y);",
-        options: ["5 5", "6 5", "6 6", "5 6"],
-        answer: 1, explanation: "אופרטור הקידום הפוסט-פיקסי (x++) מעתיק קודם את הערך המקורי 5 ל-y, ורק לאחר מכן מקדם את x ל-6. לכן x=6 ו-y=5."
+        code: "int x = 5;\nint y = x + 3;\nx = y * 2;\nConsole.WriteLine(x + \" \" + y);",
+        options: ["16 8", "10 8", "16 5", "8 8"],
+        answer: 0, explanation: "המשתנה x מתחיל ב-5. המשתנה y מקבל 5 + 3 = 8. לאחר מכן x מעודכן ל-y * 2 (כלומר 8 * 2 = 16). הפלט המודפס הוא \"16 8\"."
     },
     // 5
     {
@@ -49,9 +51,9 @@ window.allIOVPreparationQuestions = [
     {
         id: 6, level: "medium",
         question: "מה יהיה הפלט של קטע הקוד הבא?",
-        code: "char c = 'C';\nConsole.WriteLine((char)(c + 2));",
-        options: ["C2", "67", "E", "D"],
-        answer: 2, explanation: "ערך ה-ASCII של 'C' הוא 67. הוספת 2 מניבה 69, והמרה מפורשת (char)69 מחזירה את התו 'E'."
+        code: "int x = 5;\nint y = 10;\nConsole.WriteLine(\"Result: \" + (x + y));",
+        options: ["Result: 15", "Result: 510", "Result: x + y", "שגיאת קומפילציה"],
+        answer: 0, explanation: "תחילה מחושב הביטוי בסוגריים החשבוניים (5 + 10 = 15). לאחר מכן מבוצע שרשור למחרוזת \"Result: \", והפלט המתקבל הוא \"Result: 15\"."
     },
     // 7
     {
@@ -64,10 +66,10 @@ window.allIOVPreparationQuestions = [
     // 8
     {
         id: 8, level: "medium",
-        question: "מה יהיה ערכו של המשתנה a בסוף קטע הקוד הבא?",
-        code: "int a = 15;\na %= 4;",
-        options: ["3", "3.75", "0", "11"],
-        answer: 0, explanation: "האופרטור a %= 4 שקול ל-a = a % 4. שארית החלוקה של 15 ב-4 היא 3 (כיוון ש-12 מתחלק ב-4 ללא שארית)."
+        question: "מה יהיה ערכו של המשתנה average בסוף קטע הקוד הבא?",
+        code: "int a = 10;\nint b = 15;\ndouble average = (a + b) / 2;",
+        options: ["12.5", "12.0", "12", "13.0"],
+        answer: 1, explanation: "הביטוי בסוגריים (a + b) מחושב ראשון ונותן 25. החלוקה ב-2 מבוצעת בין שני מספרים שלמים (int / int), ולכן זו חלוקה שלמה שתוצאתה 12. בעת השמירה במשתנה מטיפוס double, הערך השלם 12 מומר ל-12.0."
     },
     // 9
     {
@@ -80,18 +82,18 @@ window.allIOVPreparationQuestions = [
     // 10
     {
         id: 10, level: "medium",
-        question: "מה יהיה ערכו של המשתנה x לאחר ביצוע השורה הבאה?",
-        code: "int x = 8;\nx *= x + 2;",
-        options: ["66", "80", "18", "64"],
-        answer: 1, explanation: "הביטוי x *= x + 2 שקול ל-x = x * (x + 2). תחילה מחושב אגף ימין: 8 + 2 = 10, ולאחר מכן 8 * 10 = 80."
+        question: "מה יהיה ערכו של המשתנה c בסוף קטע הקוד הבא?",
+        code: "int a = 4;\nint b = 2;\nint c = a + b * 3;",
+        options: ["10", "18", "14", "8"],
+        answer: 0, explanation: "לפי קדימות אופרטורים חשבוניים, הכפל מחושב קודם: 2 * 3 = 6. לאחר מכן מבוצע החיבור a + 6 (כלומר 4 + 6 = 10)."
     },
     // 11
     {
         id: 11, level: "medium",
         question: "מה יהיה הפלט של קטע הקוד הבא?",
-        code: "bool check = (10 / 3 == 3);\nConsole.WriteLine(check);",
-        options: ["True", "False", "3", "שגיאת קומפילציה"],
-        answer: 0, explanation: "חלוקה שלמה של 10 ב-3 מניבה 3. ההשוואה 3 == 3 מחזירה אמת (True), והערך הבוליאני מודפס כ-True."
+        code: "int a = 10;\nint b = a;\na = 20;\nConsole.WriteLine(a + \" \" + b);",
+        options: ["20 10", "20 20", "10 10", "10 20"],
+        answer: 0, explanation: "בהשמה b = a מועתק הערך 10 לתוך המשתנה b. שינוי מאוחר יותר של המשתנה a ל-20 אינו משפיע על b, ולכן הפלט המודפס הוא \"20 10\"."
     },
     // 12
     {
@@ -112,10 +114,10 @@ window.allIOVPreparationQuestions = [
     // 14
     {
         id: 14, level: "medium",
-        question: "מה יהיה ערכו של x בסוף קטע הקוד הבא?",
-        code: "int x = 10;\nx -= 3 * 2;",
+        question: "מה יהיה ערכו של המשתנה x בסוף קטע הקוד הבא?",
+        code: "int x = 10;\nx = x - 3 * 2;",
         options: ["14", "4", "12", "0"],
-        answer: 1, explanation: "לפי קדימות אופרטורים, תחילה מחושב הכפל 3 * 2 = 6. לאחר מכן מבוצעת ההשמה המקוצרת x -= 6 (כלומר 10 - 6 = 4)."
+        answer: 1, explanation: "לפי קדימות אופרטורים חשבוניים, מחושב תחילה הכפל 3 * 2 = 6. לאחר מכן מבוצע החיסור x - 6 (כלומר 10 - 6 = 4) והתוצאה 4 נשמרת בחזרה בתוך המשתנה x."
     },
     // 15
     {
@@ -138,18 +140,18 @@ window.allIOVPreparationQuestions = [
     // 17
     {
         id: 17, level: "hard",
-        question: "מה יהיה ערכו של המשתנה b בסוף קטע הקוד הבא?",
-        code: "int a = 5;\nint b = a-- - --a;\nConsole.WriteLine(b);",
-        options: ["0", "2", "1", "-1"],
-        answer: 1, explanation: "הביטוי a-- מחזיר 5 (ומפחית את a ל-4). הביטוי --a מפחית את a ל-3 ומחזיר 3. החיסור 5 - 3 נותן 2."
+        question: "מה יהיה ערכו של המשתנה result בסוף קטע הקוד הבא?",
+        code: "int a = 17;\nint b = 4;\ndouble result = (double)(a / b) + (double)a / b;",
+        options: ["8.25", "6.25", "8.0", "7.75"],
+        answer: 0, explanation: "הביטוי הראשון (a / b) מחושב בסוגריים כחלוקה שלמה (17 / 4 = 4), וההמרה ל-(double) הופכת אותו ל-4.0. הביטוי השני (double)a / b ממיר מפורשות את a ל-17.0 לפני החלוקה ולכן מבוצעת חלוקה ממשית (17.0 / 4 = 4.25). סכומם 4.0 + 4.25 מניב 8.25."
     },
     // 18
     {
         id: 18, level: "hard",
-        question: "מה מבודד הביטוי הבא עבור מספר תלת-ספרתי חיובי num?",
-        code: "int num = 258;\nint result = (num / 10) % 10;",
-        options: ["ספרת האחדות (8)", "ספרת העשרות (5)", "ספרת המאות (2)", "סכום הספרות (15)"],
-        answer: 1, explanation: "החלוקה השלמה num / 10 מורידה את ספרת האחדות ומחזירה 25. שארית החלוקה ב-10 (25 % 10) מבודדת את ספרת העשרות, שהיא 5."
+        question: "מה יהיה הפלט של קטע הקוד הבא?",
+        code: "double width = 4.0;\ndouble length = 5.5;\ndouble area = width * length;\ndouble perimeter = 2 * (width + length);\nConsole.WriteLine(area + perimeter);",
+        options: ["41", "41.0", "22.0", "19.0"],
+        answer: 1, explanation: "שטח המלבן הוא 4.0 * 5.5 = 22.0. היקף המלבן הוא 2 * (4.0 + 5.5) = 2 * 9.5 = 19.0. סכומם 22.0 + 19.0 מניב את הערך הממשי 41.0."
     },
     // 19
     {
@@ -172,40 +174,40 @@ window.allIOVPreparationQuestions = [
         id: 21, level: "hard",
         question: "מה יהיה הפלט של קטע הקוד הבא הכולל עיצוב רווחים במחרוזת?",
         code: "int val = 42;\nConsole.WriteLine(\"[{0,5}]\", val);",
-        options: ["[42]", "[   42]", "[42   ]", "[00042]"],
+        options: ["", "[   42]", "[42   ]", ""],
         answer: 1, explanation: "הציון {0,5} מורה להדפיס את הפרמטר הראשון ברוחב כולל של 5 תווים עם יישור לימין, ולכן נופלים 3 רווחים לפני המספר 42."
     },
     // 22
     {
         id: 22, level: "hard",
-        question: "מה תהיה תוצאת ההרצה של הקוד הבא?",
-        code: "char ch1 = '5';\nchar ch2 = '3';\nConsole.WriteLine(ch1 + ch2);",
-        options: ["8", "53", "104", "שגיאת קומפילציה"],
-        answer: 2, explanation: "אופרטור החיבור + בין שני תווים (char) מקדם אותם ל-int ומחבר את ערכי ה-ASCII שלהם: '5' (53) + '3' (51) = 104."
+        question: "מה יהיה הפלט של קטע הקוד הבא?",
+        code: "int a = 15;\nint b = 4;\ndouble result = a / b + (double)a / b;\nConsole.WriteLine(result);",
+        options: ["6.75", "7.5", "6.0", "3.75"],
+        answer: 0, explanation: "החלק הראשון a / b מבוצע כחלוקה שלמה בין שני int שתוצאתה 3. החלק השני (double)a / b כולל המרה מפורשת ל-double ולכן מבוצע כחלוקה ממשית שתוצאתה 3.75. סכומם 3 + 3.75 מניב 6.75."
     },
     // 23
     {
         id: 23, level: "hard",
-        question: "מה יהיה ערכו של המשתנה x בסוף קטע הקוד הבא ב-C#?",
-        code: "int x = 10;\nx = x++;\nConsole.WriteLine(x);",
-        options: ["11", "10", "0", "שגיאת קומפילציה"],
-        answer: 1, explanation: "בביטוי x = x++, אופרטור הקידום הפוסט-פיקסי שומר את הערך המקורי (10) בצד, מקדם את x ל-11, ואז פעולת ההשמה (=) דורסת את x בחזרה בערך המקורי שנשמר (10)."
+        question: "מה יהיה הפלט של קטע הקוד הבא?",
+        code: "string s1 = \"10\";\nstring s2 = \"20\";\nint num1 = int.Parse(s1);\nint num2 = int.Parse(s2);\nConsole.WriteLine(s1 + s2 + (num1 + num2));",
+        options: ["102030", "3030", "10201020", "שגיאת קומפילציה"],
+        answer: 0, explanation: "הביטוי (num1 + num2) שבסוגריים מחושב ראשון כחיבור מספרי (10 + 20 = 30). לאחר מכן מבוצע שרשור מחרוזות משמאל לימין: \"10\" + \"20\" = \"1020\", ושרשור עם 30 נותן \"102030\"."
     },
     // 24
     {
         id: 24, level: "hard",
-        question: "מה תהיה תוצאת ההרצה של קטע הקוד הבא?",
-        code: "byte b = 250;\nb = (byte)(b + 10);\nConsole.WriteLine(b);",
-        options: ["260", "4", "255", "שגיאת בזמן הרצה בגלל גלישה"],
-        answer: 1, explanation: "הטיפוס byte מוכבל בטווח 0-255. חיבור 250 + 10 מניב 260. בעת המרה מפורשת (byte), גלישה (overflow) ברירת מחדל ב-C# חותכת את הביטים והתוצאה היא 260 % 256 = 4."
+        question: "מה יהיה הפלט של קטע הקוד הבא?",
+        code: "int num = 15;\ndouble half = num / 2;\nstring result = \"Half is: \" + (int)half;\nConsole.WriteLine(result);",
+        options: ["Half is: 7", "Half is: 7.5", "Half is: 7.0", "Half is: 8"],
+        answer: 0, explanation: "החלוקה num / 2 מבוצעת בין שני מספרים שלמים (int / int), ולכן היא חלוקה שלמה שתוצאתה 7. הערך 7 נשמר במשתנה half כ-7.0. המרה מפורשת (int)half המירה את 7.0 בחזרה למספר השלם 7, ושרשור למחרוזת מניב \"Half is: 7\"."
     },
     // 25
     {
         id: 25, level: "hard",
-        question: "מה תדפיס התוכנית למסך?",
-        code: "char c = 'a';\nc = (char)(c - 32);\nConsole.WriteLine(c);",
-        options: ["a", "A", "65", "שגיאת קומפילציה"],
-        answer: 1, explanation: "בטבלת ASCII ההפרש בין אות קטנה לאות גדולה מקבילה הוא 32. החיסור 97 ('a') פחות 32 מניב 65, וההמרה ל-char מחזירה את התו 'A'."
+        question: "מה יהיה הפלט של קטע הקוד הבא?",
+        code: "int x = 10;\nint y = 4;\ndouble result = x / y;\nConsole.WriteLine(\"Result: \" + result);",
+        options: ["Result: 2.5", "Result: 2", "Result: 2.0", "Result: 2.50"],
+        answer: 2, explanation: "החלוקה x / y מבוצעת בין שני מספרים שלמים (int / int), ולכן זו חלוקה שלמה שתוצאתה 2. בעת השמירה במשתנה result מטיפוס double, הערך 2 מומר ל-2.0, ולכן השרשור מניב \"Result: 2.0\"."
     },
     // 26
     {
@@ -218,10 +220,10 @@ window.allIOVPreparationQuestions = [
     // 27
     {
         id: 27, level: "hard",
-        question: "מה תדפיס התוכנית למסך?",
-        code: "double x = 0.1 + 0.2;\nConsole.WriteLine(x == 0.3);",
-        options: ["True", "False", "0.3", "שגיאת קומפילציה"],
-        answer: 1, explanation: "בחישוב נקודה צפה (double), לייצוג הבינארי של 0.1 ו-0.2 יש אי-דיוק זעיר. 0.1 + 0.2 שווה ל-0.30000000000000004, ולכן ההשוואה ל-0.3 מחזירה False."
+        question: "מה יהיה הפלט של קטע הקוד הבא?",
+        code: "string val1 = \"5\";\nstring val2 = \"10\";\nint sum = int.Parse(val1) + int.Parse(val2);\nstring output = val1 + val2 + \"=\" + sum;\nConsole.WriteLine(output);",
+        options: ["510=15", "15=15", "510=510", "שגיאת קומפילציה"],
+        answer: 0, explanation: "המשתנה sum מחשב סכום מספרי (5 + 10 = 15). בבניית המחרוזת output, הביטוי val1 + val2 משרשר את המחרוזות \"5\" ו-\"10\" ל-\"510\", ולכן הפלט התקבל הוא \"510=15\"."
     },
     // 28
     {
@@ -242,9 +244,9 @@ window.allIOVPreparationQuestions = [
     // 30
     {
         id: 30, level: "hard",
-        question: "מה מטרת האלגוריתם המתמטי בקטע הקוד הבא עבור מספר דו-ספרתי חיובי n?",
-        code: "int n = 38;\nint rev = (n % 10) * 10 + (n / 10);\nConsole.WriteLine(rev);",
-        options: ["חישוב סכום הספרות (11)", "הפיכת סדר הספרות (הדפסת 83)", "הכפלת המספר ב-10", "בדיקה האם המספר זוגי"],
-        answer: 1, explanation: "n % 10 מחזיר את ספרת האחדות (8) ומכפיל ב-10 (80). n / 10 מחזיר את ספרת העשרות (3). סכומם 80 + 3 נותן 83 - המספר ההפוך."
+        question: "מה יהיה הפלט של קטע הקוד הבא הממיר שניות לדקות ושניות?",
+        code: "int totalSeconds = 125;\nint minutes = totalSeconds / 60;\nint seconds = totalSeconds - (minutes * 60);\nConsole.WriteLine(minutes + \"m \" + seconds + \"s\");",
+        options: ["2m 5s", "2m 0s", "1m 65s", "125m 0s"],
+        answer: 0, explanation: "החלוקה השלמה 125 / 60 מחזירה 2 דקות. חישוב השניות הנותרות מבוצע על ידי הפחתת הדקות שהומרו בשניות: 125 - (2 * 60) = 125 - 120 = 5 שניות. הפלט המתקבל הוא \"2m 5s\"."
     }
 ];

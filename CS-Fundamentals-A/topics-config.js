@@ -13,7 +13,7 @@ const CSHARP_SYLLABUS = {
         topics: [
             {
                 id: "Input_Output_Variables",
-                title: "קלט / פלט ומשתנים",
+                title: "קלט / פלט, משתנים והשמה",
                 desc: "Console.Write, Console.WriteLine, int, double, string",
                 isOpen: true,
                 // This teacher toggle controls preparation visibility independently of homework access.

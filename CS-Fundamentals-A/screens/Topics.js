@@ -39,10 +39,13 @@ const Topics = ({ studentInfo, onSelectTopic, onSelectPreparation, onBack, onOpe
         }
     }, []);
 
-    // Select the main syllabus category, falling back to the bundled configuration.
-    const category = syllabus.basicsA || window.CSHARP_SYLLABUS?.basicsA || {
-        title: "יסודות א' ב-#C",
-        topics: []
+    // Use saved topics for teacher toggles, but keep category labels current from the bundled config.
+    const savedCategory = syllabus.basicsA;
+    const configuredCategory = window.CSHARP_SYLLABUS?.basicsA;
+    const category = {
+        ...(savedCategory || {}),
+        ...(configuredCategory || {}),
+        topics: savedCategory?.topics || configuredCategory?.topics || []
     };
 
     return (
@@ -81,13 +84,17 @@ const Topics = ({ studentInfo, onSelectTopic, onSelectPreparation, onBack, onOpe
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {category.topics && category.topics.map(topic => {
-                            const isOpen = topic.isOpen;
-                            // Saved teacher data may lack newer metadata, so restore it from the bundled config.
+                            // Config supplies current labels and bank keys; saved state keeps teacher toggles.
                             const configuredTopic = window.CSHARP_SYLLABUS?.basicsA?.topics?.find(
                                 configuredTopic => configuredTopic.id === topic.id
                             );
-                            // Use the bundled key when older saved teacher settings do not contain it.
-                            const preparationQuestionsKey = topic.preparationQuestionsKey || configuredTopic?.preparationQuestionsKey;
+                            const currentTopic = {
+                                ...topic,
+                                ...(configuredTopic || {}),
+                                isOpen: topic.isOpen ?? configuredTopic?.isOpen,
+                                isTestPrepOpen: topic.isTestPrepOpen ?? configuredTopic?.isTestPrepOpen
+                            };
+                            const preparationQuestionsKey = currentTopic.preparationQuestionsKey;
                             // Only enable preparation when its separately loaded bank contains questions.
                             const hasPreparationQuestions = Array.isArray(window[preparationQuestionsKey])
                                 && window[preparationQuestionsKey].length > 0;
@@ -96,43 +103,43 @@ const Topics = ({ studentInfo, onSelectTopic, onSelectPreparation, onBack, onOpe
                                 <div 
                                     key={topic.id}
                                     onClick={() => {
-                                        if (isOpen) {
+                                        if (currentTopic.isOpen) {
                                             onSelectTopic({
-                                                id: topic.id,
-                                                title: topic.title,
-                                                sheetName: topic.sheetName || configuredTopic?.sheetName || topic.id,
-                                                questionsKey: topic.questionsKey || configuredTopic?.questionsKey || 'allIOVQuestions'
+                                                id: currentTopic.id,
+                                                title: currentTopic.title,
+                                                sheetName: currentTopic.sheetName || currentTopic.id,
+                                                questionsKey: currentTopic.questionsKey || 'allIOVQuestions'
                                             });
                                         }
                                     }}
                                     className={`p-4 rounded-xl border transition-all flex flex-col justify-between space-y-3 ${
-                                        isOpen 
+                                        currentTopic.isOpen
                                             ? 'bg-white border-slate-200 hover:border-indigo-500 hover:shadow-md cursor-pointer' 
                                             : 'bg-slate-50 border-slate-200 opacity-60 cursor-not-allowed'
                                     }`}
                                 >
                                     <div className="flex justify-between items-start">
-                                        <h4 className="font-bold text-slate-800 text-sm">{topic.title}</h4>
+                                        <h4 className="font-bold text-slate-800 text-sm">{currentTopic.title}</h4>
                                         <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
-                                            isOpen 
+                                            currentTopic.isOpen
                                                 ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
                                                 : 'bg-slate-200 text-slate-600'
                                         }`}>
-                                            {isOpen ? 'פתוח לתרגול ✅' : 'נעול 🔒'}
+                                            {currentTopic.isOpen ? 'פתוח לתרגול ✅' : 'נעול 🔒'}
                                         </span>
                                     </div>
 
                                     <p className="text-xs text-slate-500 leading-relaxed">
-                                        {topic.desc}
+                                        {currentTopic.desc}
                                     </p>
 
                                     <div className="pt-2 border-t border-slate-100 flex justify-end">
-                                        <span className={`text-xs font-bold ${isOpen ? 'text-indigo-600' : 'text-slate-400'}`}>
-                                            {isOpen ? 'התחל תרגול ←' : 'ממתין לפתיחה ע"י המורה'}
+                                        <span className={`text-xs font-bold ${currentTopic.isOpen ? 'text-indigo-600' : 'text-slate-400'}`}>
+                                            {currentTopic.isOpen ? 'התחל תרגול ←' : 'ממתין לפתיחה ע"י המורה'}
                                         </span>
                                     </div>
                                     {/* Teacher visibility and bank availability jointly control this activity. */}
-                                    {topic.isTestPrepOpen && (
+                                    {currentTopic.isTestPrepOpen && (
                                         <div className="border-t border-slate-100 pt-2 space-y-1">
                                             {hasPreparationQuestions ? (
                                                 <button
@@ -141,9 +148,9 @@ const Topics = ({ studentInfo, onSelectTopic, onSelectPreparation, onBack, onOpe
                                                         // Keep this action from bubbling to the card's homework click handler.
                                                         event.stopPropagation();
                                                         onSelectPreparation({
-                                                            id: topic.id,
-                                                            title: topic.title,
-                                                            sheetName: topic.sheetName || configuredTopic?.sheetName || topic.id,
+                                                            id: currentTopic.id,
+                                                            title: currentTopic.title,
+                                                            sheetName: currentTopic.sheetName || currentTopic.id,
                                                             preparationQuestionsKey
                                                         });
                                                     }}

@@ -302,12 +302,11 @@ window.allAssignmentAndOperatorsQuestions = [
         answer: 0, explanation: "חישוב גובה ההנחה: 200 * 15 / 100 = 3000 / 100 = 30. המחיר הסופי: 200 - 30 = 170."
     },
     // 38
-    {
-        id: 38, level: "hard",
-        question: "מה יכיל המשתנה isEven בעת בדיקת זוגיות של מספר num?",
-        code: "int num = 42;\nbool isEven = (num % 2 == 0);",
-        options: ["0", "42", "True", "False"],
-        answer: 2, explanation: "42 % 2 שווה 0. ההשוואה 0 == 0 היא אמת ולכן נשמר הערך הבוליאני True."
+    { id: 38, level: "hard", 
+      question: "מה יהיה הפלט של קטע הקוד הבא המחשב מחיר מוצר כולל מע\"מ (18%)?", 
+      code: "int price = 100;\\ndouble vatRatio = 1.18;\\nint totalPrice = (int)(price \* vatRatio);\\nConsole.WriteLine(\"Total: \" + totalPrice);", 
+      options: ["Total: 118", "Total: 118.0", "Total: 100", "שגיאת קומפילציה"], 
+      answer: 0, explanation: "הכפל price \* vatRatio מחושב כ-100 \* 1.18 = 118.0\. ההמרה המפורשת (int) קוטמת את החלק השברי והופכת אותו ל-118 השלם, ושרשור למחרוזת מניב \"Total: 118\"." 
     },
     // 39
     {
