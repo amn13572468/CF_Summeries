@@ -309,12 +309,20 @@ const allIOVQuestions = [
         answer: 1, explanation: "הכפל num * num מחושב תחילה (3 * 3 = 9). לאחר מכן מוסיפים את num (3 + 9 = 12), והערך 12 נשמר ב-num."
     },
     // 38
-    {
+    /*{
         id: 38, level: "hard",
         question: "מה יהיה הפלט של קטע הקוד הבא?",
         code: "char letter = 'A';\nletter++;\nConsole.WriteLine(letter);",
         options: ["A", "B", "66", "שגיאת קומפילציה"],
         answer: 1, explanation: "קידום משתנה מטיפוס char באמצעות ++ מעלה את ערך ה-ASCII שלו ב-1 ('A' שהוא 65 הופך ל-66, שהוא התו 'B')."
+    },*/
+    // 38
+    {
+        id: 38, level: "hard",
+        question: "מה יהיה הפלט של קטע הקוד הבא?",
+        code: "int a = 7;\nint b = 2;\ndouble r = a / b;\nConsole.WriteLine(r * b);",
+        options: ["7", "6", "7.0", "שגיאת קומפילציה"],
+        answer: 1, explanation: "a / b הוא חילוק של שני מספרים מטיפוס int, ולכן התוצאה היא 3 (החלק העשרוני נחתך) עוד לפני שהיא נשמרת ב-double. לכן r הוא 3, ו-3 * 2 = 6. מי שחשב ש-r הוא 3.5 הגיע ל-7."
     },
     // 39
     {
@@ -338,15 +346,23 @@ const allIOVQuestions = [
         question: "מה תהיה תוצאת ביצוע הקוד הבא?",
         code: "int a = 5;\nint b = 2;\ndouble avg = (a + b) / 2;\nConsole.WriteLine(avg);",
         options: ["3.5", "3.0", "3", "3.50"],
-        answer: 1, explanation: "הסוגריים (a + b) נותנים 7 (int). החלוקה ב-2 (int) היא חלוקה שלמה שנותנת 3 (int). השמה ל-double המירה את 3 ל-3.0, ולכן הפלט הוא 3."
+        answer: 2, explanation: "הסוגריים (a + b) נותנים 7 (int). החלוקה ב-2 (int) היא חלוקה שלמה שנותנת 3 (int). השמה ל-double המירה את 3 ל-3.0, ולכן הפלט הוא 3."
     },
     // 42
-    {
+    /*{
         id: 42, level: "hard",
         question: "מה יהיה הפלט של קטע הקוד הבא?",
         code: "int x = 1;\nx = x++ + ++x;\nConsole.WriteLine(x);",
         options: ["3", "4", "5", "תוצאה לא מוגדרת / שגיאה בשימוש כפול"],
         answer: 1, explanation: "x++ מניב 1 (ומקדם את x ל-2). ++x מקדם את x ל-3 ומניב 3. סכום הביטויים 1 + 3 = 4 ונשמר ב-x."
+    },*/
+    // 42
+    {
+        id: 42, level: "hard",
+        question: "מה יהיה הפלט של קטע הקוד הבא?",
+        code: "int x = 17;\nint y = 5;\nx = x % y;\ny = y * x + x / 2;\nConsole.WriteLine(x + \" \" + y);",
+        options: ["2 93", "2 11", "2 10", "17 11"],
+        answer: 1, explanation: "קודם x = 17 % 5 = 2. אחר כך y מחושב עם הערך המעודכן של x: y = 5 * 2 + 2 / 2 = 10 + 1 = 11 (החילוק 2 / 2 הוא חילוק שלם). הפלט הוא 2 11."
     },
     // 43
     {
